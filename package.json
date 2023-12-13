@@ -1,0 +1,11 @@
+{
+  "name": "neulchan-tddev",
+  "version": "0.0.1",
+  "description": "I want this project to work.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "neulchance@gmail.com",
+  "license": "UNLICENSED"
+}
