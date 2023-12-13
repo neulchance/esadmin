@@ -4,8 +4,15 @@
   "description": "I want this project to work.",
   "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "neulchance@gmail.com",
-  "license": "UNLICENSED"
+  "author": "NeulChan Gong",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "^28.0.0"
+  },
+  "dependencies": {
+    "surrealdb.wasm": "^0.7.0"
+  }
 }
