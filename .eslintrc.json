@@ -1,0 +1,39 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "rules": {
+        "object-curly-spacing": ["error", "never"],
+        "@typescript-eslint/ban-types": [
+          "error",
+          {
+            "types": {
+              "Object": false
+            },
+            "extendDefaults": true
+          }
+        ],
+        "no-empty-function": "off",
+        "@typescript-eslint/no-empty-function": "off"
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+      ],
+      "rules": {}
+    }
+  ]
+}
