@@ -1,6 +1,5 @@
-import swc from '@swc/core'
-import ts from 'typescript'
-import {task} from 'hereby'
+// import swc from '@swc/core'
+// import ts from 'typescript'
 
 export class SwcTranspiler {
   transpile(): void {
