@@ -29,7 +29,8 @@ export const other = task({
 export const taskWatchClient = task({
   name: "watch-client",
   description: "Builds the full compiler and services",
-  run: async () => (await import('./task-watch-client.mjs')).watch()
+  // run: async () => (await import('./task-watch-client.mjs')).watch()
+  run: async () => console.log('watch-client')
 })
 
 export const watchSrc = task({
