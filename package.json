@@ -23,6 +23,7 @@
     "hereby": "^1.8.8",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
+    "vinyl": "^3.0.0",
     "which": "^4.0.0"
   },
   "dependencies": {
