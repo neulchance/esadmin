@@ -30,7 +30,7 @@ function createCompile(src: string, build: boolean, emitError: boolean, transpil
 		overrideOptions.inlineSourceMap = true;
 	}
 
-  console.log(overrideOptions)
+  // console.log(overrideOptions)
   const compilation = tsb.creaete(
     projectPath,
     overrideOptions,
@@ -48,8 +48,11 @@ function createCompile(src: string, build: boolean, emitError: boolean, transpil
 	}); */
 }
 
-export function transpileTask() {
-  throw new Error('not implemented.');
+export function transpileTask(src: string, out: string, swc: boolean) {
+  createCompile(src, false, true, {swc})
+  if (os.totalmem() < 4_000_000_000) {
+    throw new Error('compilation requires 4GB of RAM');
+  }
 }
 
 

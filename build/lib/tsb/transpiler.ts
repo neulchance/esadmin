@@ -46,9 +46,9 @@ class OutputFileNameOracle {
 }
 
 export interface ITranspiler {
-	onOutfile?: (file: fs.ReadStream/* Vinyl */) => void;
+	onOutfile?: (file: Vinyl) => void;
 	join(): Promise<void>;
-	transpile(file: fs.ReadStream/* Vinyl */): void;
+	transpile(file: Vinyl): void;
 }
 
 export class SwcTranspiler {
@@ -68,6 +68,7 @@ export class SwcTranspiler {
   async join(): Promise<void> {
 		const jobs = this._jobs.slice();
 		this._jobs.length = 0;
+    // 모든 promises가 settled 되면
 		await Promise.allSettled(jobs);
 	}
 
@@ -82,7 +83,7 @@ export class SwcTranspiler {
 		} else if (this._cmdLine.options.module === ts.ModuleKind.CommonJS) {
 			options = SwcTranspiler._swcrcCommonJS;
 		}
-    /*this._jobs.push()*/swc.transform(tsSrc, options).then(output => {
+    this._jobs.push(swc.transform(tsSrc, options).then(output => {
       const outBase = this._cmdLine.options.outDir ?? file.base;
       const outPath = this._outputFileNames.getOutputFileName(file.path);
       this.onOutfile!(new Vinyl({
@@ -90,7 +91,10 @@ export class SwcTranspiler {
         base: outBase,
         contents: Buffer.from(output.code),
       }))
-    })
+    }).catch(err => {
+      console.log(err)
+      /* this._onError(err); */
+    }))
   }
 
   // --- .swcrc

@@ -4,4 +4,5 @@ export {
   other,
   taskWatchClient,
   watchSrc,
+  transpileSrc,
 } from './build/herebyfile.mjs'

@@ -33,8 +33,14 @@ export const taskWatchClient = task({
   run: async () => console.log('watch-client')
 })
 
+export const transpileSrc = task({
+  name: "transpile-src",
+  description: "Transpiles the src project (all code)",
+  run: async () => (await import('./tasks/facade.mjs')).transpile()
+})
+
 export const watchSrc = task({
   name: "watch-src",
   description: "Watches the src project (all code)",
-  run: async () => (await import('./tasks/watch-src.mjs')).watch()
+  run: async () => (await import('./tasks/facade.mjs')).watch()
 })

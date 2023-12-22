@@ -1,6 +1,6 @@
 import path, {dirname} from 'path'
-import {Readable, Writable} from 'stream'
-import ts from 'typescript'
+import {Readable, Writable, Transform} from 'stream'
+import ts, { transpile } from 'typescript'
 import {ITranspiler, SwcTranspiler} from './transpiler'
 import Vinyl from 'vinyl'
 import * as builder from './builder'
@@ -25,52 +25,44 @@ export function creaete(
 
   // TRANSPILE ONLY stream doing just TS to JS conversion
 	function createTranspileStream(transpiler: ITranspiler): Readable & Writable {
-		return through(
-      
-      function (
-        this: through.ThroughStream & { queue(a: any): void },
-        file: Vinyl
-      ) {
+    return new Transform({
+      transform(file: Vinyl, encoding, callback) {
         // give the file to the compiler
         if (file.isStream()) {
-          this.emit('error', 'no support for streams');
-          return;
+          this.emit('error', 'no support for stream')
+          return
         }
         if (!file.contents) {
-          return;
+          return
         }
         if (!config.transpileOnlyIncludesDts && file.path.endsWith('.d.ts')) {
-          return;
+          return
         }
-
         if (!transpiler.onOutfile) {
-          transpiler.onOutfile = file => this.queue(file);
+          /* Binding @Output */
+				  transpiler.onOutfile = file => this.push(file)
         }
-
         transpiler.transpile(file);
       },
-
-      function (this: { queue(a: any): void }) {
-			  transpiler.join().then(() => {
-				  this.queue(null);
-				  transpiler.onOutfile = undefined;
-			  });
-      }
-    );
+      destroy() {
+        transpiler.join().then(() => {
+          this.push(null)
+          transpiler.onOutfile = undefined;
+        })
+      },
+    })
 	}
 
   /* ⓵ Prepare typescript config file */
   const parsed = ts.readConfigFile(projectPath, ts.sys.readFile)
-  const cmdLine = ts.parseJsonConfigFileContent(parsed.config, ts.sys, dirname(projectPath), /* existingOptions */)
+  const cmdLine = ts.parseJsonConfigFileContent(parsed.config, ts.sys, dirname(projectPath), existingOptions)
 
   /* ⓶ */
-  const traspiler = new SwcTranspiler(projectPath, cmdLine);
+  const transpiler = new SwcTranspiler(projectPath, cmdLine);
   
   let result: any/* IncrementalCompiler */
   result = 'You have to made!'
-  // const traspiler = new SwcTranspiler()
-  // traspiler.transpile()
-  // createTranspileStream()
+  result = <any>(() => createTranspileStream(transpiler))
   // createCompileStream()
   
   // const _builder = builder.createTypeScriptBuilder(/* { logFn },  */projectPath, cmdLine)
