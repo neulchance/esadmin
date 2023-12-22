@@ -75,14 +75,14 @@ export class SwcTranspiler {
   transpile(file: Vinyl): void {
     const tsSrc = String(file.contents);
     let options: swc.Options = SwcTranspiler._swcrcEsm;
-		if (this._cmdLine.options.module === ts.ModuleKind.AMD) {
-			const isAmd = /\n(import|export)/m.test(tsSrc);
-			if (isAmd) {
-				options = SwcTranspiler._swcrcAmd;
-			}
-		} else if (this._cmdLine.options.module === ts.ModuleKind.CommonJS) {
-			options = SwcTranspiler._swcrcCommonJS;
-		}
+    if (this._cmdLine.options.module === ts.ModuleKind.AMD) {
+      const isAmd = /\n(import|export)/m.test(tsSrc);
+      if (isAmd) {
+        options = SwcTranspiler._swcrcAmd;
+      }
+    } else if (this._cmdLine.options.module === ts.ModuleKind.CommonJS) {
+      options = SwcTranspiler._swcrcCommonJS;
+    }
     this._jobs.push(swc.transform(tsSrc, options).then(output => {
       const outBase = this._cmdLine.options.outDir ?? file.base;
       const outPath = this._outputFileNames.getOutputFileName(file.path);
