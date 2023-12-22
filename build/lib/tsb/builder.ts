@@ -5,8 +5,6 @@ import ts from 'typescript'
 import { glob, globSync, globStream, globStreamSync, Glob } from 'glob'
 
 export async function  createTypeScriptBuilder(projectFile: string, cmd: ts.ParsedCommandLine) {
-  console.log('createTypeScriptBuilder')
-
   // const tsfiles = await glob('**/*.ts', { ignore: 'node_modules/**' })
   const tsFiles = await glob('src/**/*.ts', { ignore: 'node_modules/**' })
   for (const tsFile of tsFiles) {
@@ -57,9 +55,9 @@ async function run(file: string) {
         // await someLongRunningfn({ signal })
         yield source
       }, */
-      toUpper,
-      rS,
-      removeSpaces,
+      // toUpper,
+      // rS,
+      // removeSpaces,
       fs.createWriteStream('temp.js'),
       {signal}
     )
