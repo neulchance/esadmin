@@ -5,6 +5,7 @@ import {ITranspiler, SwcTranspiler} from './transpiler'
 import Vinyl from 'vinyl'
 import * as builder from './builder'
 import * as os from 'os'
+import {log} from '../../base/logger'
 
 export interface IncrementalCompiler {
 	(token?: any): Readable & Writable
@@ -22,6 +23,12 @@ export function creaete(
   existingOptions: Partial<ts.CompilerOptions>,
   config: { verbose?: boolean; transpileOnly?: boolean; transpileOnlyIncludesDts?: boolean; transpileWithSwc?: boolean },
 ): IncrementalCompiler {
+
+  function logFn(topic: string, message: string): void {
+		if (config.verbose) {
+			log.info(`${topic} ${message}`)
+		}
+	}
 
   // TRANSPILE ONLY stream doing just TS to JS conversion
 	function createTranspileStream(transpiler: ITranspiler): Readable & Writable {
