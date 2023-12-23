@@ -57,12 +57,11 @@ export class SwcTranspiler {
   private _jobs: Promise<any>[] = [];
 
   constructor(
+    private readonly _logFn: (topic: string, message: string) => void,
     configFilePath: string,
 		private readonly _cmdLine: ts.ParsedCommandLine
   ) {
     this._outputFileNames = new OutputFileNameOracle(_cmdLine, configFilePath);
-    // const outPath = this._outputFileNames.getOutputFileName(configFilePath);
-    // console.log(outPath)
   }
 
   async join(): Promise<void> {
@@ -73,7 +72,14 @@ export class SwcTranspiler {
 	}
 
   transpile(file: Vinyl): void {
+    if (this._cmdLine.options.noEmit) {
+			// not doing ANYTHING here
+			return;
+		}
+    
     const tsSrc = String(file.contents);
+    const t1 = Date.now()
+
     let options: swc.Options = SwcTranspiler._swcrcEsm;
     if (this._cmdLine.options.module === ts.ModuleKind.AMD) {
       const isAmd = /\n(import|export)/m.test(tsSrc);
@@ -84,13 +90,20 @@ export class SwcTranspiler {
       options = SwcTranspiler._swcrcCommonJS;
     }
     this._jobs.push(swc.transform(tsSrc, options).then(output => {
+
+      // check if output of a DTS-files isn't just "empty" and iff so
+			// skip this file
       const outBase = this._cmdLine.options.outDir ?? file.base;
       const outPath = this._outputFileNames.getOutputFileName(file.path);
+
       this.onOutfile!(new Vinyl({
         path: outPath,
         base: outBase,
         contents: Buffer.from(output.code),
       }))
+
+      this._logFn('Transpile', `swc took ${Date.now() - t1}ms for ${file.path}`);
+      
     }).catch(err => {
       console.log(err)
       /* this._onError(err); */
