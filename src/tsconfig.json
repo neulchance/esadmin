@@ -6,7 +6,7 @@
 		"sourceMap": false,
 		"allowJs": true,
 		"resolveJsonModule": true,
-		"outDir": "../out/td",
+		"outDir": "../out",
 		"target": "es2021",
 		"types": [
 			// "keytar",
