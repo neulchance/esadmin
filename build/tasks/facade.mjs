@@ -5,5 +5,5 @@ export async function watch() {
 }
 
 export async function transpile() {
-  await exec('ts-node', ['-T', './build/tasks/transpile-facade'])
+  await exec('ts-node', ['-T', './build/tasks/transpile'])
 }

@@ -44,7 +44,7 @@ export function create(
   /* ⓵-⓶ Read & Parse from parsed-json file include extends file */
   const cmdLine = ts.parseJsonConfigFileContent(parsed.config, ts.sys, dirname(projectPath), existingOptions)
   if (cmdLine.errors.length > 0) {
-		// cmdLine.errors.forEach(printDiagnostic);
+		cmdLine.errors.forEach(printDiagnostic);
 		// return createNullCompiler();
 	}
 
