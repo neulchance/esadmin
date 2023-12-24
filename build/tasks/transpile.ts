@@ -34,19 +34,14 @@ export async function transpileTask(src: string, out: string, swc: boolean) {
    * ⓵
    * Sourcing through glob
    */
-  const sourcingFileURL = new Readable({
-    objectMode: true,
-    async read() {
-      const g3 = new Glob('src/**/*.ts', { withFileTypes: true })
-      // console.log(g3)
-      const tsFiles = await glob('src/**/*.{ts,js}', { ignore: 'node_modules/**', })
-      for (const tsFile of tsFiles) {
-        this.push(tsFile)
-      }
-      this.pause()
-      // this.emit('end')
+  async function* sourceFileURLs() {
+    const tsFiles = await glob('src/**/*.{ts,js}', { ignore: 'node_modules/**', withFileTypes: true})
+    logger.info(`— ${tsFiles.length}`)
+    for (const tsFile of tsFiles) {
+      logger.info(`✓`)
+      yield tsFile.fullpath()
     }
-  })
+  }
   
   /**
    * ⓶
