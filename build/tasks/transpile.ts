@@ -2,10 +2,11 @@
 How to get console.log line numbers shown in Nodejs?
 https://stackoverflow.com/a/59859740 
 */
-const { log } = console;
+const {log} = console;
 function proxiedLog(...args: any) {
   const line = (((new Error('log'))
     .stack!.split('\n')[2] || '…')
+    // eslint-disable-next-line no-sparse-arrays
     .match(/\(([^)]+)\)/) || [, 'not found'])[1];
   log.call(console, `${line}\n`, ...args);
 }
@@ -15,15 +16,14 @@ console.log = proxiedLog;
 import os from 'os';
 import fs from 'fs'
 import path, {basename} from 'path'
-import { pipeline } from 'node:stream/promises'
-import { Transform, Writable, Readable, Duplex, PassThrough } from 'node:stream'
+import {pipeline} from 'node:stream/promises'
+import {Transform, Writable, Readable, Duplex, PassThrough} from 'node:stream'
 import ts from 'typescript'
 import * as util from '../lib/util'
-import { glob, globSync, globStream, globStreamSync, Glob } from 'glob'
+import {glob, globSync, globStream, globStreamSync, Glob} from 'glob'
 import Vinyl from 'vinyl'
 import {logger} from '../base/logger';
 import * as compilation from '../lib/compilation'
-const {compose} = require('node:stream')
 
 async function main() {
   transpileTask('src', 'out', true)
@@ -32,14 +32,13 @@ async function main() {
 export async function transpileTask(src: string, out: string, swc: boolean) {
   /**
    * ⓵
-   * Sourcing through glob
+   * AsyncGenerator to be source of stream
    */
-  async function* sourceFileURLs() {
-    const tsFiles = await glob('src/**/*.{ts,js}', { ignore: 'node_modules/**', withFileTypes: true})
-    logger.info(`— ${tsFiles.length}`)
-    for (const tsFile of tsFiles) {
-      logger.info(`✓`)
-      yield tsFile.fullpath()
+  async function* sourcePath() {
+    const srcFiles = await glob('src/**/*.{ts,js}', {ignore: 'node_modules/**', withFileTypes: true})
+    for (const srcFile of srcFiles) {
+      logger.info(`${srcFile.name}, ${srcFile.relative()}`)
+      yield srcFile.fullpath()
     }
   }
   
@@ -47,15 +46,13 @@ export async function transpileTask(src: string, out: string, swc: boolean) {
    * ⓶
    * Read file & Conver to Vinyl
    */
-  const rootDir = path.join(__dirname, '../../');
-  const sourcingFile = new Transform({
+  const sourceVinyl = new Transform({
     readableObjectMode: true,
     writableObjectMode: true,
-    transform(relative, encoding, callback) {
-      // logger.info(`😎 ${rootDir}${relative.toString()}`)
-      const file = fs.readFileSync(relative.toString())
+    transform(path, encoding, callback) {
+      const file = fs.readFileSync(path)
       const vinyl = new Vinyl({
-        path: `${rootDir}${relative.toString()}`,
+        path: path,
         contents: file
       })
       this.push(vinyl)
@@ -89,12 +86,15 @@ export async function transpileTask(src: string, out: string, swc: boolean) {
     }
   })
   
-  const traspile = compilation.createCompile(src, false, true, {swc})
+  const transpile = compilation.createCompile(src, false, true, {swc})
+  
+  const any = 'test';
+
   try {
     await pipeline(
-      sourcingFileURL,
-      sourcingFile,
-      traspile(),
+      sourcePath,
+      sourceVinyl,
+      transpile(),
       // what,
       saveFile
     )

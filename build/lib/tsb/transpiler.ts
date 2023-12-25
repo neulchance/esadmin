@@ -41,10 +41,9 @@ class OutputFileNameOracle {
 				return outfile;
 
 			} catch (err: any) {
-
-				// console.error(file, cmdLine.fileNames);
-				// console.error(err);
-				throw new Error();
+				console.error(file);
+				console.error(cmdLine.fileNames);
+				throw new err;
 			}
 		};
 	}
@@ -67,13 +66,13 @@ export class SwcTranspiler {
 		configFilePath: string,
 		private readonly _cmdLine: ts.ParsedCommandLine
 	) {
+		_logFn('Transpile', `will use SWC to transpile source files`);
 		this._outputFileNames = new OutputFileNameOracle(_cmdLine, configFilePath);
 	}
 
 	async join(): Promise<void> {
 		const jobs = this._jobs.slice();
 		this._jobs.length = 0;
-		// 모든 promises가 settled 되면
 		await Promise.allSettled(jobs);
 	}
 
@@ -100,7 +99,17 @@ export class SwcTranspiler {
 			// check if output of a DTS-files isn't just "empty" and iff so
 			// skip this file
 			const outBase = this._cmdLine.options.outDir ?? file.base;
+			/**
+			 * https://github.com/microsoft/TypeScript/blob/fbcdb8cf4fbbbea0111a9adeb9d0d2983c088b7c/src/compiler/emitter.ts#L702
+			 * getOutputFileName()함수는 'ts'의 'InternalTsApi'로 'tsconfig.json'의 'include'프로퍼티에 
+			 * 주어진 'path'가 있는지 여부를 체크한다. compile 대상에 포함 되지 않는 path 라면 아래 Error를 일으킨다.
+			 * Error: Debug Failure. False expression: Expected fileName to be present in command line 
+			 * 
+			 * outBase를 기반으로 outPath가 변환되어 나온다.
+			 * *ts
+			 */                               /* 👇 Frequently failured area */
 			const outPath = this._outputFileNames.getOutputFileName(file.path);
+			
 
 			this.onOutfile!(new Vinyl({
 				path: outPath,

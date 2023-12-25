@@ -4,6 +4,7 @@ import {pipeline, finished} from 'node:stream/promises'
 import { pathToFileURL } from 'url'
 import Vinyl from 'vinyl'
 import fs from 'fs'
+import { logger } from '../base/logger'
 
 export function toFileUri(filePath: string): string {
 	const match = filePath.match(/^([a-z])\:(.*)$/i);
@@ -55,4 +56,55 @@ export module strings {
 			return String(rest[index]) || match;
 		});
 	}
+}
+
+export interface FilterStream extends NodeJS.ReadWriteStream {
+	restore: PassThrough;
+}
+
+/* export function filter(fn: (data: any) => boolean): FilterStream {
+	const result = <FilterStream><any>new Transform(
+		function (data) {
+		if (fn(data)) {
+			this.emit('data', data);
+		} else {
+			result.restore.push(data);
+		}
+	});
+
+	result.restore = new PassThrough();
+	return result;
+} */
+
+export function filter(fn: (data: any) => boolean): FilterStream {
+	
+	const result = <FilterStream><any>new PassThrough({
+		readableObjectMode: true,
+		writableObjectMode: true,
+		transform(chunk: Vinyl, encoding, callback) {
+			if (fn(chunk)) {
+				this.push(chunk)
+			} else {
+				/* flow to restore로 흘려 보낸다 */
+				result.restore.push(chunk)
+			}
+			callback()
+		},
+		destroy(err, callback) {
+			logger.info(`'1', ${err}`)
+		}
+	})
+
+	result.restore = new PassThrough({
+		readableObjectMode: true,
+		writableObjectMode: true,
+		transform(chunk, encoding, callback) {
+			this.push(chunk)
+			callback()
+		},
+		destroy(err, callback) {
+			logger.info(`'2', ${err}`)
+		}
+	});
+	return result
 }

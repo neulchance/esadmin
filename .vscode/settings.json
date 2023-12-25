@@ -1,5 +1,12 @@
 {
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "window.zoomLevel": 0.5,
   "search.exclude": {
     "**/node_modules": true,
   },
+  "editor.minimap.enabled": false,
+  "workbench.sideBar.location": "right",
+  "explorer.compactFolders": false,
 }

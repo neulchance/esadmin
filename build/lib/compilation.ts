@@ -48,100 +48,47 @@ export function createCompile(src: string, build: boolean, emitError: boolean, t
   //     yield String(chunk).toUpperCase();
   //   }
   // }
-  function* toUpper(source: any) {
-    logger.info(`💪😂 ${"hihihi"}`)
-    logger.info(`💪😂 ${source}`)
-    console.log(source)
-    yield source
-  }
-
-  function pipeline() {
-    const c = compose(
-      compilation()
-    )
-    return c
-  }
-  return pipeline
-
-}
-
-export async function transpileTask(src: string, out: string, swc: boolean) {
-  /**
-   * ⓵
-   * Sourcing through glob
-   */
-  const sourcingFileURL = new Readable({
-    objectMode: true,
-    async read() {
-      const g3 = new Glob('src/**/*.ts', { withFileTypes: true })
-      // console.log(g3)
-      const tsFiles = await glob('src/**/*.{ts,js}', { ignore: 'node_modules/**', })
-      for (const tsFile of tsFiles) {
-        this.push(tsFile)
-      }
-      this.pause()
-      // this.emit('end')
-    }
-  })
-  
-  /**
-   * ⓶
-   * Read file & Conver to Vinyl
-   */
-  const rootDir = path.join(__dirname, '../../');
-  const sourcingFile = new Transform({
-    readableObjectMode: true,
-    writableObjectMode: true,
-    transform(relative, encoding, callback) {
-      // logger.info(`😎 ${rootDir}${relative.toString()}`)
-      const file = fs.readFileSync(relative.toString())
-      const vinyl = new Vinyl({
-        path: `${rootDir}${relative.toString()}`,
-        contents: file
-      })
-      this.push(vinyl)
-      callback()
-    }
-  })
-
-  /**
-   * ⓷
-   * Check What it is.
-   */
   const what = new PassThrough({
     readableObjectMode: true,
     writableObjectMode: true,
     transform(file: Vinyl, encoding, callback) {
-      logger.info(`⓶: path.dirname ${path.dirname(file.path)}`)
-      logger.info(`⓶: base ${file.base}`)
-      logger.info(`⓶: basename ${file.basename}`)
-      logger.info(`⓶: cwd ${file.cwd}`)
+      const replace = file.path.replace('src', 'out')
+      file.path = replace
       logger.info(`⓶: path ${file.path}`)
-      callback(null, file)
-    }
-  })
-
-  const saveFile = new Writable({
-    objectMode: true,
-    write(file: Vinyl, encoding, callback) {
-      fs.mkdirSync(path.dirname(file.path), {recursive: true})
-      fs.writeFileSync(file.path, file.contents.toString())
+      this.push(file)
       callback()
     }
   })
   
-  const traspile = createCompile(src, false, true, {swc})
-  try {
-    await pipeline(
-      sourcingFileURL,
-      sourcingFile,
-      traspile(),
-      // what,
-      saveFile
+  const dest = new PassThrough({
+    readableObjectMode: true,
+    writableObjectMode: true,
+    transform(file: Vinyl, encoding, callback) {
+      logger.info(`┌ 😎 file.path & replced`)
+      logger.info(`│${file.path}`)
+      const replace = file.path.replace('src', 'out')
+      file.path = replace
+      logger.info(`└${replace}`)
+      this.push(file)
+      callback()
+    }
+  })
+
+  const tsFilter = util.filter(data => /\.ts$/.test(data.path))
+
+  function pipeline() {
+    return compose(
+      tsFilter,
+      compilation(),
+      tsFilter.restore,
+      dest,
     )
-  } catch (error) {
-    console.error(error)
   }
+  pipeline.tsProjectSrc = () => {
+		return compilation.src({ base: src });
+	};
+  return pipeline
+
 }
 
 
