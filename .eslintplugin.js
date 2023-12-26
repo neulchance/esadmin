@@ -1,12 +1,19 @@
-const fs = require("fs");
-const path = require("path");
+const glob = require('glob')
+const path = require('path')
 
-const rulesDir = path.join(__dirname, "scripts", "eslint", "rules");
-const ext = ".cjs";
-const ruleFiles = fs.readdirSync(rulesDir).filter(p => p.endsWith(ext));
+require('ts-node').register({ 
+  compilerOptions: {
+    module: 'NodeNext',
+    moduleResolution: 'NodeNext',
+  },
+  experimentalResolver: true,
+  transpileOnly: true 
+})
 
-module.exports = {
-  rules: Object.fromEntries(ruleFiles.map(p => {
-    return [p.slice(0, -ext.length), require(path.join(rulesDir, p))];
-  })),
-};
+// Re-export all .ts files as rules
+const rules = {};
+glob.sync(`${__dirname}/scripts/eslint/rules/*.ts`).forEach((file) => {
+	rules[path.basename(file, '.ts')] = require(file);
+})
+
+exports.rules = rules
