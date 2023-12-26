@@ -1,9 +1,11 @@
-import {TSESTree, AST_NODE_TYPES, TSESLint} from '@typescript-eslint/utils'
+import * as ESTree from 'estree'
+import * as eslint from 'eslint'
+import {TSESTree, AST_NODE_TYPES, TSESLint,} from '@typescript-eslint/utils'
 import {createRule} from './utils'
 
-export = createRule({
-  name: "no-keywords",
-  meta: {
+
+export = new class implements eslint.Rule.RuleModule {
+  readonly meta: eslint.Rule.RuleMetaData = {
     docs: {
       description: `disallows the use of certain TypeScript keywords as variable or parameter names`,
     },
@@ -18,10 +20,9 @@ export = createRule({
       type: "object",
     }],
     type: "suggestion",
-  },
-  defaultOptions: [],
-  
-  create(context: TSESLint.RuleContext<string, unknown[]>): TSESLint.RuleListener{
+  }
+
+  create(context: eslint.Rule.RuleContext): eslint.Rule.RuleListener {
     const keywords = [
       "Undefined",
       "undefined",
@@ -65,12 +66,15 @@ export = createRule({
       });
     };
 
-    const checkParams = (node: TSESTree.ArrowFunctionExpression | TSESTree.FunctionDeclaration | TSESTree.FunctionExpression | TSESTree.TSMethodSignature | TSESTree.TSFunctionType) => {
+    const checkParams = (
+      node: TSESTree.ArrowFunctionExpression | TSESTree.FunctionDeclaration | TSESTree.FunctionExpression | TSESTree.TSMethodSignature | TSESTree.TSFunctionType |
+            ESTree.ArrowFunctionExpression | ESTree.FunctionDeclaration | ESTree.FunctionExpression
+    ) => {
       if (!node || !node.params || !node.params.length) {
         return;
       }
 
-      node.params.forEach(param => {
+      node.params.forEach((param: any) => {
         if (
           param &&
           param.type === AST_NODE_TYPES.Identifier &&
@@ -105,5 +109,5 @@ export = createRule({
       TSMethodSignature: checkParams,
       TSFunctionType: checkParams,
     };
-  },
-});
+  }
+}
