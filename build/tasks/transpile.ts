@@ -26,6 +26,8 @@ import {logger} from '../base/logger';
 import * as compilation from '../lib/compilation'
 
 async function main() {
+  const any = 'a'
+  const Undefined = 'te'
   transpileTask('src', 'out', true)
 }
 
@@ -88,8 +90,6 @@ export async function transpileTask(src: string, out: string, swc: boolean) {
   
   const transpile = compilation.createCompile(src, false, true, {swc})
   
-  const any = 'test';
-
   try {
     await pipeline(
       sourcePath,

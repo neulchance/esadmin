@@ -1,7 +1,6 @@
 import * as ESTree from 'estree'
 import * as eslint from 'eslint'
-import {TSESTree, AST_NODE_TYPES, TSESLint,} from '@typescript-eslint/utils'
-import {createRule} from './utils'
+import {TSESTree, AST_NODE_TYPES} from '@typescript-eslint/utils'
 
 
 export = new class implements eslint.Rule.RuleModule {
