@@ -1,5 +1,5 @@
 import { task } from 'hereby'
-import { rimraf } from './utils.mjs'
+import { rimraf, copyfile } from './utils.mjs'
 
 export const local = task({
   name: "local",
@@ -27,6 +27,7 @@ export const transpileSrc = task({
   description: "Transpiles the src project (all code)",
   dependencies: [delOut],
   run: async () => {
+    await copyfile('src/index.html', 'out/index.html'),
     (await import('./tasks/facade.mjs')).transpile()
   }
 })

@@ -13,12 +13,13 @@ const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    backgroundColor: 'black',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
   // win.loadURL('file://./index.html')
-  win.loadURL('file:///Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/index.html')
+  win.loadURL('file:///Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/index.html')
 }
 
 app.once('ready', function () {
@@ -45,7 +46,7 @@ function startup() {
 	// Load main in AMD
 	// perf.mark('code/willLoadMainBundle');
   
-	require('./bootstrap-amd').load('/Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/td/dev/electron-main/main', () => {
+	require('./bootstrap-amd').load('td/dev/electron-main/main', () => {
 		// perf.mark('code/didLoadMainBundle');
 	});
 }

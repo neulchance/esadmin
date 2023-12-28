@@ -5,6 +5,7 @@
 
 import {app, dialog} from 'electron';
 // import { unlinkSync } from 'fs';
+import {aa} from 'td/dev/electron-main/sub'
 
 /**
  * The main VS Code entry point.
@@ -15,9 +16,25 @@ import {app, dialog} from 'electron';
  * are running at the same time.
  */
 class DevMain {
+  
+  main(): void {
+		try {
+			this.startup();
+		} catch (error) {
+			console.error(error.message);
+			app.exit(1);
+		}
+	}
+
+  private async startup(): Promise<void> {
+    console.log('startup')
+  }
+
   constructor() {
-    console.log('??')
+    aa()
   }
 }
 
-// export default DevMain
+// Main Startup
+const dev = new DevMain();
+dev.main();

@@ -42,7 +42,7 @@ loader.config({
 	catchError: true,
 	nodeRequire,
 	'vs/nls': nlsConfig,
-	amdModulesPattern: /^vs\//,
+	amdModulesPattern: /^td\//,
 	recordStats: true
 });
 
