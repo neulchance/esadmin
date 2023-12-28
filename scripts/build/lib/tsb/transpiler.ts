@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import ts from 'typescript'
 import Vinyl from 'vinyl'
 import * as swc from '@swc/core'
-import { logger } from '../../base/logger';
+import {logger} from '../../base/logger';
 
 class OutputFileNameOracle {
 

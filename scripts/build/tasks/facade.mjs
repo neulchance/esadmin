@@ -1,7 +1,7 @@
 import {exec} from '../utils.mjs'
 
 export async function watch() {
-  await exec('ts-node', ['-T', './scripts/build/tasks/facade/watch'])
+  await exec('ts-node', ['-T', './scripts/build/tasks/watch'])
 }
 
 export async function transpile() {

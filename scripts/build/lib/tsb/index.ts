@@ -1,9 +1,9 @@
 import path, {dirname} from 'path'
 import {Readable, Writable, Transform, Duplex} from 'stream'
-import ts, { transpile } from 'typescript'
+import ts, {transpile} from 'typescript'
 import Vinyl from 'vinyl'
 import {ITranspiler, SwcTranspiler} from './transpiler'
-import {strings} from '../util'
+import {strings} from './utils'
 import {logger} from '../../base/logger'
 
 export interface IncrementalCompiler {
@@ -40,6 +40,7 @@ export function create(
   /* ⓵-⓵ Read & Dianogstic tsconfig.json file */
   const parsed = ts.readConfigFile(projectPath, ts.sys.readFile)
   if (parsed.error) {
+    /*  */
   }
   /* ⓵-⓶ Read & Parse from parsed-json file include extends file */
   const cmdLine = ts.parseJsonConfigFileContent(parsed.config, ts.sys, dirname(projectPath), existingOptions)
@@ -76,7 +77,7 @@ export function create(
         }
         if (!transpiler.onOutfile) {
           /* Binding @Output */
-				  transpiler.onOutfile = file => {
+          transpiler.onOutfile = file => {
             this.push(file)
             callback()
           }

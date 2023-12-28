@@ -1,11 +1,11 @@
 import os from 'os';
 import fs from 'fs'
 import path, {basename} from 'path'
-import { pipeline } from 'node:stream/promises'
-import { Transform, Writable, Readable, Duplex, PassThrough } from 'node:stream'
+import {pipeline} from 'node:stream/promises'
+import {Transform, Writable, Readable, Duplex, PassThrough} from 'node:stream'
 import ts from 'typescript'
 import * as util from './util'
-import { glob, globSync, globStream, globStreamSync, Glob } from 'glob'
+import {glob, globSync, globStream, globStreamSync, Glob} from 'glob'
 import Vinyl from 'vinyl'
 import {logger} from '../base/logger';
 const {compose} = require('node:stream')
@@ -28,7 +28,7 @@ function getTypeScriptCompilerOptions(src: string): ts.CompilerOptions {
 export function createCompile(src: string, build: boolean, emitError: boolean, transpileOnly: boolean | { swc: boolean }) {
   const tsb = require('./tsb') as typeof import('./tsb')
   
-  const rootDir = path.join(__dirname, '../../');
+  const rootDir = path.join(__dirname, '../../../');
   const projectPath = path.join(rootDir, src, 'tsconfig.json')
   const overrideOptions = {...getTypeScriptCompilerOptions(src), inlineSources: Boolean(build)}
   if (!build) {
@@ -85,7 +85,7 @@ export function createCompile(src: string, build: boolean, emitError: boolean, t
     )
   }
   pipeline.tsProjectSrc = () => {
-		return compilation.src({ base: src });
+		return compilation.src({base: src});
 	};
   return pipeline
 
