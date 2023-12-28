@@ -3,10 +3,15 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "warnOnUnsupportedTypeScriptVersion": false,
+    "ecmaVersion": 6,
     "sourceType": "module"
   },
+  // https://github.com/eslint/eslint/issues/11553#issuecomment-476570950
+  "globals": {
+		"globalThis": "writable",
+    "navigator": "readonly"
+	},
   "env": {
-    "browser": false,
     "node": true,
     "es6": true
   },
@@ -23,7 +28,8 @@
     "**/node_modules/**"
   ],
   "rules": {
-    "local/no-keywords-copy": "error",
+    "local/no-keywords": "error",
+    "@typescript-eslint/no-this-alias": "off",
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/no-unused-vars": "off"
   },

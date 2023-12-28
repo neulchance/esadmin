@@ -5,5 +5,7 @@ export async function watch() {
 }
 
 export async function transpile() {
+  // eslint-disable-next-line no-undef
+  console.log(globalThis)
   await exec('ts-node', ['-T', './build/tasks/transpile'])
 }

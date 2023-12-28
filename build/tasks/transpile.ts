@@ -26,8 +26,6 @@ import {logger} from '../base/logger';
 import * as compilation from '../lib/compilation'
 
 async function main() {
-  const any = 'a'
-  const Undefined = 'te'
   transpileTask('src', 'out', true)
 }
 

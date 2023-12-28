@@ -26,8 +26,8 @@
 	},
 	"include": [
 		"./bootstrap.js",
+		"./bootstrap-amd.js",
 		"./main.js",
-		// "./bootstrap-amd.js",
 		// "./server-main.js",
 		// "./typings",
 		"./td/**/*.ts",

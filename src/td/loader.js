@@ -231,7 +231,7 @@ var AMDLoader;
 		return result;
 	}
 	AMDLoader.ensureError = ensureError;
-	;
+	
 	class ConfigurationOptionsUtil {
 		/**
 		 * Ensure configuration options make sense
