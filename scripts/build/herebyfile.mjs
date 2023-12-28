@@ -1,5 +1,5 @@
 import { task } from 'hereby'
-import { rimraf } from './tasks/utils.mjs'
+import { rimraf } from './utils.mjs'
 
 export const local = task({
   name: "local",

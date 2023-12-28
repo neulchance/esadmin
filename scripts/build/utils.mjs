@@ -5,6 +5,7 @@ import {
 import {
   spawn,
 } from 'child_process'
+import fs from 'fs'
 import chalk from 'chalk'
 import which from 'which'
 
@@ -66,4 +67,12 @@ export class ExecError extends Error {
     super(message);
     this.exitCode = exitCode;
   }
+}
+
+/**
+ * @param {fs.PathLike} p
+ */
+export function rimraf(p) {
+	// The rimraf package uses maxRetries=10 on Windows, but Node's fs.rm does not have that special case.
+	return fs.promises.rm(p, {recursive: true, force: true, maxRetries: process.platform === "win32" ? 10 : 0});
 }
