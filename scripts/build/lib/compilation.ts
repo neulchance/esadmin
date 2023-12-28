@@ -11,7 +11,7 @@ import {logger} from '../base/logger';
 const {compose} = require('node:stream')
 
 function getTypeScriptCompilerOptions(src: string): ts.CompilerOptions {
-	const rootDir = path.join(__dirname, `../../${src}`);
+	const rootDir = path.join(__dirname, `../../../${src}`);
 	const options: ts.CompilerOptions = {};
 	options.verbose = false;
 	options.sourceMap = true;

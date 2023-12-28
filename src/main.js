@@ -3,6 +3,8 @@ const path = require('node:path')
 
 const perf = require('./td/base/common/performance')
 perf.mark('code/didStartMain')
+
+const bootstrap = require('./bootstrap')
  
 console.log('Hello from Electron 👋')
 
@@ -23,10 +25,7 @@ app.once('ready', function () {
   ipcMain.handle('ping', () => 'pong')
   createWindow()
 
-
   onReady();
-
-  console.log('opoen?')
   // app.on('activate', () => {
   //   if (BrowserWindow.getAllWindows().length === 0) {
   //     createWindow()
@@ -45,7 +44,8 @@ function startup() {
 
 	// Load main in AMD
 	// perf.mark('code/willLoadMainBundle');
-	require('./bootstrap-amd').load('td/dev/electron-main/main', () => {
+  
+	require('./bootstrap-amd').load('/Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/td/dev/electron-main/main', () => {
 		// perf.mark('code/didLoadMainBundle');
 	});
 }
