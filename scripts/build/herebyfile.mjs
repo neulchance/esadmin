@@ -1,8 +1,8 @@
 import { task } from 'hereby'
 import { rimraf } from './tasks/utils.mjs'
 
-export const hello = task({
-  name: "hello",
+export const local = task({
+  name: "local",
   description: "Builds the full compiler and services",
   run: async () => {
     console.log('hereby hello!')
@@ -13,23 +13,6 @@ export const delOut = task({
   name: "rimraf-out",
   description: "Delete out directory",
   run: async () => await rimraf('out')
-})
-
-export const local = task({
-  name: "local",
-  description: "Builds the full compiler and services",
-  run: async () => {
-    console.log('hereby hello!')
-  }
-})
-
-export const other = task({
-  name: "other",
-  description: "Builds the full compiler and services",
-  run: async () => {
-    console.log('hereby hello!')
-    // createCompiler()
-  }
 })
 
 export const taskWatchClient = task({
