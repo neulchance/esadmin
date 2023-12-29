@@ -20,8 +20,6 @@ export async function watchTask(src: string, out: string) {
     t1.push(events)
   })
 
-  
-
   const t1 = new Readable({
     objectMode: true,
     read() {},
