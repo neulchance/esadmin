@@ -42,9 +42,9 @@ export function filter(fn: (data: any) => boolean): FilterStream {
 			}
 			callback()
 		},
-		destroy(err, callback) {
-			logger.info(`'1', ${err}`)
-		}
+		// destroy(err, callback) {
+		// 	logger.info(`'1', ${err}`)
+		// }
 	})
 
 	result.restore = new PassThrough({
@@ -54,9 +54,9 @@ export function filter(fn: (data: any) => boolean): FilterStream {
 			this.push(chunk)
 			callback()
 		},
-		destroy(err, callback) {
-			logger.info(`'2', ${err}`)
-		}
+		// destroy(err, callback) {
+		// 	logger.info(`'2', ${err}`)
+		// }
 	});
 	return result
 }
