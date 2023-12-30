@@ -1,3 +1,8 @@
+/*----------------------------------------------------------------------------------------------------
+ *  Copyright (c) TinyDeskDev Corporation. All rights reserved.
+ *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
+ *---------------------------------------------------------------------------------------------------*/
+
 class Node<E> {
 
 	static readonly Undefined = new Node<any>(undefined);

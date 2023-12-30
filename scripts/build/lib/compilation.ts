@@ -60,7 +60,7 @@ export function createCompile(src: string, build: boolean, emitError: boolean, t
     }
   })
   
-  const dest = new PassThrough({
+  const replacePath = new PassThrough({
     readableObjectMode: true,
     writableObjectMode: true,
     transform(file: Vinyl, encoding, callback) {
@@ -76,12 +76,15 @@ export function createCompile(src: string, build: boolean, emitError: boolean, t
 
   const tsFilter = util.filter(data => /\.ts$/.test(data.path))
 
+  const dtsFilter = util.filter(data => !/\.d.ts$/.test(data.path))
+
   function pipeline() {
     return compose(
+      dtsFilter,
       tsFilter,
       compilation(),
       tsFilter.restore,
-      dest,
+      replacePath,
     )
   }
   pipeline.tsProjectSrc = () => {

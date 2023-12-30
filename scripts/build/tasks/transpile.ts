@@ -2,16 +2,16 @@
 How to get console.log line numbers shown in Nodejs?
 https://stackoverflow.com/a/59859740 
 */
-const {log} = console;
-function proxiedLog(...args: any) {
-  const line = (((new Error('log'))
-    .stack!.split('\n')[2] || '…')
-    // eslint-disable-next-line no-sparse-arrays
-    .match(/\(([^)]+)\)/) || [, 'not found'])[1];
-  log.call(console, `${line}\n`, ...args);
-}
-console.info = proxiedLog;
-console.log = proxiedLog;
+// const {log} = console;
+// function proxiedLog(...args: any) {
+//   const line = (((new Error('log'))
+//     .stack!.split('\n')[2] || '…')
+//     // eslint-disable-next-line no-sparse-arrays
+//     .match(/\(([^)]+)\)/) || [, 'not found'])[1];
+//   log.call(console, `${line}\n`, ...args);
+// }
+// console.info = proxiedLog;
+// console.log = proxiedLog;
 
 import os from 'os';
 import fs from 'fs'
@@ -37,7 +37,6 @@ export async function transpileTask(src: string, out: string, swc: boolean) {
   async function* sourcePath() {
     const srcFiles = await glob('src/**/*.{ts,js}', {ignore: 'node_modules/**', withFileTypes: true})
     for (const srcFile of srcFiles) {
-      logger.info(`${srcFile.name}, ${srcFile.relative()}`)
       yield srcFile.fullpath()
     }
   }

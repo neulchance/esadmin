@@ -1,3 +1,8 @@
+/*----------------------------------------------------------------------------------------------------
+ *  Copyright (c) TinyDeskDev Corporation. All rights reserved.
+ *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
+ *---------------------------------------------------------------------------------------------------*/
+
 export function once<T extends Function>(this: unknown, fn: T): T {
 	const _this = this;
 	let didCall = false;
