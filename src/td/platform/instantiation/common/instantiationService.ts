@@ -1,17 +1,17 @@
-/*----------------------------------------------------------------------------------------------------
- *  Copyright (c) TinyDeskDev Corporation. All rights reserved.
- *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
- *---------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Nothing. All rights reserved.
+ *  Licensed under the UNLICENSED License.
+ *--------------------------------------------------------------------------------------------*/
 
-import {GlobalIdleValue} from 'td/base/common/async';
-import {Event} from 'td/base/common/event';
-import {illegalState} from 'td/base/common/errors';
-import {toDisposable} from 'td/base/common/lifecycle';
-import {SyncDescriptor, SyncDescriptor0} from 'td/platform/instantiation/common/descriptors';
-import {Graph} from 'td/platform/instantiation/common/graph';
-import {GetLeadingNonServiceArgs, IInstantiationService, ServiceIdentifier, ServicesAccessor, _util} from 'td/platform/instantiation/common/instantiation';
-import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
-import {LinkedList} from 'td/base/common/linkedList';
+import {IdleValue} from '~/base/common/async';
+import {Event} from '~/base/common/event';
+// import { illegalState } from '~/base/common/errors';
+import {toDisposable} from '~/base/common/lifecycle';
+import {SyncDescriptor, SyncDescriptor0} from '~/platform/instantiation/common/descriptors';
+import {Graph} from '~/platform/instantiation/common/graph';
+import {GetLeadingNonServiceArgs, IInstantiationService, ServiceIdentifier, ServicesAccessor, _util} from '~/platform/instantiation/common/instantiation';
+import {ServiceCollection} from '~/platform/instantiation/common/serviceCollection';
+import {LinkedList} from '~/base/common/linkedList';
 
 // TRACING
 const _enableAllTracing = false
@@ -55,7 +55,7 @@ export class InstantiationService implements IInstantiationService {
 				get: <T>(id: ServiceIdentifier<T>) => {
 
 					if (_done) {
-						throw illegalState('service accessor is only valid during the invocation of its target method');
+						// throw illegalState('service accessor is only valid during the invocation of its target method');
 					}
 
 					const result = this._getOrCreateServiceInstance(id, _trace);
@@ -255,7 +255,7 @@ export class InstantiationService implements IInstantiationService {
 			// return "empty events" when the service isn't instantiated yet
 			const earlyListeners = new Map<string, LinkedList<Parameters<Event<any>>>>();
 
-			const idle = new GlobalIdleValue<any>(() => {
+			const idle = new IdleValue<any>(() => {
 				const result = child._createInstance<T>(ctor, args, _trace);
 
 				// early listeners that we kept are now being subscribed to
@@ -354,7 +354,7 @@ export class Trace {
 		return !_enableTracing ? Trace._None : new Trace(TraceType.Creation, ctor.name);
 	}
 
-	private static _totals: number = 0;
+	private static _totals = 0;
 	private readonly _start: number = Date.now();
 	private readonly _dep: [ServiceIdentifier<any>, boolean, Trace?][] = [];
 

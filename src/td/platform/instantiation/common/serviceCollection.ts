@@ -1,17 +1,15 @@
-/*----------------------------------------------------------------------------------------------------
- *  Copyright (c) TinyDeskDev Corporation. All rights reserved.
- *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
- *---------------------------------------------------------------------------------------------------*/
-
-import {ServiceIdentifier} from 'td/platform/instantiation/common/instantiation'
-import {SyncDescriptor} from './descriptors'
+import type { ServiceIdentifier } from '~/platform/instantiation/common/instantiation'
+import type { SyncDescriptor } from './descriptors'
 
 export class ServiceCollection {
 
+  /* About Map
+    https://ko.javascript.info/map-set
+   */
 	private _entries = new Map<ServiceIdentifier<any>, any>();
 
 	constructor(...entries: [ServiceIdentifier<any>, any][]) {
-		for (const [id, service] of entries) {
+		for (let [id, service] of entries) {
 			this.set(id, service);
 		}
 	}

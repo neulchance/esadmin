@@ -1,9 +1,12 @@
 /*---------------------------------------------------------------------------------------------
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Copyright (c) Nothing. All rights reserved.
+ *  Licensed under the UNLICENSED License.
  *--------------------------------------------------------------------------------------------*/
 
+import {colog} from '~/base/browser/colog';
 import * as descriptors from './descriptors';
-import {ServiceCollection} from './serviceCollection';
+import {ServiceCollection} from '~/platform/instantiation/common/serviceCollection';
+import {createToken} from './injectionToken';
 
 // ------ internal util
 
@@ -23,13 +26,14 @@ export namespace _util {
 
 export type BrandedService = { _serviceBrand: undefined };
 
-
-
-
+export interface IConstructorSignature<T, Args extends any[] = []> {
+	new <Services extends BrandedService[]>(...args: [...Args, ...Services]): T;
+}
 
 export interface ServicesAccessor {
 	get<T>(id: ServiceIdentifier<T>): T;
 }
+export const ServicesAccessor = createToken<ServicesAccessor>('ServicesAccessor');
 
 export const IInstantiationService = createDecorator<IInstantiationService>('instantiationService');
 
@@ -37,10 +41,11 @@ export const IInstantiationService = createDecorator<IInstantiationService>('ins
  * Given a list of arguments as a tuple, attempt to extract the leading, non-service arguments
  * to their own tuple.
  */
-export type GetLeadingNonServiceArgs<TArgs extends any[]> =
-	TArgs extends [] ? []
-	: TArgs extends [...infer TFirst, BrandedService] ? GetLeadingNonServiceArgs<TFirst>
-	: TArgs;
+export type GetLeadingNonServiceArgs<Args> =
+	Args extends [...BrandedService[]] ? []
+	: Args extends [infer A, ...BrandedService[]] ? [A]
+	: Args extends [infer A, ...infer R] ? [A, ...GetLeadingNonServiceArgs<R>]
+	: never;
 
 export interface IInstantiationService {
 
@@ -68,11 +73,15 @@ export interface IInstantiationService {
  * Identifies a service of type `T`.
  */
 export interface ServiceIdentifier<T> {
-	(...args: any[]): void;
-	type: T;
+  (...args: any[]): void;
+  type: T;
 }
 
-
+/*
+class NativeWindow
+ParameterDecorator로서 constructor의 argment로 등록되고, 호출된다.
+Decorator는 IIFE 가 되고, 스크립트(코드)가 로드 될때 Target클래스들이 변형(확장) 되어 존재한다.
+*/
 function storeServiceDependency(id: Function, target: Function, index: number): void {
 	if ((target as any)[_util.DI_TARGET] === target) {
 		(target as any)[_util.DI_DEPENDENCIES].push({id, index});
@@ -98,12 +107,26 @@ export function createDecorator<T>(serviceId: string): ServiceIdentifier<T> {
 		storeServiceDependency(id, target, index);
 	};
 
+	/* console.log(id);
+	∴ function (target, key, index) {
+    if (arguments.length !== 3) {
+      throw new Error('@IServiceName-decorator can only be used to decorate a parameter');
+    }
+    storeServiceDependency(id, target, index);
+  } */
+
+  /* About toString()
+    https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Object/toString#description
+		When we use console.log then will be printed the value of toString().
+   */
 	id.toString = () => serviceId;
+	/* console.log(id);
+	∴ serviceId's value; */
 
 	_util.serviceIds.set(serviceId, id);
+
 	return id;
 }
-
 export function refineServiceDecorator<T1, T extends T1>(serviceIdentifier: ServiceIdentifier<T1>): ServiceIdentifier<T> {
 	return <ServiceIdentifier<T>>serviceIdentifier;
 }
