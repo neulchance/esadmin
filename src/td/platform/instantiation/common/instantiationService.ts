@@ -3,15 +3,15 @@
  *  Licensed under the UNLICENSED License.
  *--------------------------------------------------------------------------------------------*/
 
-import {IdleValue} from '~/base/common/async';
-import {Event} from '~/base/common/event';
-// import { illegalState } from '~/base/common/errors';
-import {toDisposable} from '~/base/common/lifecycle';
-import {SyncDescriptor, SyncDescriptor0} from '~/platform/instantiation/common/descriptors';
-import {Graph} from '~/platform/instantiation/common/graph';
-import {GetLeadingNonServiceArgs, IInstantiationService, ServiceIdentifier, ServicesAccessor, _util} from '~/platform/instantiation/common/instantiation';
-import {ServiceCollection} from '~/platform/instantiation/common/serviceCollection';
-import {LinkedList} from '~/base/common/linkedList';
+import {IdleValue} from 'td/base/common/async';
+import {Event} from 'td/base/common/event';
+// import { illegalState } from 'td/base/common/errors';
+import {toDisposable} from 'td/base/common/lifecycle';
+import {SyncDescriptor, SyncDescriptor0} from 'td/platform/instantiation/common/descriptors';
+import {Graph} from 'td/platform/instantiation/common/graph';
+import {GetLeadingNonServiceArgs, IInstantiationService, ServiceIdentifier, ServicesAccessor, _util} from 'td/platform/instantiation/common/instantiation';
+import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
+import {LinkedList} from 'td/base/common/linkedList';
 
 // TRACING
 const _enableAllTracing = false

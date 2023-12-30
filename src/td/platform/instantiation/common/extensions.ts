@@ -3,8 +3,8 @@
  *  Licensed under the UNLICENSED License.
  *--------------------------------------------------------------------------------------------*/
 
-import { SyncDescriptor } from './descriptors';
-import { BrandedService, ServiceIdentifier } from './instantiation';
+import {SyncDescriptor} from './descriptors';
+import {BrandedService, ServiceIdentifier} from './instantiation';
 
 const _registry: [ServiceIdentifier<any>, SyncDescriptor<any>][] = [];
 

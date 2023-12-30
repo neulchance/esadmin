@@ -1,5 +1,5 @@
-import type { ServiceIdentifier } from '~/platform/instantiation/common/instantiation'
-import type { SyncDescriptor } from './descriptors'
+import type {ServiceIdentifier} from 'td/platform/instantiation/common/instantiation'
+import type {SyncDescriptor} from './descriptors'
 
 export class ServiceCollection {
 

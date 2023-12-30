@@ -3,9 +3,8 @@
  *  Licensed under the UNLICENSED License.
  *--------------------------------------------------------------------------------------------*/
 
-import {colog} from '~/base/browser/colog';
 import * as descriptors from './descriptors';
-import {ServiceCollection} from '~/platform/instantiation/common/serviceCollection';
+import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
 import {createToken} from './injectionToken';
 
 // ------ internal util

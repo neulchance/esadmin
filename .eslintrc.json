@@ -52,6 +52,7 @@
         "plugin:@typescript-eslint/recommended"
       ],
       "rules": {
+        "no-constant-condition": "warn",
         "object-curly-spacing": ["error", "never"],
         "prefer-rest-params": "warn",
         "@typescript-eslint/no-namespace": "warn",
