@@ -53,6 +53,8 @@
       ],
       "rules": {
         "object-curly-spacing": ["error", "never"],
+        "prefer-rest-params": "warn",
+        "@typescript-eslint/no-this-alias": "warn",
         "@typescript-eslint/no-explicit-any": ["off"],
         "@typescript-eslint/no-unused-vars": ["off", "never"],
         "@typescript-eslint/no-var-requires": ["off"],
@@ -60,7 +62,8 @@
           "error",
           {
             "types": {
-              "Object": false
+              "Object": false,
+              "Function": false
             },
             "extendDefaults": true
           }
