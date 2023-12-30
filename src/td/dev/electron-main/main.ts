@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {app, dialog} from 'electron';
-// import { unlinkSync } from 'fs';
-import {aa} from 'td/dev/electron-main/sub'
+import {unlinkSync} from 'fs';
+import {DevApplication} from 'td/dev/electron-main/app'
 
 /**
- * The main VS Code entry point.
+ * The main TD Dev entry point.
  *
  * Note: This class can exist more than once for example when VS Code is already
  * running and a second instance is started from the command line. It will always
@@ -27,11 +27,10 @@ class DevMain {
 	}
 
   private async startup(): Promise<void> {
-    console.log('startup')
+    new DevApplication()
   }
 
   constructor() {
-    aa()
   }
 }
 
