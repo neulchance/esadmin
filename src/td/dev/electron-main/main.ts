@@ -27,10 +27,16 @@ class DevMain {
 	}
 
   private async startup(): Promise<void> {
-    new DevApplication()
+    try {
+      new DevApplication()
+      // return instantiationService.createInstance(CodeApplication, mainProcessNodeIpcServer, instanceEnvironment).startup();
+    } catch (error) {
+      // instantiationService.invokeFunction(this.quit, error);
+    }
   }
 
   constructor() {
+    aa()
   }
 }
 
