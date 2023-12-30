@@ -1,7 +1,7 @@
-/*---------------------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------
  *  Copyright (c) TinyDeskDev Corporation. All rights reserved.
  *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+ *---------------------------------------------------------------------------------------------------*/
 
 /**
  * Given a function, returns a function that is only calling that function once.
