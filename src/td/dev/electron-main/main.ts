@@ -1,11 +1,12 @@
-/*---------------------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------
  *  Copyright (c) TinyDeskDev. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+ *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
+ *---------------------------------------------------------------------------------------------------*/
 
-import {app, dialog} from 'electron';
-import {unlinkSync} from 'fs';
+import {app, dialog} from 'electron'
+import {unlinkSync} from 'fs'
 import {DevApplication} from 'td/dev/electron-main/app'
+import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection'
 
 /**
  * The main TD Dev entry point.
@@ -19,26 +20,32 @@ class DevMain {
   
   main(): void {
 		try {
-			this.startup();
+			this.startup()
 		} catch (error) {
-			console.error(error.message);
-			app.exit(1);
+			console.error(error.message)
+			app.exit(1)
 		}
 	}
 
   private async startup(): Promise<void> {
+
+    // Create services
+    this.createService()
+
     try {
       new DevApplication()
-      // return instantiationService.createInstance(CodeApplication, mainProcessNodeIpcServer, instanceEnvironment).startup();
+      // return instantiationService.createInstance(CodeApplication, mainProcessNodeIpcServer, instanceEnvironment).startup()
     } catch (error) {
-      // instantiationService.invokeFunction(this.quit, error);
+      // instantiationService.invokeFunction(this.quit, error)
     }
   }
 
-  constructor() {
+  private createService() {
+    const services = new ServiceCollection()
+    console.log('createService')
   }
 }
 
 // Main Startup
-const dev = new DevMain();
-dev.main();
+const dev = new DevMain()
+dev.main()
