@@ -3,7 +3,7 @@
  *  Licensed under the UNLICENSED License.
  *--------------------------------------------------------------------------------------------*/
 
-import {once} from 'td/base/common/functional';
+import {createSingleCallFunction} from 'td/base/common/functional';
 import {Iterable} from 'td/base/common/iterator';
 
 /**
@@ -171,7 +171,7 @@ export class SafeDisposable implements IDisposable {
  */
 export function toDisposable(fn: () => void): IDisposable {
 	const self = trackDisposable({
-		dispose: once(() => {
+		dispose: createSingleCallFunction(() => {
 			markAsDisposed(self);
 			fn();
 		})
