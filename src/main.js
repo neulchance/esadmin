@@ -24,7 +24,7 @@ const createWindow = () => {
 
 app.once('ready', function () {
   ipcMain.handle('ping', () => 'pong')
-  createWindow()
+  // createWindow()
 
   onReady();
   // app.on('activate', () => {
