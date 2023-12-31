@@ -7,6 +7,8 @@ import {app, dialog} from 'electron'
 import {unlinkSync} from 'fs'
 import {DevApplication} from 'td/dev/electron-main/app'
 import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection'
+import {InstantiationService} from 'td/platform/instantiation/common/instantiationService'
+import {IInstantiationService} from 'td/platform/instantiation/common/instantiation'
 
 /**
  * The main TD Dev entry point.
@@ -30,19 +32,30 @@ class DevMain {
   private async startup(): Promise<void> {
 
     // Create services
-    this.createService()
+    const [instantiationService] = this.createService()
 
     try {
-      new DevApplication()
-      // return instantiationService.createInstance(CodeApplication, mainProcessNodeIpcServer, instanceEnvironment).startup()
+
+      try {
+        // 
+      } catch (error) {
+        // 
+      }
+
+      // Startup
+      await instantiationService.invokeFunction(async accessor => {
+        // accessor.get()
+        
+        return instantiationService.createInstance(DevApplication).startup()
+      })
     } catch (error) {
       // instantiationService.invokeFunction(this.quit, error)
     }
   }
 
-  private createService() {
+  private createService(): [IInstantiationService] {
     const services = new ServiceCollection()
-    console.log('createService')
+    return [new InstantiationService(services, true)]
   }
 }
 
