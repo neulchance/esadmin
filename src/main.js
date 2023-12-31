@@ -8,23 +8,8 @@ const bootstrap = require('./bootstrap')
  
 console.log('Hello from Electron 👋')
 
-
-const createWindow = () => {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    backgroundColor: 'black',
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
-  // win.loadURL('file://./index.html')
-  win.loadURL('file:///Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/index.html')
-}
-
 app.once('ready', function () {
   ipcMain.handle('ping', () => 'pong')
-  // createWindow()
 
   onReady();
   // app.on('activate', () => {

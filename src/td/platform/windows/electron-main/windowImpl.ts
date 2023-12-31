@@ -9,13 +9,12 @@ import * as path from 'path'
 export class DevWindow {
   constructor() {
     
-    console.log(path.join(__dirname, 'preload.js'))
     const win = new BrowserWindow({
       width: 800,
       height: 600,
       backgroundColor: 'black',
       webPreferences: {
-        preload: 'file:///Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/td/base/parts/sandbox/electron-sandbox/preload.js'
+        preload: '/Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/td/base/parts/sandbox/electron-sandbox/preload.js'
       }
     })
 
