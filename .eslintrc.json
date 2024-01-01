@@ -40,6 +40,8 @@
         "eslint:recommended"
       ],
       "rules": {
+        "@typescript-eslint/triple-slash-reference": "warn",
+        "@typescript-eslint/ban-ts-comment": "warn",
         "no-unused-vars": "warn"
       }
     },
