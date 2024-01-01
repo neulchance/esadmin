@@ -3,6 +3,6 @@
  *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
  *---------------------------------------------------------------------------------------------------*/
 
-export interface IDevWindow /* extends IBaseWindow */ {
-  
-}
+import 'td/workbench/electron-sandbox/desktop.main';
+
+export {main} from 'td/workbench/electron-sandbox/desktop.main';

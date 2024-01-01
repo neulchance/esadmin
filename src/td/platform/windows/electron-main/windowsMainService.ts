@@ -5,7 +5,7 @@
 
 import {distinct} from 'td/base/common/arrays';
 import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
-import {ICodeWindow} from 'td/platform/window/electron-main/window';
+import {IDevWindow} from 'td/platform/window/electron-main/window';
 import {DevWindow} from 'td/platform/windows/electron-main/windowImpl';
 
 export class WindowsMainService /* extends Disposable implements IWindowsMainService */ {
@@ -14,15 +14,15 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
     @IInstantiationService private readonly instantiationService: IInstantiationService,
   ) {
   }
-  async open(/* openConfig: IOpenConfiguration */): Promise<ICodeWindow[]> {
+  async open(/* openConfig: IOpenConfiguration */): Promise<IDevWindow[]> {
     const {windows: usedWindows} = await this.doOpen()
     return usedWindows
   }
 
-  private async doOpen(): Promise<{ windows: ICodeWindow[];}> {
-    const usedWindows: ICodeWindow[] = [];
+  private async doOpen(): Promise<{ windows: IDevWindow[];}> {
+    const usedWindows: IDevWindow[] = [];
 
-    function addUsedWindow(window: ICodeWindow, openedFiles?: boolean): void {
+    function addUsedWindow(window: IDevWindow, openedFiles?: boolean): void {
 			usedWindows.push(window);
 		}
 
@@ -31,8 +31,8 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
     return {windows: distinct(usedWindows)};
   }
 
-  private async openInBrowserWindow(): Promise<ICodeWindow> {
-    let window: ICodeWindow | undefined;
+  private async openInBrowserWindow(): Promise<IDevWindow> {
+    let window: IDevWindow | undefined;
 
     if (!window) {
       const createdWindow = window = this.instantiationService.createInstance(DevWindow);
