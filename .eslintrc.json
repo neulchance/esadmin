@@ -9,7 +9,8 @@
   // https://github.com/eslint/eslint/issues/11553#issuecomment-476570950
   "globals": {
 		"globalThis": "writable",
-    "navigator": "readonly"
+    "navigator": "readonly",
+    "window": "readonly"
 	},
   "env": {
     "node": true,

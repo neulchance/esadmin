@@ -7,7 +7,11 @@ import {app, BrowserWindow, Display, nativeImage, NativeImage, Rectangle, screen
 import * as path from 'path'
 
 export class DevWindow {
-  constructor() {
+  private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
+  
+  constructor(
+    @IProtocolMainService private readonly protocolMainService: IProtocolMainService,
+  ) {
     
     const win = new BrowserWindow({
       width: 800,

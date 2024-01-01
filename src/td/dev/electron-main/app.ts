@@ -7,7 +7,7 @@ import {app, BrowserWindow, protocol, session, Session, systemPreferences, WebFr
 import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
 import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
 import {IWindowsMainService, OpenContext} from 'td/platform/windows/electron-main/windows';
-import {ICodeWindow} from 'td/platform/window/electron-main/window';
+import {IDevWindow} from 'td/platform/window/electron-main/window';
 import {WindowsMainService} from 'td/platform/windows/electron-main/windowsMainService';
 import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors';
 
@@ -56,7 +56,7 @@ export class DevApplication /* extends Disposable */ {
     return this.mainInstantiationService.createChild(services);
   }
 
-  private async openFirstWindow(accessor: ServicesAccessor, /* initialProtocolUrls: IInitialProtocolUrls | undefined */): Promise<ICodeWindow[]> {
+  private async openFirstWindow(accessor: ServicesAccessor, /* initialProtocolUrls: IInitialProtocolUrls | undefined */): Promise<IDevWindow[]> {
     const windowsMainService = this.windowsMainService = accessor.get(IWindowsMainService);
 
     return windowsMainService.open();
