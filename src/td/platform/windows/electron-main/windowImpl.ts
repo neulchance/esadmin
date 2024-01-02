@@ -10,12 +10,13 @@ import {IWindowState, IDevWindow, ILoadEvent, WindowMode, WindowError, LoadReaso
 import * as path from 'path'
 import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol';
 import {Disposable} from 'td/base/common/lifecycle';
-import {getTitleBarStyle, useNativeFullScreen, useWindowControlsOverlay} from 'td/platform/window/common/window';
+import {getTitleBarStyle, INativeWindowConfiguration, useNativeFullScreen, useWindowControlsOverlay} from 'td/platform/window/common/window';
 import {isBigSurOrNewer, isMacintosh, isWindows} from 'td/base/common/platform';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {IStateService} from 'td/platform/state/node/state';
 import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
 import {DeferredPromise, timeout} from 'td/base/common/async';
+import {FileAccess} from 'td/base/common/network';
 
 export interface IWindowCreationOptions {
 	readonly state: IWindowState;
@@ -392,15 +393,18 @@ export class DevWindow extends BaseWindow {
 	get id(): number { return this._id; }
 
   protected override _win: BrowserWindow;
-  // private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
+  private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
   
   constructor(
     // @IProtocolMainService private readonly protocolMainService: IProtocolMainService,
     @IConfigurationService configurationService: IConfigurationService,
     @IStateService stateService: IStateService,
     @IEnvironmentMainService environmentMainService: IEnvironmentMainService,
+		@IProtocolMainService private readonly protocolMainService: IProtocolMainService,
   ) {
     super(configurationService, stateService, environmentMainService);
+
+		
 
     //#region create browser window
     {
@@ -409,11 +413,17 @@ export class DevWindow extends BaseWindow {
         height: 600,
         backgroundColor: 'black',
         webPreferences: {
-          preload: '/Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/td/base/parts/sandbox/electron-sandbox/preload.js'
+          preload: FileAccess.asFileUri('td/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
+					/* 
+					Error in Electron Browser
+					VM5:66 Uncaught (in promise) Error: Preload: did not find expected vscode-window-config in renderer process arguments list. */
+					additionalArguments: [`--vscode-window-config=${this.configObjectUrl.resource.toString()}`],
         }
       })
   
-      this._win.loadURL('file:///Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/td/dev/electron-sandbox/workbench/workbench.html')
+      // this._win.loadURL('file:///Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/td/dev/electron-sandbox/workbench/workbench.html')
+			// this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench${this.environmentMainService.isBuilt ? '' : '-dev'}.html`).toString(true));
+			this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench.html`).toString(true));
 
       this._id = this._win.id;
     }

@@ -8,14 +8,14 @@ import {unlinkSync} from 'fs'
 import {DevApplication} from 'td/dev/electron-main/app'
 import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection'
 import {InstantiationService} from 'td/platform/instantiation/common/instantiationService'
-import {IInstantiationService} from 'td/platform/instantiation/common/instantiation'
+import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation/common/instantiation'
 import {ProtocolMainService} from 'td/platform/protocol/electron-main/protocolMainService'
 import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol'
-import {EnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService'
+import {EnvironmentMainService, IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService'
 import {NativeParsedArgs} from 'td/platform/environment/common/argv'
 import {cwd} from 'td/base/common/process'
 import {IPathWithLineAndColumn, isValidBasename, parseLineAndColumnAware, sanitizeFilePath} from 'td/base/common/extpath'
-import {isMacintosh, isWindows} from 'td/base/common/platform'
+import {IProcessEnvironment, isMacintosh, isWindows} from 'td/base/common/platform'
 import {rtrim, trim} from 'td/base/common/strings'
 import {coalesce, distinct} from 'td/base/common/arrays'
 import {basename, resolve} from 'td/base/common/path'
@@ -41,6 +41,10 @@ import {IConfigurationService} from 'td/platform/configuration/common/configurat
 import {ConfigurationService} from 'td/platform/configuration/common/configurationService';
 import {IPolicyService, NullPolicyService} from 'td/platform/policy/common/policy';
 import {FilePolicyService} from 'td/platform/policy/common/filePolicyService';
+import {FileUserDataProvider} from 'td/platform/userData/common/fileUserDataProvider';
+import {ExpectedError} from 'td/base/common/errors'
+import {ILifecycleMainService, LifecycleMainService} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
+import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors'
 
 /**
  * The main TD Dev entry point.
@@ -81,11 +85,11 @@ class DevMain {
         return instantiationService.createInstance(DevApplication).startup()
       })
     } catch (error) {
-      // instantiationService.invokeFunction(this.quit, error)
+      instantiationService.invokeFunction(this.quit, error)
     }
   }
 
-  private createService(): [IInstantiationService] {
+  private createService(): [IInstantiationService, IProcessEnvironment, IEnvironmentMainService, ConfigurationService, StateService, BufferLogger, IProductService, UserDataProfilesMainService] {
     const services = new ServiceCollection()
     const disposables = new DisposableStore()
 
@@ -95,6 +99,8 @@ class DevMain {
 
     // Environment
 		const environmentMainService = new EnvironmentMainService(this.resolveArgs(), productService);
+		const instanceEnvironment = this.patchEnvironment(environmentMainService); // Patch `process.env` with the instance's environment
+		services.set(IEnvironmentMainService, environmentMainService);
 
     // Logger
 		const loggerService = new LoggerMainService(getLogLevel(environmentMainService), environmentMainService.logsHome);
@@ -126,6 +132,10 @@ class DevMain {
 		const userDataProfilesMainService = new UserDataProfilesMainService(stateService, uriIdentityService, environmentMainService, fileService, logService);
 		services.set(IUserDataProfilesMainService, userDataProfilesMainService);
 
+		// Use FileUserDataProvider for user data to
+		// enable atomic read / write operations.
+		fileService.registerProvider(Schemas.vscodeUserData, new FileUserDataProvider(Schemas.file, diskFileSystemProvider, Schemas.vscodeUserData, userDataProfilesMainService, uriIdentityService, logService));
+
 		// Policy
 		const policyService = environmentMainService.policyFile ? disposables.add(new FilePolicyService(environmentMainService.policyFile, fileService, logService))
 				: new NullPolicyService();
@@ -135,11 +145,31 @@ class DevMain {
 		const configurationService = new ConfigurationService(userDataProfilesMainService.defaultProfile.settingsResource, fileService, policyService, logService);
 		services.set(IConfigurationService, configurationService);
 
+		// Lifecycle
+		services.set(ILifecycleMainService, new SyncDescriptor(LifecycleMainService, undefined, false));
+
     // Protocol (instantiated early and not using sync descriptor for security reasons)
     services.set(IProtocolMainService, new ProtocolMainService(environmentMainService, userDataProfilesMainService, logService));
 
-    return [new InstantiationService(services, true)]
+    return [new InstantiationService(services, true), instanceEnvironment, environmentMainService, configurationService, stateService, bufferLogger, productService, userDataProfilesMainService]
   }
+
+	private patchEnvironment(environmentMainService: IEnvironmentMainService): IProcessEnvironment {
+		const instanceEnvironment: IProcessEnvironment = {
+			VSCODE_IPC_HOOK: environmentMainService.mainIPCHandle
+		};
+
+		['VSCODE_NLS_CONFIG', 'VSCODE_PORTABLE'].forEach(key => {
+			const value = process.env[key];
+			if (typeof value === 'string') {
+				instanceEnvironment[key] = value;
+			}
+		});
+
+		Object.assign(process.env, instanceEnvironment);
+
+		return instanceEnvironment;
+	}
 
   //#region Command line arguments utilities
 
@@ -255,6 +285,31 @@ class DevMain {
 		}
 
 		return segments.join(':');
+	}
+
+	private quit(accessor: ServicesAccessor, reason?: ExpectedError | Error): void {
+		const logService = accessor.get(ILogService);
+		const lifecycleMainService = accessor.get(ILifecycleMainService);
+
+		let exitCode = 0;
+
+		if (reason) {
+			if ((reason as ExpectedError).isExpected) {
+				if (reason.message) {
+					logService.trace(reason.message);
+				}
+			} else {
+				exitCode = 1; // signal error to the outside
+
+				if (reason.stack) {
+					logService.error(reason.stack);
+				} else {
+					logService.error(`Startup error: ${reason.toString()}`);
+				}
+			}
+		}
+
+		lifecycleMainService.kill(exitCode);
 	}
 
 }
