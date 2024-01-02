@@ -5,12 +5,13 @@
 
 import {app, BrowserWindow, Display, nativeImage, NativeImage, Rectangle, screen, SegmentedControlSegment, systemPreferences, TouchBar, TouchBarSegmentedControl} from 'electron';
 import * as path from 'path'
+import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol';
 
 export class DevWindow {
-  private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
+  // private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
   
   constructor(
-    @IProtocolMainService private readonly protocolMainService: IProtocolMainService,
+    // @IProtocolMainService private readonly protocolMainService: IProtocolMainService,
   ) {
     
     const win = new BrowserWindow({

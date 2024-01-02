@@ -4,7 +4,7 @@
  *---------------------------------------------------------------------------------------------------*/
 
 import {createDecorator} from 'td/platform/instantiation/common/instantiation';
-import {ICodeWindow} from 'td/platform/window/electron-main/window';
+import {IDevWindow} from 'td/platform/window/electron-main/window';
 
 export const IWindowsMainService = createDecorator<IWindowsMainService>('windowsMainService');
 
@@ -12,7 +12,7 @@ export interface IWindowsMainService {
   
   readonly _serviceBrand: undefined;
 
-  open(/* openConfig: IOpenConfiguration */): Promise<ICodeWindow[]>;
+  open(/* openConfig: IOpenConfiguration */): Promise<IDevWindow[]>;
 
 }
 

@@ -9,6 +9,8 @@ import {DevApplication} from 'td/dev/electron-main/app'
 import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection'
 import {InstantiationService} from 'td/platform/instantiation/common/instantiationService'
 import {IInstantiationService} from 'td/platform/instantiation/common/instantiation'
+import {ProtocolMainService} from 'td/platform/protocol/electron-main/protocolMainService'
+import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol'
 
 /**
  * The main TD Dev entry point.
@@ -55,6 +57,10 @@ class DevMain {
 
   private createService(): [IInstantiationService] {
     const services = new ServiceCollection()
+
+    // Protocol (instantiated early and not using sync descriptor for security reasons)
+    // services.set(IProtocolMainService, new ProtocolMainService(environmentMainService, userDataProfilesMainService, logService));
+
     return [new InstantiationService(services, true)]
   }
 }
