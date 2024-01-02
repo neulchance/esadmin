@@ -31,7 +31,7 @@
     "pino": "^8.17.1",
     "pino-pretty": "^10.3.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.0-dev.20240102",
     "vinyl": "^3.0.0",
     "which": "^4.0.0"
   },

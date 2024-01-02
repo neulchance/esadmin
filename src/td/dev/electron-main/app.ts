@@ -10,6 +10,14 @@ import {IWindowsMainService, OpenContext} from 'td/platform/windows/electron-mai
 import {IDevWindow} from 'td/platform/window/electron-main/window';
 import {WindowsMainService} from 'td/platform/windows/electron-main/windowsMainService';
 import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors';
+import {validatedIpcMain} from 'td/base/parts/ipc/electron-main/ipcMain';
+import {NativeParsedArgs} from 'td/platform/environment/common/argv';
+import {IProcessEnvironment} from 'td/base/common/platform';
+import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
+import {getResolvedShellEnv} from 'td/platform/shell/node/shellEnv';
+import {ILogService} from 'td/platform/log/common/log';
+import {toErrorMessage} from 'td/base/common/errorMessage';
+import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -21,6 +29,9 @@ export class DevApplication /* extends Disposable */ {
 
   constructor(
     @IInstantiationService private readonly mainInstantiationService: IInstantiationService,
+		@IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@ILogService private readonly logService: ILogService,
   ) {
 
     this.registerListeners()
@@ -37,7 +48,36 @@ export class DevApplication /* extends Disposable */ {
 				// await this.windowsMainService?.openEmptyWindow({context: OpenContext.DOCK});
 			}
 		});
+
+    //#region Bootstrap IPC Handlers
+
+		validatedIpcMain.handle('vscode:fetchShellEnv', event => {
+
+			// Prefer to use the args and env from the target window
+			// when resolving the shell env. It is possible that
+			// a first window was opened from the UI but a second
+			// from the CLI and that has implications for whether to
+			// resolve the shell environment or not.
+			//
+			// Window can be undefined for e.g. the shared process
+			// that is not part of our windows registry!
+			const window = this.windowsMainService?.getWindowByWebContents(event.sender); // Note: this can be `undefined` for the shared process
+			let args: NativeParsedArgs;
+			let env: IProcessEnvironment;
+			if (window?.config) {
+				args = window.config;
+				env = {...process.env, ...window.config.userEnv};
+			} else {
+				args = this.environmentMainService.args;
+				env = process.env;
+			}
+
+			// Resolve shell env
+			return this.resolveShellEnvironment(args, env, false);
+		});
   }
+
+
 
   async startup(): Promise<void> {
     // Services
@@ -61,5 +101,20 @@ export class DevApplication /* extends Disposable */ {
 
     return windowsMainService.open();
   }
+
+	private async resolveShellEnvironment(args: NativeParsedArgs, env: IProcessEnvironment, notifyOnError: boolean): Promise<typeof process.env> {
+		try {
+			return await getResolvedShellEnv(this.configurationService, this.logService, args, env);
+		} catch (error) {
+			const errorMessage = toErrorMessage(error);
+			if (notifyOnError) {
+				this.windowsMainService?.sendToFocused('vscode:showResolveShellEnvError', errorMessage);
+			} else {
+				this.logService.error(errorMessage);
+			}
+		}
+
+		return {};
+	}
   
 }

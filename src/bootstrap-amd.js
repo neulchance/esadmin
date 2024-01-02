@@ -41,7 +41,7 @@ loader.config({
 	baseUrl: bootstrap.fileUriFromPath(__dirname, { isWindows: process.platform === 'win32' }),
 	catchError: true,
 	nodeRequire,
-	'vs/nls': nlsConfig,
+	'td/nls': nlsConfig,
 	amdModulesPattern: /^td\//,
 	recordStats: true
 });
@@ -55,7 +55,7 @@ if (process.env['ELECTRON_RUN_AS_NODE'] || process.versions['electron']) {
 
 // Pseudo NLS support
 if (nlsConfig && nlsConfig.pseudo) {
-	loader(['vs/nls'], function (/** @type {import('vs/nls')} */nlsPlugin) {
+	loader(['td/nls'], function (/** @type {import('td/nls')} */nlsPlugin) {
 		nlsPlugin.setPseudoTranslation(!!nlsConfig.pseudo);
 	});
 }

@@ -37,6 +37,10 @@ import {Schemas} from 'td/base/common/network'
 import {IStateReadService, IStateService} from 'td/platform/state/node/state'
 import {UriIdentityService} from 'td/platform/uriIdentity/common/uriIdentityService'
 import {IUriIdentityService} from 'td/platform/uriIdentity/common/uriIdentity'
+import {IConfigurationService} from 'td/platform/configuration/common/configuration';
+import {ConfigurationService} from 'td/platform/configuration/common/configurationService';
+import {IPolicyService, NullPolicyService} from 'td/platform/policy/common/policy';
+import {FilePolicyService} from 'td/platform/policy/common/filePolicyService';
 
 /**
  * The main TD Dev entry point.
@@ -121,6 +125,15 @@ class DevMain {
     // User Data Profiles
 		const userDataProfilesMainService = new UserDataProfilesMainService(stateService, uriIdentityService, environmentMainService, fileService, logService);
 		services.set(IUserDataProfilesMainService, userDataProfilesMainService);
+
+		// Policy
+		const policyService = environmentMainService.policyFile ? disposables.add(new FilePolicyService(environmentMainService.policyFile, fileService, logService))
+				: new NullPolicyService();
+		services.set(IPolicyService, policyService);
+
+		// Configuration
+		const configurationService = new ConfigurationService(userDataProfilesMainService.defaultProfile.settingsResource, fileService, policyService, logService);
+		services.set(IConfigurationService, configurationService);
 
     // Protocol (instantiated early and not using sync descriptor for security reasons)
     services.set(IProtocolMainService, new ProtocolMainService(environmentMainService, userDataProfilesMainService, logService));
