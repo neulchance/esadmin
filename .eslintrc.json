@@ -10,7 +10,8 @@
   "globals": {
 		"globalThis": "writable",
     "navigator": "readonly",
-    "window": "readonly"
+    "window": "readonly",
+    "define": "writable"
 	},
   "env": {
     "node": true,
@@ -55,6 +56,9 @@
         "plugin:@typescript-eslint/recommended"
       ],
       "rules": {
+        "no-ex-assign": "warn",
+        "prefer-spread": "warn",
+        "no-prototype-builtins": "warn",
         "no-cond-assign": "warn",
         "no-empty": "warn",
         "no-control-regex": "warn",
@@ -83,6 +87,12 @@
         "prefer-const": ["off"]
       }
     },
+    // {
+    //   "files": ["src/td/workbench/**/*.ts"],
+    //   "rules": {
+    //     "object-curly-spacing": ["error", "never"]
+    //   }
+    // },
     {
       "files": ["src/td/**/*.ts"],
       "rules": {
