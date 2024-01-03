@@ -176,7 +176,7 @@
 	}
 
 	/**
-	 * @returns {typeof import('./vs/base/parts/sandbox/electron-sandbox/globals') | undefined}
+	 * @returns {typeof import('./td/base/parts/sandbox/electron-sandbox/globals') | undefined}
 	 */
 	function safeSandboxGlobals() {
 		const globals = (typeof self === 'object' ? self : typeof global === 'object' ? global : {});
@@ -186,7 +186,7 @@
 	}
 
 	/**
-	 * @returns {import('./vs/base/parts/sandbox/electron-sandbox/globals').ISandboxNodeProcess | NodeJS.Process | undefined}
+	 * @returns {import('./td/base/parts/sandbox/electron-sandbox/globals').ISandboxNodeProcess | NodeJS.Process | undefined}
 	 */
 	function safeProcess() {
 		const sandboxGlobals = safeSandboxGlobals();
@@ -202,7 +202,7 @@
 	}
 
 	/**
-	 * @returns {import('./vs/base/parts/sandbox/electron-sandbox/electronTypes').IpcRenderer | undefined}
+	 * @returns {import('./td/base/parts/sandbox/electron-sandbox/electronTypes').IpcRenderer | undefined}
 	 */
 	function safeIpcRenderer() {
 		const sandboxGlobals = safeSandboxGlobals();

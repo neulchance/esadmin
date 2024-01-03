@@ -14,3 +14,7 @@ https://github.com/parcel-bundler/watcher
 
 
 https://github.com/microsoft/vscode/wiki/[DEV]-Perf-Tools-for-VS-Code-Development
+
+dev-oss-dev
+~/Library/Application Support/dev-oss-dev
+~/.vscode-oss-dev/extensions
