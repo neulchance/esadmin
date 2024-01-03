@@ -3,12 +3,15 @@
  *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
  *---------------------------------------------------------------------------------------------------*/
 
+import {BrowserWindow, WebContents} from 'electron';
 import {distinct} from 'td/base/common/arrays';
 import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
 import {IDevWindow} from 'td/platform/window/electron-main/window';
 import {DevWindow} from 'td/platform/windows/electron-main/windowImpl';
 
 export class WindowsMainService /* extends Disposable implements IWindowsMainService */ {
+
+  private readonly windows = new Map<number, IDevWindow>();
 
   constructor(
     @IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -40,4 +43,17 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
 
     return window
   }
+
+  getWindowById(windowId: number): IDevWindow | undefined {
+		return this.windows.get(windowId);
+	}
+
+  getWindowByWebContents(webContents: WebContents): IDevWindow | undefined {
+		const browserWindow = BrowserWindow.fromWebContents(webContents);
+		if (!browserWindow) {
+			return undefined;
+		}
+
+		return this.getWindowById(browserWindow.id);
+	}
 }
