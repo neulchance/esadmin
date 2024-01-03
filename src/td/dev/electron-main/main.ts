@@ -15,7 +15,7 @@ import {EnvironmentMainService, IEnvironmentMainService} from 'td/platform/envir
 import {NativeParsedArgs} from 'td/platform/environment/common/argv'
 import {cwd} from 'td/base/common/process'
 import {IPathWithLineAndColumn, isValidBasename, parseLineAndColumnAware, sanitizeFilePath} from 'td/base/common/extpath'
-import {IProcessEnvironment, isMacintosh, isWindows} from 'td/base/common/platform'
+import {IProcessEnvironment, OS, isMacintosh, isWindows} from 'td/base/common/platform'
 import {rtrim, trim} from 'td/base/common/strings'
 import {coalesce, distinct} from 'td/base/common/arrays'
 import {basename, resolve} from 'td/base/common/path'
@@ -26,7 +26,7 @@ import product from 'td/platform/product/common/product'
 import {IUserDataProfilesMainService, UserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile'
 import {SaveStrategy, StateService} from 'td/platform/state/node/stateService'
 import {ILoggerMainService, LoggerMainService} from 'td/platform/log/electron-main/loggerService'
-import {ConsoleMainLogger, ILogService, getLogLevel} from 'td/platform/log/common/log'
+import {ConsoleMainLogger, ILogService, ILoggerService, getLogLevel} from 'td/platform/log/common/log'
 import {BufferLogger} from 'td/platform/log/common/bufferLog'
 import {LogService} from 'td/platform/log/common/logService'
 import {DisposableStore} from 'td/base/common/lifecycle'
@@ -45,6 +45,20 @@ import {FileUserDataProvider} from 'td/platform/userData/common/fileUserDataProv
 import {ExpectedError} from 'td/base/common/errors'
 import {ILifecycleMainService, LifecycleMainService} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
 import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors'
+import {connect as nodeIPCConnect, serve as nodeIPCServe, Server as NodeIPCServer, XDG_RUNTIME_DIR} from 'td/base/parts/ipc/node/ipc.net';
+import {mark} from 'td/base/common/performance';
+import {Event} from 'td/base/common/event';
+import {localize} from 'td/nls'
+import {massageMessageBoxOptions} from 'td/platform/dialogs/common/dialogs';
+import {ProxyChannel} from 'td/base/parts/ipc/common/ipc';
+import {ILaunchMainService} from 'td/platform/launch/electron-main/launchMainService';
+import {toErrorMessage} from 'td/base/common/errorMessage'
+import {getPathLabel} from 'td/base/common/labels'
+import {URI} from 'td/base/common/uri'
+import {IDiagnosticsMainService} from 'td/platform/diagnostics/electron-main/diagnosticsMainService';
+import {Client as NodeIPCClient} from 'td/base/parts/ipc/common/ipc.net';
+import {DiagnosticsService} from 'td/platform/diagnostics/node/diagnosticsService';
+import {NullTelemetryService} from 'td/platform/telemetry/common/telemetryUtils';
 
 /**
  * The main TD Dev entry point.
@@ -68,7 +82,8 @@ class DevMain {
   private async startup(): Promise<void> {
 
     // Create services
-    const [instantiationService] = this.createService()
+    const [instantiationService, instanceEnvironment, environmentMainService, configurationService, stateMainService, bufferLogService, productService, userDataProfilesMainService] = this.createServices();
+		console.log('instanceEnvironment', instanceEnvironment)
 
     try {
 
@@ -80,16 +95,24 @@ class DevMain {
 
       // Startup
       await instantiationService.invokeFunction(async accessor => {
-        // accessor.get()
+        const logService = accessor.get(ILogService);
+				const lifecycleMainService = accessor.get(ILifecycleMainService);
+				const fileService = accessor.get(IFileService);
+				const loggerService = accessor.get(ILoggerService);
+
+				// Create the main IPC server by trying to be the server
+				// If this throws an error it means we are not the first
+				// instance of VS Code running and so we would quit.
+				const mainProcessNodeIpcServer = await this.claimInstance(logService, environmentMainService, lifecycleMainService, instantiationService, productService, true);
         
-        return instantiationService.createInstance(DevApplication).startup()
+        return instantiationService.createInstance(DevApplication, mainProcessNodeIpcServer, instanceEnvironment).startup()
       })
     } catch (error) {
       instantiationService.invokeFunction(this.quit, error)
     }
   }
 
-  private createService(): [IInstantiationService, IProcessEnvironment, IEnvironmentMainService, ConfigurationService, StateService, BufferLogger, IProductService, UserDataProfilesMainService] {
+  private createServices(): [IInstantiationService, IProcessEnvironment, IEnvironmentMainService, ConfigurationService, StateService, BufferLogger, IProductService, UserDataProfilesMainService] {
     const services = new ServiceCollection()
     const disposables = new DisposableStore()
 
@@ -153,6 +176,162 @@ class DevMain {
 
     return [new InstantiationService(services, true), instanceEnvironment, environmentMainService, configurationService, stateService, bufferLogger, productService, userDataProfilesMainService]
   }
+
+	private async claimInstance(logService: ILogService, environmentMainService: IEnvironmentMainService, lifecycleMainService: ILifecycleMainService, instantiationService: IInstantiationService, productService: IProductService, retry: boolean): Promise<NodeIPCServer> {
+
+		// Try to setup a server for running. If that succeeds it means
+		// we are the first instance to startup. Otherwise it is likely
+		// that another instance is already running.
+		let mainProcessNodeIpcServer: NodeIPCServer;
+		try {
+			mark('code/willStartMainServer');
+			mainProcessNodeIpcServer = await nodeIPCServe(environmentMainService.mainIPCHandle);
+			mark('code/didStartMainServer');
+			Event.once(lifecycleMainService.onWillShutdown)(() => mainProcessNodeIpcServer.dispose());
+		} catch (error) {
+
+			// Handle unexpected errors (the only expected error is EADDRINUSE that
+			// indicates another instance of VS Code is running)
+			if (error.code !== 'EADDRINUSE') {
+
+				// Show a dialog for errors that can be resolved by the user
+				this.handleStartupDataDirError(environmentMainService, productService, error);
+
+				// Any other runtime error is just printed to the console
+				throw error;
+			}
+
+			// there's a running instance, let's connect to it
+			let client: NodeIPCClient<string>;
+			try {
+				client = await nodeIPCConnect(environmentMainService.mainIPCHandle, 'main');
+			} catch (error) {
+
+				// Handle unexpected connection errors by showing a dialog to the user
+				if (!retry || isWindows || error.code !== 'ECONNREFUSED') {
+					if (error.code === 'EPERM') {
+						this.showStartupWarningDialog(
+							localize('secondInstanceAdmin', "Another instance of {0} is already running as administrator.", productService.nameShort),
+							localize('secondInstanceAdminDetail', "Please close the other instance and try again."),
+							productService
+						);
+					}
+
+					throw error;
+				}
+
+				// it happens on Linux and OS X that the pipe is left behind
+				// let's delete it, since we can't connect to it and then
+				// retry the whole thing
+				try {
+					unlinkSync(environmentMainService.mainIPCHandle);
+				} catch (error) {
+					logService.warn('Could not delete obsolete instance handle', error);
+
+					throw error;
+				}
+
+				return this.claimInstance(logService, environmentMainService, lifecycleMainService, instantiationService, productService, false);
+			}
+
+			// Tests from CLI require to be the only instance currently
+			if (environmentMainService.extensionTestsLocationURI && !environmentMainService.debugExtensionHost.break) {
+				const msg = `Running extension tests from the command line is currently only supported if no other instance of ${productService.nameShort} is running.`;
+				logService.error(msg);
+				client.dispose();
+
+				throw new Error(msg);
+			}
+
+			// Show a warning dialog after some timeout if it takes long to talk to the other instance
+			// Skip this if we are running with --wait where it is expected that we wait for a while.
+			// Also skip when gathering diagnostics (--status) which can take a longer time.
+			let startupWarningDialogHandle: NodeJS.Timeout | undefined = undefined;
+			if (!environmentMainService.args.wait && !environmentMainService.args.status) {
+				startupWarningDialogHandle = setTimeout(() => {
+					this.showStartupWarningDialog(
+						localize('secondInstanceNoResponse', "Another instance of {0} is running but not responding", productService.nameShort),
+						localize('secondInstanceNoResponseDetail', "Please close all other instances and try again."),
+						productService
+					);
+				}, 10000);
+			}
+
+			const otherInstanceLaunchMainService = ProxyChannel.toService<ILaunchMainService>(client.getChannel('launch'), {disableMarshalling: true});
+			const otherInstanceDiagnosticsMainService = ProxyChannel.toService<IDiagnosticsMainService>(client.getChannel('diagnostics'), {disableMarshalling: true});
+
+			// Process Info
+			if (environmentMainService.args.status) {
+				return instantiationService.invokeFunction(async () => {
+					const diagnosticsService = new DiagnosticsService(NullTelemetryService, productService);
+					const mainDiagnostics = await otherInstanceDiagnosticsMainService.getMainDiagnostics();
+					const remoteDiagnostics = await otherInstanceDiagnosticsMainService.getRemoteDiagnostics({includeProcesses: true, includeWorkspaceMetadata: true});
+					const diagnostics = await diagnosticsService.getDiagnostics(mainDiagnostics, remoteDiagnostics);
+					console.log(diagnostics);
+
+					throw new ExpectedError();
+				});
+			}
+
+			// Windows: allow to set foreground
+			if (isWindows) {
+				await this.windowsAllowSetForegroundWindow(otherInstanceLaunchMainService, logService);
+			}
+
+			// Send environment over...
+			logService.trace('Sending env to running instance...');
+			await otherInstanceLaunchMainService.start(environmentMainService.args, process.env as IProcessEnvironment);
+
+			// Cleanup
+			client.dispose();
+
+			// Now that we started, make sure the warning dialog is prevented
+			if (startupWarningDialogHandle) {
+				clearTimeout(startupWarningDialogHandle);
+			}
+
+			throw new ExpectedError('Sent env to running instance. Terminating...');
+		}
+
+		// Print --status usage info
+		if (environmentMainService.args.status) {
+			console.log(localize('statusWarning', "Warning: The --status argument can only be used if {0} is already running. Please run it again after {0} has started.", productService.nameShort));
+
+			throw new ExpectedError('Terminating...');
+		}
+
+		// Set the VSCODE_PID variable here when we are sure we are the first
+		// instance to startup. Otherwise we would wrongly overwrite the PID
+		process.env['VSCODE_PID'] = String(process.pid);
+
+		return mainProcessNodeIpcServer;
+	}
+
+	private handleStartupDataDirError(environmentMainService: IEnvironmentMainService, productService: IProductService, error: NodeJS.ErrnoException): void {
+		if (error.code === 'EACCES' || error.code === 'EPERM') {
+			const directories = coalesce([environmentMainService.userDataPath, environmentMainService.extensionsPath, XDG_RUNTIME_DIR]).map(folder => getPathLabel(URI.file(folder), {os: OS, tildify: environmentMainService}));
+
+			this.showStartupWarningDialog(
+				localize('startupDataDirError', "Unable to write program user data."),
+				localize('startupUserDataAndExtensionsDirErrorDetail', "{0}\n\nPlease make sure the following directories are writeable:\n\n{1}", toErrorMessage(error), directories.join('\n')),
+				productService
+			);
+		}
+	}
+
+	private showStartupWarningDialog(message: string, detail: string, productService: IProductService): void {
+
+		// use sync variant here because we likely exit after this method
+		// due to startup issues and otherwise the dialog seems to disappear
+		// https://github.com/microsoft/vscode/issues/104493
+
+		dialog.showMessageBoxSync(massageMessageBoxOptions({
+			type: 'warning',
+			buttons: [localize({key: 'close', comment: ['&& denotes a mnemonic']}, "&&Close")],
+			message,
+			detail
+		}, productService).options);
+	}
 
 	private patchEnvironment(environmentMainService: IEnvironmentMainService): IProcessEnvironment {
 		const instanceEnvironment: IProcessEnvironment = {
@@ -285,6 +464,20 @@ class DevMain {
 		}
 
 		return segments.join(':');
+	}
+
+	private async windowsAllowSetForegroundWindow(launchMainService: ILaunchMainService, logService: ILogService): Promise<void> {
+		if (isWindows) {
+			const processId = await launchMainService.getMainProcessId();
+
+			logService.trace('Sending some foreground love to the running instance:', processId);
+
+			try {
+				// (await import('windows-foreground-love')).allowSetForegroundWindow(processId);
+			} catch (error) {
+				logService.error(error);
+			}
+		}
 	}
 
 	private quit(accessor: ServicesAccessor, reason?: ExpectedError | Error): void {

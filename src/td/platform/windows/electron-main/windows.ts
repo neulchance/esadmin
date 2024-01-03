@@ -36,7 +36,7 @@ export interface IWindowsMainService {
 	readonly onDidTriggerSystemContextMenu: Event<{ readonly window: IDevWindow; readonly x: number; readonly y: number }>;
 	readonly onDidDestroyWindow: Event<IDevWindow>;
 
-	open(/* openConfig: IOpenConfiguration */): Promise<IDevWindow[]>;
+	open(openConfig?: IOpenConfiguration): Promise<IDevWindow[]>;
 	openEmptyWindow(openConfig: IOpenEmptyConfiguration, options?: IOpenEmptyWindowOptions): Promise<IDevWindow[]>;
 	openExtensionDevelopmentHostWindow(extensionDevelopmentPath: string[], openConfig: IOpenConfiguration): Promise<IDevWindow[]>;
 

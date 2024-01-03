@@ -18,6 +18,9 @@ import {getResolvedShellEnv} from 'td/platform/shell/node/shellEnv';
 import {ILogService} from 'td/platform/log/common/log';
 import {toErrorMessage} from 'td/base/common/errorMessage';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
+import {resolveMachineId, resolveSqmId} from 'td/platform/telemetry/electron-main/telemetryUtils';
+import {IStateService} from 'td/platform/state/node/state';
+import {Server as NodeIPCServer} from 'td/base/parts/ipc/node/ipc.net';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -28,10 +31,13 @@ export class DevApplication /* extends Disposable */ {
   private windowsMainService: IWindowsMainService | undefined;
 
   constructor(
+		private readonly mainProcessNodeIpcServer: NodeIPCServer,
+		private readonly userEnv: IProcessEnvironment,
     @IInstantiationService private readonly mainInstantiationService: IInstantiationService,
 		@IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILogService private readonly logService: ILogService,
+		@IStateService private readonly stateService: IStateService,
   ) {
 
     this.registerListeners()
@@ -80,6 +86,21 @@ export class DevApplication /* extends Disposable */ {
 
 
   async startup(): Promise<void> {
+		console.log(this.logService.getLevel())
+		this.logService.setLevel(2)
+		this.logService.debug('Starting VS Code');
+		this.logService.debug(`from: ${this.environmentMainService.appRoot}`);
+		// this.logService.debug('args:', this.environmentMainService.args);
+
+		// Resolve unique machine ID
+		this.logService.trace('Resolving machine identifier...');
+		const [machineId, sqmId] = await Promise.all([
+			resolveMachineId(this.stateService, this.logService),
+			resolveSqmId(this.stateService, this.logService)
+		]);
+		this.logService.debug(`Resolved machine identifier: ${machineId}`);
+		this.logService.debug(`Resolved machine identifier: ${sqmId}`);
+
     // Services
     const appInstantiationService = await this.initServices(/* machineId, sqmId, sharedProcessReady */);
     
@@ -98,7 +119,7 @@ export class DevApplication /* extends Disposable */ {
 
   private async openFirstWindow(accessor: ServicesAccessor, /* initialProtocolUrls: IInitialProtocolUrls | undefined */): Promise<IDevWindow[]> {
     const windowsMainService = this.windowsMainService = accessor.get(IWindowsMainService);
-
+		
     return windowsMainService.open();
   }
 
