@@ -17,6 +17,7 @@ import {IStateService} from 'td/platform/state/node/state';
 import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
 import {DeferredPromise, timeout} from 'td/base/common/async';
 import {FileAccess} from 'td/base/common/network';
+import {NativeParsedArgs} from 'td/platform/environment/common/argv';
 
 export interface IWindowCreationOptions {
 	readonly state: IWindowState;
@@ -409,7 +410,7 @@ export class DevWindow extends BaseWindow {
     //#region create browser window
     {
       this._win = new BrowserWindow({
-        width: 800,
+        width: 1000	,
         height: 600,
         backgroundColor: 'black',
         webPreferences: {
@@ -420,14 +421,26 @@ export class DevWindow extends BaseWindow {
 					additionalArguments: [`--vscode-window-config=${this.configObjectUrl.resource.toString()}`],
         }
       })
-  
-      // this._win.loadURL('file:///Users/home/workspace/organizations/org-neulchance/with-electron/neulchan-tddev/out/td/dev/electron-sandbox/workbench/workbench.html')
-			// this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench${this.environmentMainService.isBuilt ? '' : '-dev'}.html`).toString(true));
-			this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench.html`).toString(true));
 
       this._id = this._win.id;
     }
     //#endregion
     
   }
+
+	/* Invoked in windowsMainService.ts #doOpenInBrowserWindow */
+	load(configuration: INativeWindowConfiguration, options: ILoadOptions = Object.create(null)): void {
+		// this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench${this.environmentMainService.isBuilt ? '' : '-dev'}.html`).toString(true));
+
+		// Update configuration values based on our window context
+		// and set it into the config object URL for usage
+		this.updateConfiguration(configuration)
+
+		this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench.html`).toString(true));
+	}
+
+	private updateConfiguration(configuration: INativeWindowConfiguration, options?: ILoadOptions): void {
+		// Update in config object URL for usage in renderer
+		this.configObjectUrl.update(configuration);
+	}
 }

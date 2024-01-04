@@ -248,7 +248,7 @@
 	}
 
 	/**
-	 * @return {typeof import('./vs/base/parts/sandbox/electron-sandbox/globals')}
+	 * @return {typeof import('./td/base/parts/sandbox/electron-sandbox/globals')}
 	 */
 	function sandboxGlobals() {
 		// @ts-ignore (defined in globals.js)

@@ -3,6 +3,14 @@
  *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
  *---------------------------------------------------------------------------------------------------*/
 
+//@ts-check
+'use strict';
+
+/**
+ * @typedef {import('./td/base/common/product').IProductConfiguration} IProductConfiguration
+ * @typedef {import('./td/platform/environment/common/argv').NativeParsedArgs} NativeParsedArgs
+ */
+
 const path = require('node:path')
 const fs = require('fs')
 const os = require('os')
@@ -16,7 +24,7 @@ perf.mark('code/didStartMain')
 
 const bootstrap = require('./bootstrap')
  
-console.log('Hello from Electron 👋👋👋')
+console.log('Hello Electron 👋')
 
 const args = parseCLIArgs();
 // Configure static command line arguments
@@ -277,98 +285,6 @@ function getArgvConfigPath() {
 	return path.join(os.homedir(), dataFolderName, 'argv.json');
 }
 
-function configureCrashReporter() {
-
-	let crashReporterDirectory = args['crash-reporter-directory'];
-	let submitURL = '';
-	if (crashReporterDirectory) {
-		crashReporterDirectory = path.normalize(crashReporterDirectory);
-
-		if (!path.isAbsolute(crashReporterDirectory)) {
-			console.error(`The path '${crashReporterDirectory}' specified for --crash-reporter-directory must be absolute.`);
-			app.exit(1);
-		}
-
-		if (!fs.existsSync(crashReporterDirectory)) {
-			try {
-				fs.mkdirSync(crashReporterDirectory, { recursive: true });
-			} catch (error) {
-				console.error(`The path '${crashReporterDirectory}' specified for --crash-reporter-directory does not seem to exist or cannot be created.`);
-				app.exit(1);
-			}
-		}
-
-		// Crashes are stored in the crashDumps directory by default, so we
-		// need to change that directory to the provided one
-		console.log(`Found --crash-reporter-directory argument. Setting crashDumps directory to be '${crashReporterDirectory}'`);
-		app.setPath('crashDumps', crashReporterDirectory);
-	}
-
-	// Otherwise we configure the crash reporter from product.json
-	else {
-		const appCenter = product.appCenter;
-		if (appCenter) {
-			const isWindows = (process.platform === 'win32');
-			const isLinux = (process.platform === 'linux');
-			const isDarwin = (process.platform === 'darwin');
-			const crashReporterId = argvConfig['crash-reporter-id'];
-			const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-			if (uuidPattern.test(crashReporterId)) {
-				if (isWindows) {
-					switch (process.arch) {
-						case 'x64':
-							submitURL = appCenter['win32-x64'];
-							break;
-						case 'arm64':
-							submitURL = appCenter['win32-arm64'];
-							break;
-					}
-				} else if (isDarwin) {
-					if (product.darwinUniversalAssetId) {
-						submitURL = appCenter['darwin-universal'];
-					} else {
-						switch (process.arch) {
-							case 'x64':
-								submitURL = appCenter['darwin'];
-								break;
-							case 'arm64':
-								submitURL = appCenter['darwin-arm64'];
-								break;
-						}
-					}
-				} else if (isLinux) {
-					submitURL = appCenter['linux-x64'];
-				}
-				submitURL = submitURL.concat('&uid=', crashReporterId, '&iid=', crashReporterId, '&sid=', crashReporterId);
-				// Send the id for child node process that are explicitly starting crash reporter.
-				// For vscode this is ExtensionHost process currently.
-				const argv = process.argv;
-				const endOfArgsMarkerIndex = argv.indexOf('--');
-				if (endOfArgsMarkerIndex === -1) {
-					argv.push('--crash-reporter-id', crashReporterId);
-				} else {
-					// if the we have an argument "--" (end of argument marker)
-					// we cannot add arguments at the end. rather, we add
-					// arguments before the "--" marker.
-					argv.splice(endOfArgsMarkerIndex, 0, '--crash-reporter-id', crashReporterId);
-				}
-			}
-		}
-	}
-
-	// Start crash reporter for all processes
-	const productName = (product.crashReporter ? product.crashReporter.productName : undefined) || product.nameShort;
-	const companyName = (product.crashReporter ? product.crashReporter.companyName : undefined) || 'Microsoft';
-	const uploadToServer = Boolean(!process.env['VSCODE_DEV'] && submitURL && !crashReporterDirectory);
-	crashReporter.start({
-		companyName,
-		productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
-		submitURL,
-		uploadToServer,
-		compress: true
-	});
-}
-
 /**
  * @param {NativeParsedArgs} cliArgs
  * @returns {string | null}
@@ -407,147 +323,4 @@ function parseCLIArgs() {
 			'no-sandbox': 'sandbox'
 		}
 	});
-}
-
-function registerListeners() {
-
-	/**
-	 * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
-	 * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
-	 *
-	 * @type {string[]}
-	 */
-	const macOpenFiles = [];
-	// @ts-ignore
-	global['macOpenFiles'] = macOpenFiles;
-	app.on('open-file', function (event, path) {
-		macOpenFiles.push(path);
-	});
-
-	/**
-	 * macOS: react to open-url requests.
-	 *
-	 * @type {string[]}
-	 */
-	const openUrls = [];
-	const onOpenUrl =
-		/**
-		 * @param {{ preventDefault: () => void; }} event
-		 * @param {string} url
-		 */
-		function (event, url) {
-			event.preventDefault();
-
-			openUrls.push(url);
-		};
-
-	app.on('will-finish-launching', function () {
-		app.on('open-url', onOpenUrl);
-	});
-
-	// @ts-ignore
-	global['getOpenUrls'] = function () {
-		app.removeListener('open-url', onOpenUrl);
-
-		return openUrls;
-	};
-}
-
-/**
- * @returns {string | undefined} the location to use for the code cache
- * or `undefined` if disabled.
- */
-function getCodeCachePath() {
-
-	// explicitly disabled via CLI args
-	if (process.argv.indexOf('--no-cached-data') > 0) {
-		return undefined;
-	}
-
-	// running out of sources
-	if (process.env['VSCODE_DEV']) {
-		return undefined;
-	}
-
-	// require commit id
-	const commit = product.commit;
-	if (!commit) {
-		return undefined;
-	}
-
-	return path.join(userDataPath, 'CachedData', commit);
-}
-
-/**
- * @param {string} dir
- * @returns {Promise<string>}
- */
-function mkdirp(dir) {
-	return new Promise((resolve, reject) => {
-		fs.mkdir(dir, { recursive: true }, err => (err && err.code !== 'EEXIST') ? reject(err) : resolve(dir));
-	});
-}
-
-/**
- * @param {string | undefined} dir
- * @returns {Promise<string | undefined>}
- */
-async function mkdirpIgnoreError(dir) {
-	if (typeof dir === 'string') {
-		try {
-			await mkdirp(dir);
-
-			return dir;
-		} catch (error) {
-			// ignore
-		}
-	}
-
-	return undefined;
-}
-
-//#region NLS Support
-
-/**
- * @param {string} appLocale
- * @returns string
- */
-function processZhLocale(appLocale) {
-	if (appLocale.startsWith('zh')) {
-		const region = appLocale.split('-')[1];
-		// On Windows and macOS, Chinese languages returned by
-		// app.getPreferredSystemLanguages() start with zh-hans
-		// for Simplified Chinese or zh-hant for Traditional Chinese,
-		// so we can easily determine whether to use Simplified or Traditional.
-		// However, on Linux, Chinese languages returned by that same API
-		// are of the form zh-XY, where XY is a country code.
-		// For China (CN), Singapore (SG), and Malaysia (MY)
-		// country codes, assume they use Simplified Chinese.
-		// For other cases, assume they use Traditional.
-		if (['hans', 'cn', 'sg', 'my'].includes(region)) {
-			return 'zh-cn';
-		}
-		return 'zh-tw';
-	}
-	return appLocale;
-}
-
-
-
-/**
- * Language tags are case insensitive however an amd loader is case sensitive
- * To make this work on case preserving & insensitive FS we do the following:
- * the language bundles have lower case language tags and we always lower case
- * the locale we receive from the user or OS.
- *
- * @param {{ locale: string | undefined; }} argvConfig
- * @returns {string | undefined}
- */
-function getUserDefinedLocale(argvConfig) {
-	const locale = args['locale'];
-	if (locale) {
-		return locale.toLowerCase(); // a directly provided --locale always wins
-	}
-
-	return argvConfig.locale && typeof argvConfig.locale === 'string' ? argvConfig.locale.toLowerCase() : undefined;
 }

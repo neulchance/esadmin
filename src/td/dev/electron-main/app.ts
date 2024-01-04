@@ -86,20 +86,19 @@ export class DevApplication /* extends Disposable */ {
 
 
   async startup(): Promise<void> {
-		console.log(this.logService.getLevel())
 		this.logService.setLevel(2)
 		this.logService.debug('Starting VS Code');
 		this.logService.debug(`from: ${this.environmentMainService.appRoot}`);
 		// this.logService.debug('args:', this.environmentMainService.args);
 
 		// Resolve unique machine ID
-		this.logService.trace('Resolving machine identifier...');
+		this.logService.info('Resolving machine identifier...');
 		const [machineId, sqmId] = await Promise.all([
 			resolveMachineId(this.stateService, this.logService),
 			resolveSqmId(this.stateService, this.logService)
 		]);
-		this.logService.debug(`Resolved machine identifier: ${machineId}`);
-		this.logService.debug(`Resolved machine identifier: ${sqmId}`);
+		this.logService.info(`Resolved machine identifier: ${machineId}`);
+		this.logService.info(`Resolved sqm identifier: ${sqmId}`);
 
     // Services
     const appInstantiationService = await this.initServices(machineId, sqmId/*, sharedProcessReady */);
