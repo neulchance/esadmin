@@ -1,8 +1,11 @@
 import path from 'path'
+import fs from 'fs'
 import {pipeline} from 'node:stream/promises'
 import {Transform, Writable, Readable, Duplex, PassThrough} from 'node:stream'
 import parcelWatcher from '@parcel/watcher'
+import Vinyl from 'vinyl'
 import {logger} from '../base/logger'
+import * as compilation from '../lib/compilation'
 
 
 async function main() {
@@ -11,20 +14,48 @@ async function main() {
 
 
 export async function watchTask(src: string, out: string) {
-  
+  /**
+   * cwd: current working directory
+   * process.cwd()는 명령어가 실행된 위치의 'path'를 나타낸다.
+   */
   parcelWatcher.subscribe(path.join(process.cwd(), 'src'), (err, events) => {
     if (err) {
       logger.info(err)
     }
-    logger.info('1')
-    t1.push(events)
+    logger.info(events.at(0)?.path)
+    start.push(events.at(0)?.path)
   })
 
-  const t1 = new Readable({
+  const start = new Readable({
     objectMode: true,
     read() {},
     destroy(err, callback) {
       console.log(err)
+    }
+  })
+
+  const sourceVinyl = new Transform({
+    readableObjectMode: true,
+    writableObjectMode: true,
+    transform(path, encoding, callback) {
+      const file = fs.readFileSync(path)
+      const vinyl = new Vinyl({
+        path: path,
+        contents: file
+      })
+      this.push(vinyl)
+      callback()
+    }
+  })
+
+  const transpile = compilation.createCompile(src, false, true, {swc: true})
+
+  const saveFile = new Writable({
+    objectMode: true,
+    write(file: Vinyl, encoding, callback) {
+      fs.mkdirSync(path.dirname(file.path), {recursive: true})
+      fs.writeFileSync(file.path, file.contents.toString())
+      callback()
     }
   })
 
@@ -40,8 +71,10 @@ export async function watchTask(src: string, out: string) {
 
   try {
     await pipeline(
-      t1,
-      what
+      start,
+      sourceVinyl,
+      transpile(),
+      saveFile
     )
   } catch (error) {
     console.error(error)
