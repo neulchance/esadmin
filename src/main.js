@@ -1,12 +1,24 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('node:path')
+const { app, protocol, crashReporter, Menu, ipcMain } = require('electron')
 
 const perf = require('./td/base/common/performance')
 perf.mark('code/didStartMain')
 
 const bootstrap = require('./bootstrap')
  
-console.log('Hello from Electron 👋')
+console.log('Hello from Electron 👋👋👋')
+
+// Register custom schemes with privileges
+protocol.registerSchemesAsPrivileged([
+	{
+		scheme: 'vscode-webview',
+		privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, allowServiceWorkers: true, }
+	},
+	{
+		scheme: 'vscode-file',
+		privileges: { secure: true, standard: true, supportFetchAPI: true, corsEnabled: true }
+	}
+]);
 
 app.once('ready', function () {
   ipcMain.handle('ping', () => 'pong')
