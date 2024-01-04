@@ -5,6 +5,7 @@
 
 import {BrowserWindow, WebContents} from 'electron';
 import {distinct} from 'td/base/common/arrays';
+import {IProcessEnvironment} from 'td/base/common/platform';
 import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
 import {IDevWindow} from 'td/platform/window/electron-main/window';
 import {DevWindow} from 'td/platform/windows/electron-main/windowImpl';
@@ -14,6 +15,9 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
   private readonly windows = new Map<number, IDevWindow>();
 
   constructor(
+    private readonly machineId: string,
+		private readonly sqmId: string,
+    private readonly initialUserEnv: IProcessEnvironment,
     @IInstantiationService private readonly instantiationService: IInstantiationService,
   ) {
   }

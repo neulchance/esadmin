@@ -102,17 +102,17 @@ export class DevApplication /* extends Disposable */ {
 		this.logService.debug(`Resolved machine identifier: ${sqmId}`);
 
     // Services
-    const appInstantiationService = await this.initServices(/* machineId, sqmId, sharedProcessReady */);
+    const appInstantiationService = await this.initServices(machineId, sqmId/*, sharedProcessReady */);
     
     // Open Windows
 		await appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor/* , initialProtocolUrls */));
   }
 
-  private async initServices(): Promise<IInstantiationService> {
+  private async initServices(machineId: string, sqmId: string): Promise<IInstantiationService> {
     const services = new ServiceCollection();
 
     // Windows
-    services.set(IWindowsMainService, new SyncDescriptor(WindowsMainService/* , [machineId, sqmId, this.userEnv], false */));
+    services.set(IWindowsMainService, new SyncDescriptor(WindowsMainService, [machineId, sqmId, this.userEnv], false));
 
     return this.mainInstantiationService.createChild(services);
   }
