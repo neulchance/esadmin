@@ -20,9 +20,7 @@ func();
 	'use strict';
 
   const bootstrapWindow = bootstrapWindowLib();
-  console.log('bootstrapWindow', bootstrapWindow)
-  console.log('hello1')
-  console.log('hello2')
+
   // Load workbench main JS, CSS and NLS all in parallel. This is an
 	// optimization to prevent a waterfall of loading to happen, because
 	// we know for a fact that workbench.desktop.main will depend on
@@ -33,7 +31,11 @@ func();
 		// 'vs/css!vs/workbench/workbench.desktop.main'
 	],
 		function (desktopMain, configuration) {
-      console.log(desktopMain)
+
+      // Mark start of workbench
+			performance.mark('code/didLoadWorkbenchMain');
+
+      return desktopMain.main()
     },
     {}
   );

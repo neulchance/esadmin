@@ -15,6 +15,7 @@ import {INativeWindowConfiguration} from 'td/platform/window/common/window';
 import {IDevWindow} from 'td/platform/window/electron-main/window';
 import {DevWindow} from 'td/platform/windows/electron-main/windowImpl';
 import {ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
+import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
 
 interface IOpenBrowserWindowOptions {
 	readonly userEnv?: IProcessEnvironment;
@@ -56,6 +57,7 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
 		private readonly sqmId: string,
     private readonly initialUserEnv: IProcessEnvironment,
     @IInstantiationService private readonly instantiationService: IInstantiationService,
+    @IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
   ) {
   }
 
@@ -83,6 +85,7 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
     console.log('this.initialUserEnv', this.initialUserEnv)
     const configuration = {
       userEnv: {...this.initialUserEnv/* , ...options.userEnv */},
+      appRoot: this.environmentMainService.appRoot,
     }
 
     if (!window) {
