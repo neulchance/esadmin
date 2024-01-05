@@ -44,6 +44,7 @@
       "rules": {
         "@typescript-eslint/triple-slash-reference": "warn",
         "@typescript-eslint/ban-ts-comment": "warn",
+        "no-redeclare": "warn",
         "no-unused-vars": "warn"
       }
     },
