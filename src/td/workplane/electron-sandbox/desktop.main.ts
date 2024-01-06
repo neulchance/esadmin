@@ -18,6 +18,10 @@ import {ILogService, ILoggerService} from 'td/platform/log/common/log';
 import {NativeLogService} from 'td/workbench/services/log/electron-sandbox/logService';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {IAnyWorkspaceIdentifier, toWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
+import {IUserDataProfilesService, reviveProfile} from 'td/platform/userDataProfile/common/userDataProfile';
+import {UserDataProfilesService} from 'td/platform/userDataProfile/common/userDataProfileIpc';
+import {UserDataProfileService} from 'td/workbench/services/userDataProfile/common/userDataProfileService';
+import {IUserDataProfileService} from 'td/workbench/services/userDataProfile/common/userDataProfile';
 
 export class DesktopMain extends Disposable {
   
@@ -65,6 +69,12 @@ export class DesktopMain extends Disposable {
 		// Log
 		const logService = this._register(new NativeLogService(loggerService, environmentService));
 		serviceCollection.set(ILogService, logService);
+
+    // User Data Profiles
+		const userDataProfilesService = new UserDataProfilesService(this.configuration.profiles.all, URI.revive(this.configuration.profiles.home).with({scheme: environmentService.userRoamingDataHome.scheme}), mainProcessService.getChannel('userDataProfiles'));
+    serviceCollection.set(IUserDataProfilesService, userDataProfilesService);
+    const userDataProfileService = new UserDataProfileService(reviveProfile(this.configuration.profiles.profile, userDataProfilesService.profilesHome.scheme));
+    serviceCollection.set(IUserDataProfileService, userDataProfileService);
 
     // Create services that require resolving in parallel
 		const workspace = this.resolveWorkspaceIdentifier(environmentService);
