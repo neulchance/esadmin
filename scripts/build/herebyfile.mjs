@@ -27,7 +27,7 @@ export const transpileSrc = task({
   description: "Transpiles the src project (all code)",
   dependencies: [delOut],
   run: async () => {
-    await copyfile('src/td/dev/electron-sandbox/workplane/workplane.html', 'out/td/dev/electron-sandbox/workplane/workplane.html'),
+    await copyfile('src/td/dev/electron-sandbox/workbench/workbench.html', 'out/td/dev/electron-sandbox/workbench/workbench.html'),
     (await import('./tasks/facade.mjs')).transpile()
   }
 })
