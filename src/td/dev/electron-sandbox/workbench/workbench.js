@@ -26,7 +26,7 @@ func();
 	// we know for a fact that workbench.desktop.main will depend on
 	// the related CSS and NLS counterparts.
 	bootstrapWindow.load([
-		'td/workbench/workbench.desktop.main',
+		'td/workplane/workplane.desktop.main',
 		// 'vs/nls!vs/workbench/workbench.desktop.main',
 		// 'vs/css!vs/workbench/workbench.desktop.main'
 	],
