@@ -3,7 +3,7 @@ import {mainWindow} from 'td/base/browser/window';
 import {Disposable} from 'td/base/common/lifecycle';
 import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
 import {INativeWindowConfiguration} from 'td/platform/window/common/window';
-import {Workbench} from '../\bbrowser/workbench';
+import {Workbench} from '../browser/workbench';
 
 export class DesktopMain extends Disposable {
   
@@ -11,7 +11,13 @@ export class DesktopMain extends Disposable {
 		private readonly configuration?: INativeWindowConfiguration
 	) {
     super()
+
+    this.init()
 	}
+
+  private init(): void {
+    console.log('DesktopMain init')
+  }
 
   async open(): Promise<void> {
     // Init services and wait for DOM to be ready in parallel
