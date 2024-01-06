@@ -436,7 +436,7 @@ export class DevWindow extends BaseWindow {
 		// and set it into the config object URL for usage
 		this.updateConfiguration(configuration)
 
-		this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench.html`).toString(true));
+		this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workplane/workplane.html`).toString(true));
 	}
 
 	private updateConfiguration(configuration: INativeWindowConfiguration, options?: ILoadOptions): void {
