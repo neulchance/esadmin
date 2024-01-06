@@ -6,15 +6,15 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../../../typings/require.d.ts" />
 
-const information = document.getElementById('info')
-information.innerText = `This app is using Chrome (v${window.versions.chrome()}), Node.js (v${versions.node()}), and Electron (v${versions.electron()})`
+// const information = document.getElementById('info')
+// information.innerText = `This app is using Chrome (v${window.versions.chrome()}), Node.js (v${versions.node()}), and Electron (v${versions.electron()})`
 
 const func = async () => {
   const response = await globalThis.versions.ping()
   console.log(response) // prints out 'pong'
 }
 
-func();
+// func();
 
 (function () {
 	'use strict';

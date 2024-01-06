@@ -1,14 +1,31 @@
-import {INativeWindowConfiguration} from "td/platform/window/common/window";
+import {domContentLoaded} from 'td/base/browser/dom';
+import {mainWindow} from 'td/base/browser/window';
+import {Disposable} from 'td/base/common/lifecycle';
+import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
+import {INativeWindowConfiguration} from 'td/platform/window/common/window';
+import {Workbench} from '../\bbrowser/workbench';
 
-export class DesktopMain {
+export class DesktopMain extends Disposable {
   
   constructor(
 		private readonly configuration?: INativeWindowConfiguration
 	) {
+    super()
 	}
 
   async open(): Promise<void> {
-    console.log('open')
+    // Init services and wait for DOM to be ready in parallel
+		const [services] = await Promise.all([this.initServices(), domContentLoaded(mainWindow)]);
+
+    // Create Workbench
+    const workbench = new Workbench(mainWindow.document.body/* , {extraClasses: this.getExtraClasses()}, services.serviceCollection, services.logService */);
+    console.log('workbench', workbench)
+  }
+
+  private async initServices(): Promise<{serviceCollection: ServiceCollection; /* logService: ILogService; storageService: NativeWorkbenchStorageService; configurationService: IConfigurationService */}> {
+    const serviceCollection = new ServiceCollection();
+
+    return {serviceCollection};
   }
 }
 

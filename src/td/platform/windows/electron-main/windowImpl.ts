@@ -397,7 +397,6 @@ export class DevWindow extends BaseWindow {
   private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
   
   constructor(
-    // @IProtocolMainService private readonly protocolMainService: IProtocolMainService,
     @IConfigurationService configurationService: IConfigurationService,
     @IStateService stateService: IStateService,
     @IEnvironmentMainService environmentMainService: IEnvironmentMainService,
