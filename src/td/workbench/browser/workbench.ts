@@ -26,6 +26,7 @@ export class Workbench extends Layout {
 		private readonly serviceCollection: ServiceCollection,
 		logService: ILogService
   ) {
+    console.log('parent', parent)
     super(parent);
     
   }

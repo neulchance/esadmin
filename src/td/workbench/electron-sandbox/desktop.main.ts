@@ -43,7 +43,6 @@ export class DesktopMain extends Disposable {
 	}
 
   async open(): Promise<void> {
-		console.log('open')
     // Init services and wait for DOM to be ready in parallel
 		const [services] = await Promise.all([this.initServices(), domContentLoaded(mainWindow)]);
 
@@ -131,6 +130,7 @@ export class DesktopMain extends Disposable {
 			// 	return service;
 			// })
 		]);
+		console.log('here1')
 
     return {serviceCollection, logService, storageService, configurationService};
   }

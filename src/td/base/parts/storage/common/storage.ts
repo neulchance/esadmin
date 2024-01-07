@@ -209,7 +209,14 @@ export class Storage extends Disposable implements IStorage {
 			// there can be no items because the storage does not exist.
 			return;
 		}
-
+		
+		// FIGUREOUTs
+		/* How did to recognize this broken? */
+		/*
+			실행확인을 위해 class Workbench 에 console.log('parent', parent)를 찍어 두었고,
+			실행되지 않아 함수 실행을 쫒아 들어 갔고, 아래 getItems() 함수내부에서 
+		*/
+		/* 아래 함수 내부에는  */
 		this.cache = await this.database.getItems();
 	}
 
@@ -419,6 +426,7 @@ export class InMemoryStorageDatabase implements IStorageDatabase {
 	private readonly items = new Map<string, string>();
 
 	async getItems(): Promise<Map<string, string>> {
+		console.log('this.items this.itemsthis.itemsthis.itemsthis.itemsthis.itemsthis.items', this.items)
 		return this.items;
 	}
 

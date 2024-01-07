@@ -21,12 +21,19 @@ import {IConfigurationService} from 'td/platform/configuration/common/configurat
 import {resolveMachineId, resolveSqmId} from 'td/platform/telemetry/electron-main/telemetryUtils';
 import {IStateService} from 'td/platform/state/node/state';
 import {Server as NodeIPCServer} from 'td/base/parts/ipc/node/ipc.net';
+import {ApplicationStorageMainService, IApplicationStorageMainService, IStorageMainService, StorageMainService} from 'td/platform/storage/electron-main/storageMainService';
+import {StorageDatabaseChannel} from 'td/platform/storage/electron-main/storageIpc';
+import {Server as ElectronIPCServer} from 'td/base/parts/ipc/electron-main/ipc.electron';
+import {Client as MessagePortClient} from 'td/base/parts/ipc/electron-main/ipc.mp';
+import {ILifecycleMainService, ShutdownReason} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
+import {Disposable} from 'td/base/common/lifecycle';
+import {SharedProcess} from 'td/platform/sharedProcess/electron-main/sharedProcess';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
  * even if the user starts many instances (e.g. from the command line).
  */
-export class DevApplication /* extends Disposable */ {
+export class DevApplication extends Disposable {
 
   private windowsMainService: IWindowsMainService | undefined;
 
@@ -38,7 +45,9 @@ export class DevApplication /* extends Disposable */ {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILogService private readonly logService: ILogService,
 		@IStateService private readonly stateService: IStateService,
+		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
   ) {
+		super()
 
     this.registerListeners()
   }
@@ -91,8 +100,20 @@ export class DevApplication /* extends Disposable */ {
 		this.logService.debug(`from: ${this.environmentMainService.appRoot}`);
 		// this.logService.debug('args:', this.environmentMainService.args);
 
+		// Main process server (electron IPC based)
+		const mainProcessElectronServer = new ElectronIPCServer();
+		this.lifecycleMainService.onWillShutdown(e => {
+			if (e.reason === ShutdownReason.KILL) {
+				// When we go down abnormally, make sure to free up
+				// any IPC we accept from other windows to reduce
+				// the chance of doing work after we go down. Kill
+				// is special in that it does not orderly shutdown
+				// windows.
+				mainProcessElectronServer.dispose();
+			}
+		});
+
 		// Resolve unique machine ID
-		this.logService.info('Resolving machine identifier...');
 		const [machineId, sqmId] = await Promise.all([
 			resolveMachineId(this.stateService, this.logService),
 			resolveSqmId(this.stateService, this.logService)
@@ -100,21 +121,60 @@ export class DevApplication /* extends Disposable */ {
 		this.logService.info(`Resolved machine identifier: ${machineId}`);
 		this.logService.info(`Resolved sqm identifier: ${sqmId}`);
 
+		// Shared process
+		const {sharedProcessReady, sharedProcessClient} = this.setupSharedProcess(machineId, sqmId);
+
     // Services
-    const appInstantiationService = await this.initServices(machineId, sqmId/*, sharedProcessReady */);
+    const appInstantiationService = await this.initServices(machineId, sqmId, sharedProcessReady);
+
+		// Init Channels
+		appInstantiationService.invokeFunction(accessor => this.initChannels(accessor, mainProcessElectronServer, sharedProcessClient));
     
     // Open Windows
 		await appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor/* , initialProtocolUrls */));
   }
 
-  private async initServices(machineId: string, sqmId: string): Promise<IInstantiationService> {
+	private setupSharedProcess(machineId: string, sqmId: string): { sharedProcessReady: Promise<MessagePortClient>; sharedProcessClient: Promise<MessagePortClient> } {
+		const sharedProcess = this._register(this.mainInstantiationService.createInstance(SharedProcess, machineId, sqmId));
+
+		const sharedProcessClient = (async () => {
+			this.logService.trace('Main->SharedProcess#connect');
+
+			const port = await sharedProcess.connect();
+
+			this.logService.trace('Main->SharedProcess#connect: connection established');
+
+			return new MessagePortClient(port, 'main');
+		})();
+
+		const sharedProcessReady = (async () => {
+			await sharedProcess.whenReady();
+
+			return sharedProcessClient;
+		})();
+
+		return {sharedProcessReady, sharedProcessClient};
+	}
+
+  private async initServices(machineId: string, sqmId: string, sharedProcessReady: Promise<MessagePortClient>): Promise<IInstantiationService> {
     const services = new ServiceCollection();
 
     // Windows
     services.set(IWindowsMainService, new SyncDescriptor(WindowsMainService, [machineId, sqmId, this.userEnv], false));
 
+		// Storage
+		services.set(IStorageMainService, new SyncDescriptor(StorageMainService));
+		services.set(IApplicationStorageMainService, new SyncDescriptor(ApplicationStorageMainService));
+
     return this.mainInstantiationService.createChild(services);
   }
+
+	private initChannels(accessor: ServicesAccessor, mainProcessElectronServer: ElectronIPCServer, sharedProcessClient: Promise<MessagePortClient>): void {
+		// Storage (main & shared process)
+		const storageChannel = this._register(new StorageDatabaseChannel(this.logService, accessor.get(IStorageMainService)));
+		mainProcessElectronServer.registerChannel('storage', storageChannel);
+		sharedProcessClient.then(client => client.registerChannel('storage', storageChannel));
+	}
 
   private async openFirstWindow(accessor: ServicesAccessor, /* initialProtocolUrls: IInitialProtocolUrls | undefined */): Promise<IDevWindow[]> {
     const windowsMainService = this.windowsMainService = accessor.get(IWindowsMainService);

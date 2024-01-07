@@ -9,4 +9,15 @@
   "editor.minimap.enabled": false,
   "workbench.sideBar.location": "right",
   "explorer.compactFolders": false,
+  /* https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight */
+  "todohighlight.keywords": [
+    "DEFAULT WORKS LIKE THIS",
+    "FIGUREOUTs",
+    {
+      "text": "TODO",
+      "color": "#5DB1D1",
+      "backgroundColor": "#132C44",
+      "borderRadius": "2px",
+    },
+  ],
 }
