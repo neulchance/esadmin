@@ -27,8 +27,8 @@ func();
 	// the related CSS and NLS counterparts.
 	bootstrapWindow.load([
 		'td/workbench/workbench.desktop.main',
-		// 'vs/nls!vs/workbench/workbench.desktop.main',
-		// 'vs/css!vs/workbench/workbench.desktop.main'
+		// 'td/nls!td/workbench/workbench.desktop.main',
+		'td/css!td/workbench/workbench.desktop.main'
 	],
 		function (desktopMain, configuration) {
 
