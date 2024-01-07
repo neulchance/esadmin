@@ -5,7 +5,7 @@
 
 import {BrowserWindow, WebContents} from 'electron';
 import {distinct} from 'td/base/common/arrays';
-import {IPath, IPathsToWaitFor} from 'td/platform/window/common/window';
+import {IPath, IPathsToWaitFor, IWindowSettings} from 'td/platform/window/common/window';
 import {IProcessEnvironment} from 'td/base/common/platform';
 import {IEmptyWindowBackupInfo} from 'td/platform/backup/node/backup';
 import {NativeParsedArgs} from 'td/platform/environment/common/argv';
@@ -17,6 +17,9 @@ import {DevWindow} from 'td/platform/windows/electron-main/windowImpl';
 import {ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
 import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
 import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
+import {Schemas} from 'td/base/common/network';
+import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
+import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 
 interface IOpenBrowserWindowOptions {
 	readonly userEnv?: IProcessEnvironment;
@@ -60,6 +63,8 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
     @ILoggerMainService private readonly loggerService: ILoggerMainService,
     @IInstantiationService private readonly instantiationService: IInstantiationService,
     @IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
+    @IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService,
+    @IConfigurationService private readonly configurationService: IConfigurationService,
   ) {
   }
 
@@ -81,6 +86,12 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
   }
 
   private async openInBrowserWindow(/* options: IOpenBrowserWindowOptions */): Promise<IDevWindow> {
+    // const windowConfig = this.configurationService.getValue<IWindowSettings | undefined>('window');
+
+    // const lastActiveWindow = this.getLastActiveWindow();
+    // const defaultProfile = lastActiveWindow?.profile ?? this.userDataProfilesMainService.defaultProfile;
+    const defaultProfile = this.userDataProfilesMainService.defaultProfile;
+
     let window: IDevWindow | undefined;
 
     // Build up the window configuration from provided options, config and environment
@@ -88,6 +99,19 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
 
       windowId: -1,	// Will be filled in by the window once loaded later
       appRoot: this.environmentMainService.appRoot,
+
+      profiles: {
+				home: this.userDataProfilesMainService.profilesHome,
+				all: this.userDataProfilesMainService.profiles,
+				// Set to default profile first and resolve and update the profile
+				// only after the workspace-backup is registered.
+				// Because, workspace identifier of an empty window is known only then.
+				profile: defaultProfile
+			},
+
+      homeDir: this.environmentMainService.userHome.with({scheme: Schemas.file}).fsPath,
+			tmpDir: this.environmentMainService.tmpDir.with({scheme: Schemas.file}).fsPath,
+      userDataDir: this.environmentMainService.userDataPath,
 
       userEnv: {...this.initialUserEnv/* , ...options.userEnv */},
 
@@ -97,9 +121,7 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
 				global: this.loggerService.getRegisteredLoggers()
 			},
     }
-
-    console.log('this.environmentMainService.logsHome', this.environmentMainService.logsHome)
-
+    
     if (!window) {
       const createdWindow = window = this.instantiationService.createInstance(DevWindow);
     }
