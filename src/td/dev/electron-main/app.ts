@@ -26,10 +26,12 @@ import {StorageDatabaseChannel} from 'td/platform/storage/electron-main/storageI
 import {Server as ElectronIPCServer} from 'td/base/parts/ipc/electron-main/ipc.electron';
 import {Client as MessagePortClient} from 'td/base/parts/ipc/electron-main/ipc.mp';
 import {ILifecycleMainService, ShutdownReason} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
-import {Disposable} from 'td/base/common/lifecycle';
+import {Disposable, DisposableStore} from 'td/base/common/lifecycle';
 import {SharedProcess} from 'td/platform/sharedProcess/electron-main/sharedProcess';
 import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
 import {LoggerChannel} from 'td/platform/log/electron-main/logIpc';
+import {ProxyChannel} from 'td/base/parts/ipc/common/ipc';
+import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -48,6 +50,7 @@ export class DevApplication extends Disposable {
 		@ILogService private readonly logService: ILogService,
 		@IStateService private readonly stateService: IStateService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
+		@IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService
   ) {
 		super()
 
@@ -172,6 +175,21 @@ export class DevApplication extends Disposable {
   }
 
 	private initChannels(accessor: ServicesAccessor, mainProcessElectronServer: ElectronIPCServer, sharedProcessClient: Promise<MessagePortClient>): void {
+
+		console.log('this.userDataProfilesMainService', this.userDataProfilesMainService)
+
+		// Channels registered to node.js are exposed to second instances
+		// launching because that is the only way the second instance
+		// can talk to the first instance. Electron IPC does not work
+		// across apps until `requestSingleInstance` APIs are adopted.
+		
+		const disposables = this._register(new DisposableStore());
+		
+		// User Data Profiles
+		const userDataProfilesService = ProxyChannel.fromService(accessor.get(IUserDataProfilesMainService), disposables);
+		mainProcessElectronServer.registerChannel('userDataProfiles', userDataProfilesService);
+		sharedProcessClient.then(client => client.registerChannel('userDataProfiles', userDataProfilesService));
+
 		// Storage (main & shared process)
 		const storageChannel = this._register(new StorageDatabaseChannel(this.logService, accessor.get(IStorageMainService)));
 		mainProcessElectronServer.registerChannel('storage', storageChannel);
