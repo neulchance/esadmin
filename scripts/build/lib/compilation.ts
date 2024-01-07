@@ -75,11 +75,17 @@ export function createCompile(src: string, build: boolean, emitError: boolean, t
 
   const tsFilter = util.filter(data => /\.ts$/.test(data.path))
 
-  const dtsFilter = util.filter(data => !/\.d.ts$/.test(data.path))
+  /*
+  │          ┌─true  ─> forward
+  │ ~ .d.ts ~┤
+  │          └─false ─> sideway (can restore)
+  │Converted the result throught boolean negation. so .d.ts file does not flow.
+  │*/
+  const doNotFlowDtsFile = util.filter(data => !/\.d.ts$/.test(data.path))
 
   function pipeline() {
     return compose(
-      dtsFilter,
+      doNotFlowDtsFile,
       tsFilter,
       compilation(),
       tsFilter.restore,
