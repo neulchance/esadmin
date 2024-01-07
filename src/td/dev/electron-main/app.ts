@@ -28,6 +28,8 @@ import {Client as MessagePortClient} from 'td/base/parts/ipc/electron-main/ipc.m
 import {ILifecycleMainService, ShutdownReason} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
 import {Disposable} from 'td/base/common/lifecycle';
 import {SharedProcess} from 'td/platform/sharedProcess/electron-main/sharedProcess';
+import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
+import {LoggerChannel} from 'td/platform/log/electron-main/logIpc';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -174,6 +176,11 @@ export class DevApplication extends Disposable {
 		const storageChannel = this._register(new StorageDatabaseChannel(this.logService, accessor.get(IStorageMainService)));
 		mainProcessElectronServer.registerChannel('storage', storageChannel);
 		sharedProcessClient.then(client => client.registerChannel('storage', storageChannel));
+
+		// Logger
+		const loggerChannel = new LoggerChannel(accessor.get(ILoggerMainService),);
+		mainProcessElectronServer.registerChannel('logger', loggerChannel);
+		sharedProcessClient.then(client => client.registerChannel('logger', loggerChannel));
 	}
 
   private async openFirstWindow(accessor: ServicesAccessor, /* initialProtocolUrls: IInitialProtocolUrls | undefined */): Promise<IDevWindow[]> {

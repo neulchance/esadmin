@@ -73,7 +73,7 @@ export class DesktopMain extends Disposable {
 		serviceCollection.set(INativeWorkbenchEnvironmentService, environmentService);
 
     // Logger
-		console.log('desktop.main.ts::this.configuration', this.configuration)
+		// console.log('desktop.main.ts::this.configuration', this.configuration)
 		const loggers = [
 			...this.configuration.loggers.global.map(loggerResource => ({...loggerResource, resource: URI.revive(loggerResource.resource)})),
 			...this.configuration.loggers.window.map(loggerResource => ({...loggerResource, resource: URI.revive(loggerResource.resource), hidden: true})),
@@ -130,7 +130,6 @@ export class DesktopMain extends Disposable {
 			// 	return service;
 			// })
 		]);
-		console.log('here1')
 
     return {serviceCollection, logService, storageService, configurationService};
   }

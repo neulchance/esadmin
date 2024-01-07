@@ -214,9 +214,10 @@ export class Storage extends Disposable implements IStorage {
 		/* How did to recognize this broken? */
 		/*
 			실행확인을 위해 class Workbench 에 console.log('parent', parent)를 찍어 두었고,
-			실행되지 않아 함수 실행을 쫒아 들어 갔고, 아래 getItems() 함수내부에서 
+			실행되지 않아 함수 실행을 쫒아 들어 갔고, 아래 getItems() 함수내부에서
+			'getItems' ipc채널통신을 한다는 실마리를 얻을 수 있었다.
+			아래 함수 getItems 는 src/td/platform/storage/common/storageIpc.ts:61 를 가리킬 수 있다.
 		*/
-		/* 아래 함수 내부에는  */
 		this.cache = await this.database.getItems();
 	}
 

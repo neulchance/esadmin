@@ -39,7 +39,6 @@ export class RemoteStorageService extends AbstractStorageService {
 
 	private createApplicationStorage(): IStorage {
 		const storageDataBaseClient = this._register(new ApplicationStorageDatabaseClient(this.remoteService.getChannel('storage')));
-		console.log('storageDataBaseClient ⚡️✍️✍️💁💁🏻', storageDataBaseClient.getItems())
 		const applicationStorage = this._register(new Storage(storageDataBaseClient));
 
 		this._register(applicationStorage.onDidChangeStorage(e => this.emitDidChangeValue(StorageScope.APPLICATION, e)));
@@ -96,15 +95,13 @@ export class RemoteStorageService extends AbstractStorageService {
 	}
 
 	protected async doInitialize(): Promise<void> {
-		console.log('doInitialize start')
-
+		
 		// Init all storage locations
 		await Promises.settled([
 			this.applicationStorage.init(),
 			this.profileStorage.init(),
 			this.workspaceStorage?.init() ?? Promise.resolve()
 		]);
-		console.log('doInitialize done')
 	}
 
 	protected getStorage(scope: StorageScope): IStorage | undefined {
