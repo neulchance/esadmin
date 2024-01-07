@@ -98,7 +98,10 @@ class DevMain {
 		setUnexpectedErrorHandler(err => console.error(err));
 
 		// Create services
-		const [instantiationService, instanceEnvironment, environmentMainService, configurationService, stateMainService, bufferLogService, productService, userDataProfilesMainService] = this.createServices();
+		const [
+			instantiationService, instanceEnvironment, environmentMainService, configurationService, 
+			stateMainService, bufferLogService, productService, userDataProfilesMainService
+		] = this.createServices();
 
 		try {
 

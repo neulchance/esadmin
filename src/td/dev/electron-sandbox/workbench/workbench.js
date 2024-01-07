@@ -35,9 +35,31 @@ func();
       // Mark start of workbench
 			performance.mark('code/didLoadWorkbenchMain');
 
-      return desktopMain.main()
+      return desktopMain.main(configuration)
     },
-    {}
+    {
+			beforeRequire: function (windowConfig) {
+				performance.mark('code/willLoadWorkbenchMain');
+
+				// Code windows have a `vscodeWindowId` property to identify them
+				Object.defineProperty(window, 'tddevWindowId', {
+					get: () => windowConfig.windowId
+				});
+
+				// It looks like browsers only lazily enable
+				// the <canvas> element when needed. Since we
+				// leverage canvas elements in our code in many
+				// locations, we try to help the browser to
+				// initialize canvas when it is idle, right
+				// before we wait for the scripts to be loaded.
+				window.requestIdleCallback(() => {
+					const canvas = document.createElement('canvas');
+					const context = canvas.getContext('2d');
+					context?.clearRect(0, 0, canvas.width, canvas.height);
+					canvas.remove();
+				}, { timeout: 50 });
+			}
+		}
   );
 
   function bootstrapWindowLib() {

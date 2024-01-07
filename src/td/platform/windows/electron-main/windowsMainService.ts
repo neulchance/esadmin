@@ -16,6 +16,7 @@ import {IDevWindow} from 'td/platform/window/electron-main/window';
 import {DevWindow} from 'td/platform/windows/electron-main/windowImpl';
 import {ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
 import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
+import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
 
 interface IOpenBrowserWindowOptions {
 	readonly userEnv?: IProcessEnvironment;
@@ -56,6 +57,7 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
     private readonly machineId: string,
 		private readonly sqmId: string,
     private readonly initialUserEnv: IProcessEnvironment,
+    @ILoggerMainService private readonly loggerService: ILoggerMainService,
     @IInstantiationService private readonly instantiationService: IInstantiationService,
     @IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
   ) {
@@ -82,11 +84,21 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
     let window: IDevWindow | undefined;
 
     // Build up the window configuration from provided options, config and environment
-    console.log('this.initialUserEnv', this.initialUserEnv)
-    const configuration = {
-      userEnv: {...this.initialUserEnv/* , ...options.userEnv */},
+    const configuration/* : INativeWindowConfiguration */ = {
+
+      windowId: -1,	// Will be filled in by the window once loaded later
       appRoot: this.environmentMainService.appRoot,
+
+      userEnv: {...this.initialUserEnv/* , ...options.userEnv */},
+
+
+      loggers: {
+				window: [],
+				global: this.loggerService.getRegisteredLoggers()
+			},
     }
+
+    console.log('this.environmentMainService.logsHome', this.environmentMainService.logsHome)
 
     if (!window) {
       const createdWindow = window = this.instantiationService.createInstance(DevWindow);

@@ -17,7 +17,7 @@ import {IMainProcessService} from 'td/platform/ipc/common/mainProcessService';
 import {ILogService, ILoggerService} from 'td/platform/log/common/log';
 import {NativeLogService} from 'td/workbench/services/log/electron-sandbox/logService';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
-import {IAnyWorkspaceIdentifier, toWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
+import {IAnyWorkspaceIdentifier, IWorkspaceContextService, toWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
 import {IUserDataProfilesService, reviveProfile} from 'td/platform/userDataProfile/common/userDataProfile';
 import {UserDataProfilesService} from 'td/platform/userDataProfile/common/userDataProfileIpc';
 import {UserDataProfileService} from 'td/workbench/services/userDataProfile/common/userDataProfileService';
@@ -28,6 +28,11 @@ import {IPolicyService, NullPolicyService} from 'td/platform/policy/common/polic
 import {UriIdentityService} from 'td/platform/uriIdentity/common/uriIdentityService';
 import {IUriIdentityService} from 'td/platform/uriIdentity/common/uriIdentity';
 import {WorkspaceService} from 'td/workbench/services/configuration/browser/configurationService';
+import {IWorkbenchConfigurationService} from '../services/configuration/common/configuration';
+import {IStorageService} from 'td/platform/storage/common/storage';
+import {onUnexpectedError} from 'td/base/common/errors';
+import {ConfigurationCache} from 'td/workbench/services/configuration/common/configurationCache';
+import {Schemas} from 'td/base/common/network';
 
 export class DesktopMain extends Disposable {
   
@@ -38,9 +43,9 @@ export class DesktopMain extends Disposable {
 	}
 
   async open(): Promise<void> {
+		console.log('open')
     // Init services and wait for DOM to be ready in parallel
 		const [services] = await Promise.all([this.initServices(), domContentLoaded(mainWindow)]);
-    console.log('open')
 
     // Create Workplane
     const workbench = new Workbench(mainWindow.document.body, {extraClasses: this.getExtraClasses()}, services.serviceCollection, services.logService);
@@ -69,6 +74,7 @@ export class DesktopMain extends Disposable {
 		serviceCollection.set(INativeWorkbenchEnvironmentService, environmentService);
 
     // Logger
+		console.log('this.configuration', this.configuration)
 		const loggers = [
 			...this.configuration.loggers.global.map(loggerResource => ({...loggerResource, resource: URI.revive(loggerResource.resource)})),
 			...this.configuration.loggers.window.map(loggerResource => ({...loggerResource, resource: URI.revive(loggerResource.resource), hidden: true})),
@@ -165,11 +171,45 @@ export class DesktopMain extends Disposable {
 		logService: ILogService,
 		policyService: IPolicyService
 	): Promise<WorkspaceService> {
+		const configurationCache = new ConfigurationCache([Schemas.file, Schemas.vscodeUserData] /* Cache all non native resources */, environmentService, fileService);
+		const workspaceService = new WorkspaceService({remoteAuthority: environmentService.remoteAuthority, configurationCache}, 
+			environmentService, 
+			userDataProfileService, 
+			userDataProfilesService, 
+			fileService, uriIdentityService, logService, policyService);
 
+		try {
+			await workspaceService.initialize(workspace);
+
+			return workspaceService;
+		} catch (error) {
+			onUnexpectedError(error);
+
+			return workspaceService;
+		}
+
+	}
+
+	private async createStorageService(workspace: IAnyWorkspaceIdentifier, environmentService: INativeWorkbenchEnvironmentService, userDataProfileService: IUserDataProfileService, userDataProfilesService: IUserDataProfilesService, mainProcessService: IMainProcessService): Promise<NativeWorkbenchStorageService> {
+		const storageService = new NativeWorkbenchStorageService(workspace, userDataProfileService, userDataProfilesService, mainProcessService, environmentService);
+
+		try {
+			await storageService.initialize();
+
+			return storageService;
+		} catch (error) {
+			onUnexpectedError(error);
+
+			return storageService;
+		}
 	}
 }
 
-export function main() {
-  const workplane = new DesktopMain();
+/**
+ * Invoked from td/dev/electron-sandbox/workbench.js
+ * @param configuration 
+ */
+export function main(configuration: INativeWindowConfiguration) {
+  const workplane = new DesktopMain(configuration);
   workplane.open();
 }
