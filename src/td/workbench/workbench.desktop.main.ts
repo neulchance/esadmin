@@ -17,4 +17,11 @@ import 'td/workbench/electron-sandbox/desktop.main';
 //#endregion
 
 
+//#region --- workbench services
+
+import 'td/workbench/services/lifecycle/electron-sandbox/lifecycleService';
+// import 'td/workbench/services/host/electron-sandbox/nativeHostService';
+
+//#endregion
+
 export {main} from 'td/workbench/electron-sandbox/desktop.main';

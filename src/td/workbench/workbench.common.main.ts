@@ -13,3 +13,6 @@
 // import 'td/workbench/browser/parts/views/viewsService';
 
 //#endregion
+
+console.log('workbench.common.main.ts')
+export const dd = 'aaa'

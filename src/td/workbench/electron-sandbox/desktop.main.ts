@@ -51,6 +51,12 @@ export class DesktopMain extends Disposable {
 
     // Listeners
 		this.registerListeners(workbench, services.storageService);
+
+		// Startup
+		const instantiationService = workbench.startup();
+
+		// Window
+		// this._register(instantiationService.createInstance(NativeWindow));
   }
 
   private async initServices(): Promise<{serviceCollection: ServiceCollection; logService: ILogService; storageService: NativeWorkbenchStorageService; configurationService: IConfigurationService}> {
