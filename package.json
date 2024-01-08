@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@vscode/spdlog": "0.13.12",
+    "@vscode/sqlite3": "^5.1.6-vscode",
     "@vscode/windows-process-tree": "^0.5.0",
     "@vscode/windows-registry": "^1.1.0",
     "graceful-fs": "^4.2.11",

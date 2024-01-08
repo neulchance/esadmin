@@ -176,8 +176,6 @@ export class DevApplication extends Disposable {
 
 	private initChannels(accessor: ServicesAccessor, mainProcessElectronServer: ElectronIPCServer, sharedProcessClient: Promise<MessagePortClient>): void {
 
-		console.log('this.userDataProfilesMainService', this.userDataProfilesMainService)
-
 		// Channels registered to node.js are exposed to second instances
 		// launching because that is the only way the second instance
 		// can talk to the first instance. Electron IPC does not work
