@@ -26,11 +26,16 @@ export class Workbench extends Layout {
 		private readonly serviceCollection: ServiceCollection,
 		logService: ILogService
   ) {
+    console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
     console.log('parent', parent)
     super(parent);
     
   }
   startup() {
-    console.log('startup')
+    try {
+      console.log('try startup')
+    } catch (error) {
+
+    }
   }
 }
