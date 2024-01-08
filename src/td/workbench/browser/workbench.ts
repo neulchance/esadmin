@@ -85,7 +85,7 @@ export class Workbench extends Layout {
 				super.layout();
 
 				// Restore
-				// this.restore(lifecycleService);
+				this.restore(lifecycleService);
       })
 
       return instantiationService;
@@ -127,4 +127,7 @@ export class Workbench extends Layout {
   private renderWorkbench(instantiationService: IInstantiationService, notificationService: NotificationService, storageService: IStorageService, configurationService: IConfigurationService): void {
 
   }
+
+	private restore(lifecycleService: ILifecycleService): void {
+	}
 }
