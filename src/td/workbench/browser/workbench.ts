@@ -12,6 +12,7 @@ import {IStorageService} from 'td/platform/storage/common/storage';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {INotificationService} from 'td/platform/notification/common/notification';
 import {NotificationService} from 'td/workbench/services/notification/common/notificationService';
+import {setARIAContainer} from 'td/base/browser/ui/aria/aria';
 
 export interface IWorkbenchOptions {
 
@@ -56,11 +57,11 @@ export class Workbench extends Layout {
       instantiationService.invokeFunction(accessor => {
         const lifecycleService = accessor.get(ILifecycleService);
         console.log('lifecycleService', lifecycleService)
-				// const storageService = accessor.get(IStorageService);
-				// const configurationService = accessor.get(IConfigurationService);
+				const storageService = accessor.get(IStorageService);
+				const configurationService = accessor.get(IConfigurationService);
 				// const hostService = accessor.get(IHostService);
 				// const dialogService = accessor.get(IDialogService);
-				// const notificationService = accessor.get(INotificationService) as NotificationService;
+				const notificationService = accessor.get(INotificationService) as NotificationService;
 
 				// Layout
 				super.initLayout(accessor);
@@ -76,7 +77,7 @@ export class Workbench extends Layout {
 				// this.registerListeners(lifecycleService, storageService, configurationService, hostService, dialogService);
 
 				// Render Workbench
-				// this.renderWorkbench(instantiationService, notificationService, storageService, configurationService);
+				this.renderWorkbench(instantiationService, notificationService, storageService, configurationService);
 
 				// Workbench Layout
 				super.createWorkbenchLayout();
@@ -125,6 +126,10 @@ export class Workbench extends Layout {
    * Invoked from self in startup()
    */
   private renderWorkbench(instantiationService: IInstantiationService, notificationService: NotificationService, storageService: IStorageService, configurationService: IConfigurationService): void {
+		
+		// ARIA
+		setARIAContainer(this.mainContainer);
+		console.log('this.mainContainer', this.mainContainer)
 
   }
 

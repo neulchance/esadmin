@@ -14,5 +14,12 @@
 
 //#endregion
 
+
+//#region --- workbench services
+
+import 'td/workbench/services/notification/common/notificationService';
+
+//#endregion
+
 console.log('workbench.common.main.ts')
 export const dd = 'aaa'
