@@ -13,6 +13,8 @@ import {IConfigurationService} from 'td/platform/configuration/common/configurat
 import {INotificationService} from 'td/platform/notification/common/notification';
 import {NotificationService} from 'td/workbench/services/notification/common/notificationService';
 import {setARIAContainer} from 'td/base/browser/ui/aria/aria';
+import {isChrome, isFirefox, isLinux, isSafari, isWeb, isWindows} from 'td/base/common/platform';
+import {coalesce} from 'td/base/common/arrays';
 
 export interface IWorkbenchOptions {
 
@@ -131,6 +133,21 @@ export class Workbench extends Layout {
 		setARIAContainer(this.mainContainer);
 		console.log('this.mainContainer', this.mainContainer)
 
+		// State specific classes
+		const platformClass = isWindows ? 'windows' : isLinux ? 'linux' : 'mac';
+		const workbenchClasses = coalesce([
+			'monaco-workbench',
+			platformClass,
+			isWeb ? 'web' : undefined,
+			isChrome ? 'chromium' : isFirefox ? 'firefox' : isSafari ? 'safari' : undefined,
+			// ...this.getLayoutClasses(),
+			...(this.options?.extraClasses ? this.options.extraClasses : [])
+		]);
+
+		this.mainContainer.classList.add(...workbenchClasses);
+
+		console.log('this.mainContainer 2', this.mainContainer)
+		
   }
 
 	private restore(lifecycleService: ILifecycleService): void {
