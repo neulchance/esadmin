@@ -9,7 +9,7 @@
 // import 'td/workbench/browser/parts/editor/editorParts';
 // import 'td/workbench/browser/parts/paneCompositePartService';
 // import 'td/workbench/browser/parts/banner/bannerPart';
-// import 'td/workbench/browser/parts/statusbar/statusbarPart';
+import 'td/workbench/browser/parts/statusbar/statusbarPart';
 // import 'td/workbench/browser/parts/views/viewsService';
 
 //#endregion
