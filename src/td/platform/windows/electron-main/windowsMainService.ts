@@ -126,6 +126,10 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
       const createdWindow = window = this.instantiationService.createInstance(DevWindow);
     }
 
+    // Update window identifier and session now
+		// that we have the window object in hand.
+		configuration.windowId = window.id;
+
     await this.doOpenInBrowserWindow(window, configuration/* , options, defaultProfile */);
 
 
@@ -133,7 +137,7 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
   }
 
   private async doOpenInBrowserWindow(window: IDevWindow, configuration: any, options?: IOpenBrowserWindowOptions, defaultProfile?: IUserDataProfile): Promise<void> {
-    console.log('configuration', configuration)
+  console.log('configuration', configuration)
     window.load(configuration);
   }
 

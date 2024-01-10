@@ -15,6 +15,7 @@ import {NotificationService} from 'td/workbench/services/notification/common/not
 import {setARIAContainer} from 'td/base/browser/ui/aria/aria';
 import {isChrome, isFirefox, isLinux, isSafari, isWeb, isWindows} from 'td/base/common/platform';
 import {coalesce} from 'td/base/common/arrays';
+import {mainWindow} from 'td/base/browser/window';
 
 export interface IWorkbenchOptions {
 
@@ -145,8 +146,13 @@ export class Workbench extends Layout {
 		]);
 
 		this.mainContainer.classList.add(...workbenchClasses);
+    mainWindow.document.body.classList.add(platformClass); // used by our fonts
 
 		console.log('this.mainContainer 2', this.mainContainer)
+    console.log('mainWindow', mainWindow)
+
+		// Add Workbench to DOM
+		this.parent.appendChild(this.mainContainer)
 		
   }
 
