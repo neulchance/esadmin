@@ -58,7 +58,7 @@ export interface IHoverDelegateOptions extends IUpdatableHoverOptions {
 }
 
 export interface IHoverDelegate {
-	showHover(options: IHoverDelegateOptions, focus?: boolean): IHoverWidget | undefined;
+	// showHover(options: IHoverDelegateOptions, focus?: boolean): IHoverWidget | undefined;
 	onDidHideHover?: () => void;
 	delay: number;
 	placement?: 'mouse' | 'element';

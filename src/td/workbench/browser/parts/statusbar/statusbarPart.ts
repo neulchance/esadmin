@@ -154,22 +154,22 @@ class StatusbarPart extends Part implements IStatusbarEntryContainer {
 
 		constructor(
 			private readonly configurationService: IConfigurationService,
-			private readonly hoverService: IHoverService
+			// private readonly hoverService: IHoverService
 		) { }
 
-		showHover(options: IHoverDelegateOptions, focus?: boolean): IHoverWidget | undefined {
-			return this.hoverService.showHover({
-				...options,
-				persistence: {
-					hideOnKeyDown: true
-				}
-			}, focus);
-		}
+		// showHover(options: IHoverDelegateOptions, focus?: boolean): IHoverWidget | undefined {
+		// 	return this.hoverService.showHover({
+		// 		...options,
+		// 		persistence: {
+		// 			hideOnKeyDown: true
+		// 		}
+		// 	}, focus);
+		// }
 
 		onDidHideHover(): void {
 			this.lastHoverHideTime = Date.now();
 		}
-	}(this.configurationService, this.hoverService);
+	}(this.configurationService/* , this.hoverService */);
 
 	private readonly compactEntriesDisposable = this._register(new MutableDisposable<DisposableStore>());
 	private readonly styleOverrides = new Set<IStatusbarStyleOverride>();
@@ -183,7 +183,7 @@ class StatusbarPart extends Part implements IStatusbarEntryContainer {
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
-		@IHoverService private readonly hoverService: IHoverService,
+		// @IHoverService private readonly hoverService: IHoverService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super(id, {hasTitle: false}, themeService, storageService, layoutService);
@@ -666,10 +666,10 @@ export class MainStatusbarPart extends StatusbarPart {
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IHoverService hoverService: IHoverService,
+		// @IHoverService hoverService: IHoverService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(Parts.STATUSBAR_PART, instantiationService, themeService, contextService, storageService, layoutService, contextMenuService, contextKeyService, hoverService, configurationService);
+		super(Parts.STATUSBAR_PART, instantiationService, themeService, contextService, storageService, layoutService, contextMenuService, contextKeyService, /* hoverService, */ configurationService);
 	}
 }
 
