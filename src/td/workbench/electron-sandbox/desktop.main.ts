@@ -18,6 +18,8 @@ import {ILogService, ILoggerService} from 'td/platform/log/common/log';
 import {NativeLogService} from 'td/workbench/services/log/electron-sandbox/logService';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {IAnyWorkspaceIdentifier, IWorkspaceContextService, toWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
+import {RemoteAuthorityResolverService} from 'td/platform/remote/electron-sandbox/remoteAuthorityResolverService';
+import {IRemoteAuthorityResolverService, RemoteConnectionType} from 'td/platform/remote/common/remoteAuthorityResolver';
 import {IUserDataProfilesService, reviveProfile} from 'td/platform/userDataProfile/common/userDataProfile';
 import {UserDataProfilesService} from 'td/platform/userDataProfile/common/userDataProfileIpc';
 import {UserDataProfileService} from 'td/workbench/services/userDataProfile/common/userDataProfileService';
@@ -33,6 +35,11 @@ import {IStorageService} from 'td/platform/storage/common/storage';
 import {onUnexpectedError} from 'td/base/common/errors';
 import {ConfigurationCache} from 'td/workbench/services/configuration/common/configurationCache';
 import {Schemas} from 'td/base/common/network';
+import {ElectronRemoteResourceLoader} from 'td/platform/remote/electron-sandbox/electronRemoteResourceLoader';
+import {IRemoteSocketFactoryService, RemoteSocketFactoryService} from 'td/platform/remote/common/remoteSocketFactoryService';
+import {BrowserSocketFactory} from 'td/platform/remote/browser/browserSocketFactory';
+import {RemoteAgentService} from 'td/workbench/services/remote/electron-sandbox/remoteAgentService';
+import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
 
 export class DesktopMain extends Disposable {
   
@@ -102,9 +109,21 @@ export class DesktopMain extends Disposable {
 		const fileService = this._register(new FileService(logService));
 		serviceCollection.set(IFileService, fileService);
 
+		// Remote
+		const remoteAuthorityResolverService = new RemoteAuthorityResolverService(productService, new ElectronRemoteResourceLoader(environmentService.window.id, mainProcessService, fileService));
+		serviceCollection.set(IRemoteAuthorityResolverService, remoteAuthorityResolverService);
+
 		// URI Identity
 		const uriIdentityService = new UriIdentityService(fileService);
 		serviceCollection.set(IUriIdentityService, uriIdentityService);
+
+		// Remote Agent
+		const remoteSocketFactoryService = new RemoteSocketFactoryService();
+		remoteSocketFactoryService.register(RemoteConnectionType.WebSocket, new BrowserSocketFactory(null));
+		serviceCollection.set(IRemoteSocketFactoryService, remoteSocketFactoryService);
+		const remoteAgentService = this._register(new RemoteAgentService(remoteSocketFactoryService, userDataProfileService, environmentService, productService, remoteAuthorityResolverService, /* signService, */ logService));
+		serviceCollection.set(IRemoteAgentService, remoteAgentService);
+
 
     // Create services that require resolving in parallel
 		const workspace = this.resolveWorkspaceIdentifier(environmentService);

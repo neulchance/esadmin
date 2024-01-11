@@ -80,7 +80,7 @@ interface ISimpleConnectionOptions<T extends RemoteConnection = RemoteConnection
 	reconnectionToken: string;
 	reconnectionProtocol: PersistentProtocol | null;
 	remoteSocketFactoryService: IRemoteSocketFactoryService;
-	signService: ISignService;
+	// signService: ISignService;
 	logService: ILogService;
 }
 
@@ -255,12 +255,12 @@ async function connectToRemoteExtensionHostAgent<T extends RemoteConnection>(opt
 	}
 
 	options.logService.trace(`${logPrefix} 3/6. sending AuthRequest control message.`);
-	const message = await raceWithTimeoutCancellation(options.signService.createNewMessage(generateUuid()), timeoutCancellationToken);
+	// const message = await raceWithTimeoutCancellation(options.signService.createNewMessage(generateUuid()), timeoutCancellationToken);
 
 	const authRequest: AuthRequest = {
 		type: 'auth',
 		auth: options.connectionToken || '00000000000000000000',
-		data: message.data
+		data: 'message.data'
 	};
 	protocol.sendControl(VSBuffer.fromString(JSON.stringify(authRequest)));
 
@@ -275,26 +275,26 @@ async function connectToRemoteExtensionHostAgent<T extends RemoteConnection>(opt
 
 		options.logService.trace(`${logPrefix} 4/6. received SignRequest control message.`);
 
-		const isValid = await raceWithTimeoutCancellation(options.signService.validate(message, msg.signedData), timeoutCancellationToken);
-		if (!isValid) {
-			const error: any = new Error('Refused to connect to unsupported server');
-			error.code = 'VSCODE_CONNECTION_ERROR';
-			throw error;
-		}
+		// const isValid = await raceWithTimeoutCancellation(options.signService.validate(message, msg.signedData), timeoutCancellationToken);
+		// if (!isValid) {
+		// 	const error: any = new Error('Refused to connect to unsupported server');
+		// 	error.code = 'VSCODE_CONNECTION_ERROR';
+		// 	throw error;
+		// }
 
-		const signed = await raceWithTimeoutCancellation(options.signService.sign(msg.data), timeoutCancellationToken);
-		const connTypeRequest: ConnectionTypeRequest = {
-			type: 'connectionType',
-			commit: options.commit,
-			signedData: signed,
-			desiredConnectionType: connectionType
-		};
+		// const signed = await raceWithTimeoutCancellation(options.signService.sign(msg.data), timeoutCancellationToken);
+		// const connTypeRequest: ConnectionTypeRequest = {
+		// 	type: 'connectionType',
+		// 	commit: options.commit,
+		// 	signedData: signed,
+		// 	desiredConnectionType: connectionType
+		// };
 		if (args) {
-			connTypeRequest.args = args;
+			// connTypeRequest.args = args;
 		}
 
 		options.logService.trace(`${logPrefix} 5/6. sending ConnectionTypeRequest control message.`);
-		protocol.sendControl(VSBuffer.fromString(JSON.stringify(connTypeRequest)));
+		// protocol.sendControl(VSBuffer.fromString(JSON.stringify(connTypeRequest)));
 
 		return {protocol, ownsProtocol};
 
@@ -384,7 +384,7 @@ export interface IConnectionOptions<T extends RemoteConnection = RemoteConnectio
 	quality: string | undefined;
 	addressProvider: IAddressProvider<T>;
 	remoteSocketFactoryService: IRemoteSocketFactoryService;
-	signService: ISignService;
+	// signService: ISignService;
 	logService: ILogService;
 	ipcLogger: IIPCLogger | null;
 }
@@ -399,7 +399,7 @@ async function resolveConnectionOptions<T extends RemoteConnection>(options: ICo
 		reconnectionToken: reconnectionToken,
 		reconnectionProtocol: reconnectionProtocol,
 		remoteSocketFactoryService: options.remoteSocketFactoryService,
-		signService: options.signService,
+		// signService: options.signService,
 		logService: options.logService
 	};
 }
