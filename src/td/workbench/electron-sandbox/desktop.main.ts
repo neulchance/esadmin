@@ -40,6 +40,8 @@ import {IRemoteSocketFactoryService, RemoteSocketFactoryService} from 'td/platfo
 import {BrowserSocketFactory} from 'td/platform/remote/browser/browserSocketFactory';
 import {RemoteAgentService} from 'td/workbench/services/remote/electron-sandbox/remoteAgentService';
 import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
+import {ISharedProcessService} from 'td/platform/ipc/electron-sandbox/services';
+import {SharedProcessService} from 'td/workbench/services/sharedProcess/electron-sandbox/sharedProcessService';
 
 export class DesktopMain extends Disposable {
   
@@ -98,6 +100,18 @@ export class DesktopMain extends Disposable {
 		const logService = this._register(new NativeLogService(loggerService, environmentService));
 		serviceCollection.set(ILogService, logService);
 
+		// Shared Process
+		const sharedProcessService = new SharedProcessService(this.configuration.windowId, logService);
+		serviceCollection.set(ISharedProcessService, sharedProcessService);
+
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//
+		// NOTE: Please do NOT register services here. Use `registerSingleton()`
+		//       from `workbench.common.main.ts` if the service is shared between
+		//       desktop and web or `workbench.desktop.main.ts` if the service
+		//       is desktop only.
+		//
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // User Data Profiles
 		const userDataProfilesService = new UserDataProfilesService(this.configuration.profiles.all, URI.revive(this.configuration.profiles.home).with({scheme: environmentService.userRoamingDataHome.scheme}), mainProcessService.getChannel('userDataProfiles'));

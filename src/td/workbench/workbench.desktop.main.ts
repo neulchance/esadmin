@@ -25,12 +25,21 @@ import 'td/workbench/services/themes/electron-sandbox/nativeHostColorSchemeServi
 import 'td/platform/extensionResourceLoader/common/extensionResourceLoaderService';
 import 'td/workbench/services/telemetry/electron-sandbox/telemetryService';
 import 'td/workbench/services/extensions/electron-sandbox/nativeExtensionService';
+import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementService';
 
 import {registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {IUserDataInitializationService, UserDataInitializationService} from 'td/workbench/services/userData/browser/userDataInit';
 import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors';
 
 registerSingleton(IUserDataInitializationService, new SyncDescriptor(UserDataInitializationService, [[]], true));
+
+//#endregion
+
+
+//#region --- workbench contributions
+
+// Extensions Management
+import 'td/workbench/contrib/extensions/electron-sandbox/extensions.contribution';
 
 //#endregion
 

@@ -19,7 +19,8 @@ import 'td/workbench/browser/parts/statusbar/statusbarPart';
 
 import 'td/workbench/services/dialogs/common/dialogService';
 import 'td/workbench/services/themes/browser/workbenchThemeService';
-// import 'td/workbench/services/notification/common/notificationService';
+import 'td/workbench/services/notification/common/notificationService';
 import 'td/workbench/services/remote/common/remoteExtensionsScanner';
+import 'td/workbench/services/extensionManagement/browser/extensionEnablementService';
 
 //#endregion
