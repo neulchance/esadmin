@@ -28,13 +28,13 @@ export class ExtensionManagementService extends BaseExtensionManagementService {
 
 	constructor(
 		@INativeWorkbenchEnvironmentService private readonly environmentService: INativeWorkbenchEnvironmentService,
-		@IExtensionManagementServerService extensionManagementServerService: IExtensionManagementServerService,
-		@IExtensionGalleryService extensionGalleryService: IExtensionGalleryService,
+		// @IExtensionManagementServerService extensionManagementServerService: IExtensionManagementServerService,
+		// @IExtensionGalleryService extensionGalleryService: IExtensionGalleryService,
 		@IUserDataProfileService userDataProfileService: IUserDataProfileService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IProductService productService: IProductService,
-		@IDownloadService downloadService: IDownloadService,
-		@IUserDataSyncEnablementService userDataSyncEnablementService: IUserDataSyncEnablementService,
+		// @IDownloadService downloadService: IDownloadService,
+		// @IUserDataSyncEnablementService userDataSyncEnablementService: IUserDataSyncEnablementService,
 		@IDialogService dialogService: IDialogService,
 		@IWorkspaceTrustRequestService workspaceTrustRequestService: IWorkspaceTrustRequestService,
 		@IExtensionManifestPropertiesService extensionManifestPropertiesService: IExtensionManifestPropertiesService,
@@ -42,16 +42,7 @@ export class ExtensionManagementService extends BaseExtensionManagementService {
 		@ILogService logService: ILogService,
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
-		super(extensionManagementServerService, extensionGalleryService, userDataProfileService, configurationService, productService, downloadService, userDataSyncEnablementService, dialogService, workspaceTrustRequestService, extensionManifestPropertiesService, fileService, logService, instantiationService);
-	}
-
-	protected override async installVSIXInServer(vsix: URI, server: IExtensionManagementServer, options: InstallVSIXOptions | undefined): Promise<ILocalExtension> {
-		if (vsix.scheme === Schemas.vscodeRemote && server === this.extensionManagementServerService.localExtensionManagementServer) {
-			const downloadedLocation = joinPath(this.environmentService.tmpDir, generateUuid());
-			await this.downloadService.download(vsix, downloadedLocation);
-			vsix = downloadedLocation;
-		}
-		return super.installVSIXInServer(vsix, server, options);
+		super(/* extensionManagementServerService, */ /* extensionGalleryService, */ userDataProfileService, configurationService, productService, /* downloadService, */ /* userDataSyncEnablementService, */ dialogService, workspaceTrustRequestService, extensionManifestPropertiesService, fileService, logService, instantiationService);
 	}
 }
 

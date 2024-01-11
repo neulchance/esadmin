@@ -375,7 +375,7 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
 		@IContextMenuService protected contextMenuService: IContextMenuService,
 		@ITelemetryService protected telemetryService: ITelemetryService,
-		@IExtensionService protected extensionService: IExtensionService,
+		// @IExtensionService protected extensionService: IExtensionService,
 		@IThemeService themeService: IThemeService,
 		@IStorageService protected storageService: IStorageService,
 		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
@@ -540,18 +540,18 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		}
 
 		// Update headers after and title contributed views after available, since we read from cache in the beginning to know if the viewlet has single view or not. Ref #29609
-		this.extensionService.whenInstalledExtensionsRegistered().then(() => {
-			this.areExtensionsReady = true;
-			if (this.panes.length) {
-				this.updateTitleArea();
-				this.updateViewHeaders();
-			}
-			this._register(this.configurationService.onDidChangeConfiguration(e => {
-				if (e.affectsConfiguration(LayoutSettings.ACTIVITY_BAR_LOCATION)) {
-					this.updateViewHeaders();
-				}
-			}));
-		});
+		// this.extensionService.whenInstalledExtensionsRegistered().then(() => {
+		// 	this.areExtensionsReady = true;
+		// 	if (this.panes.length) {
+		// 		this.updateTitleArea();
+		// 		this.updateViewHeaders();
+		// 	}
+		// 	this._register(this.configurationService.onDidChangeConfiguration(e => {
+		// 		if (e.affectsConfiguration(LayoutSettings.ACTIVITY_BAR_LOCATION)) {
+		// 			this.updateViewHeaders();
+		// 		}
+		// 	}));
+		// });
 
 		this._register(this.viewContainerModel.onDidChangeActiveViewDescriptors(() => this._onTitleAreaUpdate.fire()));
 	}

@@ -22,5 +22,12 @@ import 'td/workbench/services/themes/browser/workbenchThemeService';
 import 'td/workbench/services/notification/common/notificationService';
 import 'td/workbench/services/remote/common/remoteExtensionsScanner';
 import 'td/workbench/services/extensionManagement/browser/extensionEnablementService';
+import 'td/workbench/services/label/common/labelService';
+
+import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
+import {ContextViewService} from 'td/platform/contextview/browser/contextViewService';
+import {IContextViewService} from 'td/platform/contextview/browser/contextView';
+
+registerSingleton(IContextViewService, ContextViewService, InstantiationType.Eager);
 
 //#endregion

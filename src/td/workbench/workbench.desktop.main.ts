@@ -24,8 +24,12 @@ import 'td/workbench/services/host/electron-sandbox/nativeHostService';
 import 'td/workbench/services/themes/electron-sandbox/nativeHostColorSchemeService';
 import 'td/platform/extensionResourceLoader/common/extensionResourceLoaderService';
 import 'td/workbench/services/telemetry/electron-sandbox/telemetryService';
-import 'td/workbench/services/extensions/electron-sandbox/nativeExtensionService';
+// import 'td/workbench/services/extensions/electron-sandbox/nativeExtensionService';
 import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementService';
+import 'td/workbench/services/path/electron-sandbox/pathService';
+import 'td/platform/remote/electron-sandbox/sharedProcessTunnelService';
+import 'td/workbench/services/tunnel/electron-sandbox/tunnelService';
+import 'td/workbench/services/request/electron-sandbox/requestService';
 
 import {registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {IUserDataInitializationService, UserDataInitializationService} from 'td/workbench/services/userData/browser/userDataInit';

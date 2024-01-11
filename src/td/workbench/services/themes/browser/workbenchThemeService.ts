@@ -105,7 +105,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 	private hasDefaultUpdated: boolean = false;
 
 	constructor(
-		@IExtensionService extensionService: IExtensionService,
+		// @IExtensionService extensionService: IExtensionService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
@@ -181,19 +181,19 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 			this.applyAndSetProductIconTheme(productIconData, true);
 		}
 
-		extensionService.whenInstalledExtensionsRegistered().then(_ => {
-			this.installConfigurationListener();
-			this.installPreferredSchemeListener();
-			this.installRegistryListeners();
-			this.initialize().catch(errors.onUnexpectedError);
-		});
+		// extensionService.whenInstalledExtensionsRegistered().then(_ => {
+		// 	this.installConfigurationListener();
+		// 	this.installPreferredSchemeListener();
+		// 	this.installRegistryListeners();
+		// 	this.initialize().catch(errors.onUnexpectedError);
+		// });
 
 		const codiconStyleSheet = createStyleSheet();
 		codiconStyleSheet.id = 'codiconStyles';
 
 		const iconsStyleSheet = getIconsStyleSheet(this);
 		function updateAll() {
-			codiconStyleSheet.textContent = iconsStyleSheet.getCSS();
+			// codiconStyleSheet.textContent = iconsStyleSheet.getCSS();
 		}
 
 		const delayer = new RunOnceScheduler(updateAll, 0);
@@ -416,12 +416,12 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 	}
 
 	private getPreferredColorScheme(): ColorScheme | undefined {
-		if (this.configurationService.getValue(ThemeSettings.DETECT_HC) && this.hostColorService.highContrast) {
-			return this.hostColorService.dark ? ColorScheme.HIGH_CONTRAST_DARK : ColorScheme.HIGH_CONTRAST_LIGHT;
-		}
-		if (this.configurationService.getValue(ThemeSettings.DETECT_COLOR_SCHEME)) {
-			return this.hostColorService.dark ? ColorScheme.DARK : ColorScheme.LIGHT;
-		}
+		// if (this.configurationService.getValue(ThemeSettings.DETECT_HC) && this.hostColorService.highContrast) {
+		// 	return this.hostColorService.dark ? ColorScheme.HIGH_CONTRAST_DARK : ColorScheme.HIGH_CONTRAST_LIGHT;
+		// }
+		// if (this.configurationService.getValue(ThemeSettings.DETECT_COLOR_SCHEME)) {
+		// 	return this.hostColorService.dark ? ColorScheme.DARK : ColorScheme.LIGHT;
+		// }
 		return undefined;
 	}
 
@@ -877,9 +877,9 @@ function _applyRules(styleSheetContent: string, rulesClassName: string) {
 	if (themeStyles.length === 0) {
 		const elStyle = createStyleSheet();
 		elStyle.className = rulesClassName;
-		elStyle.textContent = styleSheetContent;
+		// elStyle.textContent = styleSheetContent;
 	} else {
-		(<HTMLStyleElement>themeStyles[0]).textContent = styleSheetContent;
+		// (<HTMLStyleElement>themeStyles[0]).textContent = styleSheetContent;
 	}
 }
 

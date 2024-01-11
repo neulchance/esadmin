@@ -3,13 +3,64 @@
   <head>
     <meta charset="UTF-8" />
     <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <meta
-      http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
+			http-equiv="Content-Security-Policy"
+			content="
+				default-src
+					'none'
+				;
+				img-src
+					'self'
+					data:
+					blob:
+					vscode-remote-resource:
+					vscode-managed-remote-resource:
+					https:
+				;
+				media-src
+					'self'
+				;
+				frame-src
+					'self'
+					vscode-webview:
+				;
+				script-src
+					'self'
+					'unsafe-eval'
+					blob:
+				;
+				style-src
+					'self'
+					'unsafe-inline'
+				;
+				connect-src
+					'self'
+					https:
+					ws:
+				;
+				font-src
+					'self'
+					vscode-remote-resource:
+					vscode-managed-remote-resource:
+					https://*.vscode-unpkg.net
+				;
+				require-trusted-types-for
+					'script'
+				;
+				trusted-types
+					amdLoader
+					cellRendererEditorText
+					defaultWorkerFactory
+					diffEditorWidget
+					diffReview
+					domLineBreaksComputer
+					dompurify
+					editorGhostText
+					editorViewLayer
+					notebookRenderer
+					stickyScrollViewLayer
+					tokenizeToString
+				;
+		"/>
     <title>Hello from Electron renderer!</title>
   </head>
   <body>

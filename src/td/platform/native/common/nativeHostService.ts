@@ -7,7 +7,7 @@ import {ProxyChannel} from 'td/base/parts/ipc/common/ipc';
 import {IMainProcessService} from 'td/platform/ipc/common/mainProcessService';
 import {INativeHostService} from 'td/platform/native/common/native';
 
-// @ts-expect-error: interface is implemented via proxy
+// @ts-ignore: interface is implemented via proxy
 export class NativeHostService implements INativeHostService {
 
 	declare readonly _serviceBrand: undefined;
@@ -16,7 +16,6 @@ export class NativeHostService implements INativeHostService {
 		readonly windowId: number,
 		@IMainProcessService mainProcessService: IMainProcessService
 	) {
-		console.log('mainProcessService', mainProcessService)
 		return ProxyChannel.toService<INativeHostService>(mainProcessService.getChannel('nativeHost'), {
 			context: windowId,
 			properties: (() => {

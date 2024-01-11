@@ -65,9 +65,9 @@ class InitializeOtherResourcesContribution implements IWorkbenchContribution {
 	constructor(
 		@IUserDataInitializationService userDataInitializeService: IUserDataInitializationService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IExtensionService extensionService: IExtensionService
+		// @IExtensionService extensionService: IExtensionService
 	) {
-		extensionService.whenInstalledExtensionsRegistered().then(() => this.initializeOtherResource(userDataInitializeService, instantiationService));
+		// extensionService.whenInstalledExtensionsRegistered().then(() => this.initializeOtherResource(userDataInitializeService, instantiationService));
 	}
 
 	private async initializeOtherResource(userDataInitializeService: IUserDataInitializationService, instantiationService: IInstantiationService): Promise<void> {

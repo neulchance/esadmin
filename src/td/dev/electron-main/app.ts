@@ -32,6 +32,10 @@ import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
 import {LoggerChannel} from 'td/platform/log/electron-main/logIpc';
 import {ProxyChannel} from 'td/base/parts/ipc/common/ipc';
 import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
+import {INativeHostMainService, NativeHostMainService} from 'td/platform/native/electron-main/nativeHostMainService';
+import {IWorkspacesManagementMainService, WorkspacesManagementMainService} from 'td/platform/workspaces/electron-main/workspacesManagementMainService';
+import {DialogMainService, IDialogMainService} from 'td/platform/dialogs/electron-main/dialogMainService';
+import {IProductService} from 'td/platform/product/common/productService';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -40,6 +44,7 @@ import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron
 export class DevApplication extends Disposable {
 
   private windowsMainService: IWindowsMainService | undefined;
+	private nativeHostMainService: INativeHostMainService | undefined;
 
   constructor(
 		private readonly mainProcessNodeIpcServer: NodeIPCServer,
@@ -50,6 +55,7 @@ export class DevApplication extends Disposable {
 		@ILogService private readonly logService: ILogService,
 		@IStateService private readonly stateService: IStateService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
+		@IProductService private readonly productService: IProductService,
 		@IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService
   ) {
 		super()
@@ -164,12 +170,23 @@ export class DevApplication extends Disposable {
   private async initServices(machineId: string, sqmId: string, sharedProcessReady: Promise<MessagePortClient>): Promise<IInstantiationService> {
     const services = new ServiceCollection();
 
+		// Dialogs
+		const dialogMainService = new DialogMainService(this.logService, this.productService);
+		services.set(IDialogMainService, dialogMainService);
+
     // Windows
     services.set(IWindowsMainService, new SyncDescriptor(WindowsMainService, [machineId, sqmId, this.userEnv], false));
+
+		// Native Host
+		services.set(INativeHostMainService, new SyncDescriptor(NativeHostMainService, undefined, false /* proxied to other processes */));
 
 		// Storage
 		services.set(IStorageMainService, new SyncDescriptor(StorageMainService));
 		services.set(IApplicationStorageMainService, new SyncDescriptor(ApplicationStorageMainService));
+
+		// Workspaces
+		const workspacesManagementMainService = new WorkspacesManagementMainService(this.environmentMainService, this.logService, this.userDataProfilesMainService/* , backupMainService, dialogMainService */);
+		services.set(IWorkspacesManagementMainService, workspacesManagementMainService);
 
     return this.mainInstantiationService.createChild(services);
   }
@@ -182,6 +199,12 @@ export class DevApplication extends Disposable {
 		// across apps until `requestSingleInstance` APIs are adopted.
 		
 		const disposables = this._register(new DisposableStore());
+
+		// Native host (main & shared process)
+		this.nativeHostMainService = accessor.get(INativeHostMainService);
+		const nativeHostChannel = ProxyChannel.fromService(this.nativeHostMainService, disposables);
+		mainProcessElectronServer.registerChannel('nativeHost', nativeHostChannel);
+		sharedProcessClient.then(client => client.registerChannel('nativeHost', nativeHostChannel));
 		
 		// User Data Profiles
 		const userDataProfilesService = ProxyChannel.fromService(accessor.get(IUserDataProfilesMainService), disposables);

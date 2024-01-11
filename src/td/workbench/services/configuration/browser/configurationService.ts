@@ -1146,19 +1146,19 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
 		// @IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
-		@IExtensionService extensionService: IExtensionService,
+		// @IExtensionService extensionService: IExtensionService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 	) {
 		super();
 
-		extensionService.whenInstalledExtensionsRegistered().then(() => {
-			this.registerConfigurationSchemas();
+		// extensionService.whenInstalledExtensionsRegistered().then(() => {
+		// 	this.registerConfigurationSchemas();
 
-			const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
-			const delayer = this._register(new Delayer<void>(50));
-			this._register(Event.any(configurationRegistry.onDidUpdateConfiguration, configurationRegistry.onDidSchemaChange)(() =>
-				delayer.trigger(() => this.registerConfigurationSchemas(), lifecycleService.phase === LifecyclePhase.Eventually ? undefined : 2500 /* delay longer in early phases */)));
-		});
+		// 	const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
+		// 	const delayer = this._register(new Delayer<void>(50));
+		// 	this._register(Event.any(configurationRegistry.onDidUpdateConfiguration, configurationRegistry.onDidSchemaChange)(() =>
+		// 		delayer.trigger(() => this.registerConfigurationSchemas(), lifecycleService.phase === LifecyclePhase.Eventually ? undefined : 2500 /* delay longer in early phases */)));
+		// });
 	}
 
 	private registerConfigurationSchemas(): void {
@@ -1310,11 +1310,11 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 class ResetConfigurationDefaultsOverridesCache extends Disposable implements IWorkbenchContribution {
 	constructor(
 		@IConfigurationService configurationService: WorkspaceService,
-		@IExtensionService extensionService: IExtensionService,
+		// @IExtensionService extensionService: IExtensionService,
 	) {
 		super();
 		if (configurationService.hasCachedConfigurationDefaultsOverrides()) {
-			extensionService.whenInstalledExtensionsRegistered().then(() => configurationService.reloadConfiguration(ConfigurationTarget.DEFAULT));
+			// extensionService.whenInstalledExtensionsRegistered().then(() => configurationService.reloadConfiguration(ConfigurationTarget.DEFAULT));
 		}
 	}
 }

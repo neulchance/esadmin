@@ -71,8 +71,8 @@ export class WorkspacesManagementMainService extends Disposable implements IWork
 		@IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
 		@ILogService private readonly logService: ILogService,
 		@IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService,
-		@IBackupMainService private readonly backupMainService: IBackupMainService,
-		@IDialogMainService private readonly dialogMainService: IDialogMainService
+		// @IBackupMainService private readonly backupMainService: IBackupMainService,
+		// @IDialogMainService private readonly dialogMainService: IDialogMainService
 	) {
 		super();
 	}
@@ -274,16 +274,16 @@ export class WorkspacesManagementMainService extends Disposable implements IWork
 		}
 
 		// Prevent overwriting a workspace that is currently opened in another window
-		if (findWindowOnWorkspaceOrFolder(windows, workspacePath)) {
-			await this.dialogMainService.showMessageBox({
-				type: 'info',
-				buttons: [localize({key: 'ok', comment: ['&& denotes a mnemonic']}, "&&OK")],
-				message: localize('workspaceOpenedMessage', "Unable to save workspace '{0}'", basename(workspacePath)),
-				detail: localize('workspaceOpenedDetail', "The workspace is already opened in another window. Please close that window first and then try again.")
-			}, BrowserWindow.getFocusedWindow() ?? undefined);
+		// if (findWindowOnWorkspaceOrFolder(windows, workspacePath)) {
+		// 	await this.dialogMainService.showMessageBox({
+		// 		type: 'info',
+		// 		buttons: [localize({key: 'ok', comment: ['&& denotes a mnemonic']}, "&&OK")],
+		// 		message: localize('workspaceOpenedMessage', "Unable to save workspace '{0}'", basename(workspacePath)),
+		// 		detail: localize('workspaceOpenedDetail', "The workspace is already opened in another window. Please close that window first and then try again.")
+		// 	}, BrowserWindow.getFocusedWindow() ?? undefined);
 
-			return false;
-		}
+		// 	return false;
+		// }
 
 		return true; // OK
 	}
@@ -299,9 +299,9 @@ export class WorkspacesManagementMainService extends Disposable implements IWork
 		let backupPath: string | undefined;
 		if (!window.config.extensionDevelopmentPath) {
 			if (window.config.backupPath) {
-				backupPath = await this.backupMainService.registerWorkspaceBackup({workspace, remoteAuthority: window.remoteAuthority}, window.config.backupPath);
+				// backupPath = await this.backupMainService.registerWorkspaceBackup({workspace, remoteAuthority: window.remoteAuthority}, window.config.backupPath);
 			} else {
-				backupPath = this.backupMainService.registerWorkspaceBackup({workspace, remoteAuthority: window.remoteAuthority});
+				// backupPath = this.backupMainService.registerWorkspaceBackup({workspace, remoteAuthority: window.remoteAuthority});
 			}
 		}
 
