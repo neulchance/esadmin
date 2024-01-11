@@ -17,6 +17,7 @@ import 'td/workbench/browser/parts/statusbar/statusbarPart';
 
 //#region --- workbench services
 
+import 'td/platform/actions/common/actions.contribution';
 import 'td/workbench/services/dialogs/common/dialogService';
 import 'td/workbench/services/themes/browser/workbenchThemeService';
 import 'td/workbench/services/notification/common/notificationService';
