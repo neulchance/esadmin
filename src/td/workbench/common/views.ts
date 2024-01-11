@@ -14,12 +14,12 @@ import {ThemeIcon} from 'td/base/common/themables';
 import {getOrSet, SetMap} from 'td/base/common/map';
 import {Registry} from 'td/platform/registry/common/platform';
 import {IKeybindings} from 'td/platform/keybinding/common/keybindingsRegistry';
-// import {ExtensionIdentifier} from 'td/platform/extensions/common/extensions';
+import {ExtensionIdentifier} from 'td/platform/extensions/common/extensions';
 import {flatten} from 'td/base/common/arrays';
 import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors';
 // import {IProgressIndicator} from 'td/platform/progress/common/progress';
 import Severity from 'td/base/common/severity';
-// import {IPaneComposite} from 'td/workbench/common/panecomposite';
+import {IPaneComposite} from 'td/workbench/common/panecomposite';
 // import {IAccessibilityInformation} from 'td/platform/accessibility/common/accessibility';
 import {IMarkdownString} from 'td/base/common/htmlContent';
 import {mixin} from 'td/base/common/objects';
@@ -302,7 +302,7 @@ export interface IViewDescriptor {
 }
 
 export interface ICustomViewDescriptor extends IViewDescriptor {
-	// readonly extensionId: ExtensionIdentifier;
+	readonly extensionId: ExtensionIdentifier;
 	readonly originalContainerId: string;
 	readonly treeView?: ITreeView;
 }
@@ -575,7 +575,7 @@ export interface IViewsService {
 	// View Container APIs
 	readonly onDidChangeViewContainerVisibility: Event<{ id: string; visible: boolean; location: ViewContainerLocation }>;
 	isViewContainerVisible(id: string): boolean;
-	// openViewContainer(id: string, focus?: boolean): Promise<IPaneComposite | null>;
+	openViewContainer(id: string, focus?: boolean): Promise<IPaneComposite | null>;
 	closeViewContainer(id: string): void;
 	getVisibleViewContainer(location: ViewContainerLocation): ViewContainer | null;
 	getActiveViewPaneContainerWithId(viewContainerId: string): IViewPaneContainer | null;

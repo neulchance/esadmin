@@ -14,8 +14,8 @@
 			// "semver",
 			// "sinon",
 			// "winreg",
-			// "trusted-types",
-			// "wicg-file-system-access"
+			"trusted-types",
+			"wicg-file-system-access"
 		],
 		"plugins": [
 			{
@@ -30,7 +30,7 @@
 		"./main.js",
 		// "./server-main.js",
 		"./typings",
-		"./td/**/*.ts",
+		"./td/**/*.ts", "td/base/common/marked/marked.js",
 		// "vscode-dts/vscode.proposed.*.d.ts",
 		// "vscode-dts/vscode.d.ts"
 	]

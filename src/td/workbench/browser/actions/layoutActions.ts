@@ -18,7 +18,7 @@ import {IViewDescriptorService, IViewsService, ViewContainerLocation, IViewDescr
 import {QuickPickItem, IQuickInputService, IQuickPickItem, IQuickPickSeparator, IQuickPick} from 'td/platform/quickinput/common/quickInput';
 import {IDialogService} from 'td/platform/dialogs/common/dialogs';
 import {IPaneCompositePartService} from 'td/workbench/services/panecomposite/browser/panecomposite';
-import {ToggleAuxiliaryBarAction} from 'td/workbench/browser/parts/auxiliarybar/auxiliaryBarActions';
+// import {ToggleAuxiliaryBarAction} from 'td/workbench/browser/parts/auxiliarybar/auxiliaryBarActions';
 import {TogglePanelAction} from 'td/workbench/browser/parts/panel/panelActions';
 import {ICommandService} from 'td/platform/commands/common/commands';
 import {AuxiliaryBarVisibleContext, PanelAlignmentContext, PanelVisibleContext, SideBarVisibleContext, FocusedViewContext, InEditorZenModeContext, IsCenteredLayoutContext, MainEditorAreaVisibleContext, IsMainWindowFullscreenContext, PanelPositionContext, IsAuxiliaryWindowFocusedContext} from 'td/workbench/common/contextkeys';
@@ -1369,7 +1369,7 @@ if (!isMacintosh || !isNative) {
 ToggleVisibilityActions.push(...[
 	CreateToggleLayoutItem(ToggleActivityBarVisibilityActionId, ContextKeyExpr.notEquals('config.workbench.activityBar.location', 'hidden'), localize('activityBar', "Activity Bar"), {whenA: ContextKeyExpr.equals('config.workbench.sideBar.location', 'left'), iconA: activityBarLeftIcon, iconB: activityBarRightIcon}),
 	CreateToggleLayoutItem(ToggleSidebarVisibilityAction.ID, SideBarVisibleContext, localize('sideBar', "Primary Side Bar"), {whenA: ContextKeyExpr.equals('config.workbench.sideBar.location', 'left'), iconA: panelLeftIcon, iconB: panelRightIcon}),
-	CreateToggleLayoutItem(ToggleAuxiliaryBarAction.ID, AuxiliaryBarVisibleContext, localize('secondarySideBar', "Secondary Side Bar"), {whenA: ContextKeyExpr.equals('config.workbench.sideBar.location', 'left'), iconA: panelRightIcon, iconB: panelLeftIcon}),
+	// CreateToggleLayoutItem(ToggleAuxiliaryBarAction.ID, AuxiliaryBarVisibleContext, localize('secondarySideBar', "Secondary Side Bar"), {whenA: ContextKeyExpr.equals('config.workbench.sideBar.location', 'left'), iconA: panelRightIcon, iconB: panelLeftIcon}),
 	CreateToggleLayoutItem(TogglePanelAction.ID, PanelVisibleContext, localize('panel', "Panel"), panelIcon),
 	CreateToggleLayoutItem(ToggleStatusbarVisibilityAction.ID, ContextKeyExpr.equals('config.workbench.statusBar.visible', true), localize('statusBar', "Status Bar"), statusBarIcon),
 ]);
