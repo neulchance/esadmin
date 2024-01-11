@@ -70,6 +70,7 @@
         "no-constant-condition": "warn",
         "object-curly-spacing": ["error", "never"],
         "prefer-rest-params": "warn",
+        "@typescript-eslint/ban-ts-comment": "warn",
         "@typescript-eslint/no-namespace": "warn",
         "@typescript-eslint/no-this-alias": "warn",
         "@typescript-eslint/no-explicit-any": ["off"],

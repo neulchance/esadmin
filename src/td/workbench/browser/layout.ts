@@ -1,8 +1,9 @@
 import {Disposable} from 'td/base/common/lifecycle';
-import {IWorkbenchLayoutService} from '../services/layout/browser/layoutService';
+import {Position, Parts, PanelOpensMaximizedOptions, IWorkbenchLayoutService, positionFromString, positionToString, panelOpensMaximizedFromString, PanelAlignment, ActivityBarPosition, LayoutSettings, MULTI_WINDOW_PARTS, SINGLE_WINDOW_PARTS, ZenModeSettings, EditorTabsMode} from 'td/workbench/services/layout/browser/layoutService';
 import {ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
 import {Part} from 'td/workbench/browser/part';
 import {coalesce} from 'td/base/common/arrays';
+import {IStatusbarService} from '../services/statusbar/browser/statusbar';
 
 export abstract class Layout extends Disposable /* implements IWorkbenchLayoutService */ {
 
@@ -16,6 +17,8 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 
   private readonly parts = new Map<string, Part>();
 
+	private statusBarService!: IStatusbarService;
+
   constructor(
     protected readonly parent: HTMLElement
   ) {
@@ -27,6 +30,7 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
     // Services
 
     // Parts
+		this.statusBarService = accessor.get(IStatusbarService);
   }
 
   protected createWorkbenchLayout(): void {
@@ -77,4 +81,17 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 			}
 		}
   } */
+
+	registerPart(part: Part): void {
+		this.parts.set(part.getId(), part);
+	}
+
+	protected getPart(key: Parts): Part {
+		const part = this.parts.get(key);
+		if (!part) {
+			throw new Error(`Unknown part ${key}`);
+		}
+
+		return part;
+	}
 }

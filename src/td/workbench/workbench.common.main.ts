@@ -17,6 +17,7 @@ import 'td/workbench/browser/parts/statusbar/statusbarPart';
 
 //#region --- workbench services
 
+import 'td/workbench/services/themes/browser/workbenchThemeService';
 import 'td/workbench/services/notification/common/notificationService';
 
 //#endregion

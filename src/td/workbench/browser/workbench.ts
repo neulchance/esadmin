@@ -5,7 +5,7 @@ import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollect
 import {ILogService} from 'td/platform/log/common/log';
 import {Layout} from 'td/workbench/browser/layout';
 import {ILifecycleService, WillShutdownEvent} from 'td/workbench/services/lifecycle/common/lifecycle';
-import {IWorkbenchLayoutService} from '../services/layout/browser/layoutService';
+import {IWorkbenchLayoutService, Parts} from '../services/layout/browser/layoutService';
 import {onUnexpectedError} from 'td/base/common/errors';
 import {InstantiationService} from 'td/platform/instantiation/common/instantiationService';
 import {IStorageService} from 'td/platform/storage/common/storage';
@@ -16,6 +16,7 @@ import {setARIAContainer} from 'td/base/browser/ui/aria/aria';
 import {isChrome, isFirefox, isLinux, isSafari, isWeb, isWindows} from 'td/base/common/platform';
 import {coalesce} from 'td/base/common/arrays';
 import {mainWindow} from 'td/base/browser/window';
+import {Part} from 'td/workbench/browser/part';
 
 export interface IWorkbenchOptions {
 
@@ -103,7 +104,8 @@ export class Workbench extends Layout {
   private initServices(serviceCollection: ServiceCollection): IInstantiationService {
 
     // Layout Service
-		// serviceCollection.set(IWorkbenchLayoutService, this);
+		// @ts-expect-error
+		serviceCollection.set(IWorkbenchLayoutService, this);
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		//
@@ -151,10 +153,32 @@ export class Workbench extends Layout {
 		console.log('this.mainContainer 2', this.mainContainer)
     console.log('mainWindow', mainWindow)
 
+		// Create Parts
+		for (const {id, role, classes, options} of [
+			{id: Parts.STATUSBAR_PART, role: 'status', classes: ['statusbar'], options: {}}
+		]) {
+			const partContainer = this.createPart(id, role, classes);
+
+			// mark(`code/willCreatePart/${id}`);
+			super.getPart(id).create(partContainer, options);
+			// mark(`code/didCreatePart/${id}`);
+		}
+
 		// Add Workbench to DOM
 		this.parent.appendChild(this.mainContainer)
-		
   }
+
+	private createPart(id: string, role: string, classes: string[]): HTMLElement {
+		const part = document.createElement(role === 'status' ? 'footer' /* Use footer element for status bar #98376 */ : 'div');
+		part.classList.add('part', ...classes);
+		part.id = id;
+		part.setAttribute('role', role);
+		if (role === 'status') {
+			part.setAttribute('aria-live', 'off');
+		}
+
+		return part;
+	}
 
 	private restore(lifecycleService: ILifecycleService): void {
 	}

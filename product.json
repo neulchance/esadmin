@@ -1,6 +1,6 @@
 {
 	"nameShort": "Dev - OSS",
-	"nameLong": "Code - OSS",
+	"nameLong": "Dev - OSS",
 	"applicationName": "code-oss",
 	"dataFolderName": ".vscode-oss",
 	"win32MutexName": "vscodeoss",
