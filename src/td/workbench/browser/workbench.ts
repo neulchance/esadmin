@@ -65,10 +65,10 @@ export class Workbench extends Layout {
 				const configurationService = accessor.get(IConfigurationService);
 				// const hostService = accessor.get(IHostService);
 				// const dialogService = accessor.get(IDialogService);
-				const notificationService = accessor.get(INotificationService) as NotificationService;
+				// const notificationService = accessor.get(INotificationService) as NotificationService;
 
 				// Layout
-				super.initLayout(accessor);
+				this.initLayout(accessor);
 
 				// Registries
 				// Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).start(accessor);
@@ -81,7 +81,7 @@ export class Workbench extends Layout {
 				// this.registerListeners(lifecycleService, storageService, configurationService, hostService, dialogService);
 
 				// Render Workbench
-				this.renderWorkbench(instantiationService, notificationService, storageService, configurationService);
+				this.renderWorkbench(instantiationService, /* notificationService, */ storageService, configurationService);
 
 				// Workbench Layout
 				super.createWorkbenchLayout();
@@ -130,7 +130,7 @@ export class Workbench extends Layout {
   /**
    * Invoked from self in startup()
    */
-  private renderWorkbench(instantiationService: IInstantiationService, notificationService: NotificationService, storageService: IStorageService, configurationService: IConfigurationService): void {
+  private renderWorkbench(instantiationService: IInstantiationService, /* notificationService: NotificationService, */ storageService: IStorageService, configurationService: IConfigurationService): void {
 		
 		// ARIA
 		setARIAContainer(this.mainContainer);

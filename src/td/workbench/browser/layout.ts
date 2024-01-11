@@ -3,7 +3,7 @@ import {Position, Parts, PanelOpensMaximizedOptions, IWorkbenchLayoutService, po
 import {ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
 import {Part} from 'td/workbench/browser/part';
 import {coalesce} from 'td/base/common/arrays';
-import {IStatusbarService} from '../services/statusbar/browser/statusbar';
+import {IStatusbarService} from 'td/workbench/services/statusbar/browser/statusbar';
 
 export abstract class Layout extends Disposable /* implements IWorkbenchLayoutService */ {
 

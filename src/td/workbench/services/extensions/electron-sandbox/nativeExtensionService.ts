@@ -84,8 +84,8 @@ export class NativeExtensionService extends AbstractExtensionService implements 
 		@INativeHostService private readonly _nativeHostService: INativeHostService,
 		@IHostService private readonly _hostService: IHostService,
 		@IRemoteExplorerService private readonly _remoteExplorerService: IRemoteExplorerService,
-		@IExtensionGalleryService private readonly _extensionGalleryService: IExtensionGalleryService,
-		@IWorkspaceTrustManagementService private readonly _workspaceTrustManagementService: IWorkspaceTrustManagementService,
+		// @IExtensionGalleryService private readonly _extensionGalleryService: IExtensionGalleryService,
+		// @IWorkspaceTrustManagementService private readonly _workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IDialogService dialogService: IDialogService,
 	) {
 		const extensionsProposedApi = instantiationService.createInstance(ExtensionsProposedApi);
@@ -360,7 +360,7 @@ export class NativeExtensionService extends AbstractExtensionService implements 
 			// Now that the canonical URI provider has been registered, we need to wait for the trust state to be
 			// calculated. The trust state will be used while resolving the authority, however the resolver can
 			// override the trust state through the resolver result.
-			await this._workspaceTrustManagementService.workspaceResolved;
+			// await this._workspaceTrustManagementService.workspaceResolved;
 
 			if (isCI) {
 				this._logService.info(`Finished waiting on IWorkspaceTrustManagementService.workspaceResolved.`);
@@ -423,7 +423,7 @@ export class NativeExtensionService extends AbstractExtensionService implements 
 	private async _startLocalExtensionHost(remoteExtensions: IExtensionDescription[] = []): Promise<ResolvedExtensions> {
 		// Ensure that the workspace trust state has been fully initialized so
 		// that the extension host can start with the correct set of extensions.
-		await this._workspaceTrustManagementService.workspaceTrustInitialized;
+		// await this._workspaceTrustManagementService.workspaceTrustInitialized;
 
 		return new ResolvedExtensions(await this._scanAllLocalExtensions(), remoteExtensions, /*hasLocalProcess*/true, /*allowRemoteExtensionsInLocalWebWorker*/false);
 	}
@@ -494,13 +494,13 @@ export class NativeExtensionService extends AbstractExtensionService implements 
 					label: nls.localize('install', 'Install and Reload'),
 					run: async () => {
 						sendTelemetry('install');
-						const [galleryExtension] = await this._extensionGalleryService.getExtensions([{id: resolverExtensionId}], CancellationToken.None);
-						if (galleryExtension) {
-							await this._extensionManagementService.installFromGallery(galleryExtension);
-							await this._hostService.reload();
-						} else {
-							this._notificationService.error(nls.localize('resolverExtensionNotFound', "`{0}` not found on marketplace"));
-						}
+						// const [galleryExtension] = await this._extensionGalleryService.getExtensions([{id: resolverExtensionId}], CancellationToken.None);
+						// if (galleryExtension) {
+						// 	await this._extensionManagementService.installFromGallery(galleryExtension);
+						// 	await this._hostService.reload();
+						// } else {
+						// 	this._notificationService.error(nls.localize('resolverExtensionNotFound', "`{0}` not found on marketplace"));
+						// }
 
 					}
 				}],

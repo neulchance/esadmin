@@ -19,7 +19,7 @@ import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation
 import {ILogService} from 'td/platform/log/common/log';
 import {RemoteAuthorityResolverErrorCode, getRemoteAuthorityPrefix} from 'td/platform/remote/common/remoteAuthorityResolver';
 import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
-import {IEditorService} from 'td/workbench/services/editor/common/editorService';
+// import {IEditorService} from 'td/workbench/services/editor/common/editorService';
 import {IWorkbenchEnvironmentService} from 'td/workbench/services/environment/common/environmentService';
 import {ExtHostCustomersRegistry, IInternalExtHostContext} from 'td/workbench/services/extensions/common/extHostCustomers';
 import {ExtensionHostKind, extensionHostKindToString} from 'td/workbench/services/extensions/common/extensionHostKind';
@@ -637,10 +637,10 @@ registerAction2(class MeasureExtHostLatencyAction extends Action2 {
 
 	async run(accessor: ServicesAccessor) {
 
-		const editorService = accessor.get(IEditorService);
+		// const editorService = accessor.get(IEditorService);
 
 		const measurements = await Promise.all(getLatencyTestProviders().map(provider => provider.measure()));
-		editorService.openEditor({resource: undefined, contents: measurements.map(MeasureExtHostLatencyAction._print).join('\n\n'), options: {pinned: true}});
+		// editorService.openEditor({resource: undefined, contents: measurements.map(MeasureExtHostLatencyAction._print).join('\n\n'), options: {pinned: true}});
 	}
 
 	private static _print(m: ExtHostLatencyResult | null): string {
