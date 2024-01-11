@@ -32,12 +32,16 @@ import 'td/workbench/services/path/electron-sandbox/pathService';
 import 'td/platform/remote/electron-sandbox/sharedProcessTunnelService';
 import 'td/workbench/services/tunnel/electron-sandbox/tunnelService';
 import 'td/workbench/services/request/electron-sandbox/requestService';
+import 'td/workbench/services/extensions/electron-sandbox/extensionsScannerService';
 
-import {registerSingleton} from 'td/platform/instantiation/common/extensions';
+import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {IUserDataInitializationService, UserDataInitializationService} from 'td/workbench/services/userData/browser/userDataInit';
+import {IExtensionsProfileScannerService} from 'td/platform/extensionManagement/common/extensionsProfileScannerService';
+import {ExtensionsProfileScannerService} from 'td/platform/extensionManagement/electron-sandbox/extensionsProfileScannerService';
 import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors';
 
 registerSingleton(IUserDataInitializationService, new SyncDescriptor(UserDataInitializationService, [[]], true));
+registerSingleton(IExtensionsProfileScannerService, ExtensionsProfileScannerService, InstantiationType.Delayed);
 
 //#endregion
 

@@ -36,6 +36,9 @@ import {INativeHostMainService, NativeHostMainService} from 'td/platform/native/
 import {IWorkspacesManagementMainService, WorkspacesManagementMainService} from 'td/platform/workspaces/electron-main/workspacesManagementMainService';
 import {DialogMainService, IDialogMainService} from 'td/platform/dialogs/electron-main/dialogMainService';
 import {IProductService} from 'td/platform/product/common/productService';
+import {Promises, RunOnceScheduler, runWhenGlobalIdle} from 'td/base/common/async';
+import {IExtensionsScannerService} from 'td/platform/extensionManagement/common/extensionsScannerService';
+import {ExtensionsScannerService} from 'td/platform/extensionManagement/node/extensionsScannerService';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -187,6 +190,15 @@ export class DevApplication extends Disposable {
 		// Workspaces
 		const workspacesManagementMainService = new WorkspacesManagementMainService(this.environmentMainService, this.logService, this.userDataProfilesMainService/* , backupMainService, dialogMainService */);
 		services.set(IWorkspacesManagementMainService, workspacesManagementMainService);
+
+		// Default Extensions Profile Init
+		// services.set(IExtensionsScannerService, new SyncDescriptor(ExtensionsScannerService, undefined, true));
+
+		// Init services that require it
+		await Promises.settled([
+			// backupMainService.initialize(),
+			workspacesManagementMainService.initialize()
+		]);
 
     return this.mainInstantiationService.createChild(services);
   }
