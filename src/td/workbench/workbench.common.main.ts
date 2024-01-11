@@ -24,6 +24,7 @@ import 'td/workbench/services/notification/common/notificationService';
 import 'td/workbench/services/remote/common/remoteExtensionsScanner';
 import 'td/workbench/services/extensionManagement/browser/extensionEnablementService';
 import 'td/workbench/services/label/common/labelService';
+import 'td/workbench/services/commands/common/commandService';
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {ContextViewService} from 'td/platform/contextview/browser/contextViewService';

@@ -32,7 +32,7 @@ export class ContextMenuHandler {
 		private contextViewService: IContextViewService,
 		private telemetryService: ITelemetryService,
 		private notificationService: INotificationService,
-		private keybindingService: IKeybindingService,
+		// private keybindingService: IKeybindingService,
 	) { }
 
 	configure(options: IContextMenuHandlerOptions): void {
@@ -88,7 +88,7 @@ export class ContextMenuHandler {
 					actionViewItemProvider: delegate.getActionViewItem,
 					context: delegate.getActionsContext ? delegate.getActionsContext() : null,
 					actionRunner,
-					getKeyBinding: delegate.getKeyBinding ? delegate.getKeyBinding : action => this.keybindingService.lookupKeybinding(action.id)
+					getKeyBinding: delegate.getKeyBinding/*  ? delegate.getKeyBinding : action => this.keybindingService.lookupKeybinding(action.id) */
 				},
 					defaultMenuStyles
 				);

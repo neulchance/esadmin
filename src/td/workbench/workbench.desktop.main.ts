@@ -24,7 +24,8 @@ import 'td/workbench/services/host/electron-sandbox/nativeHostService';
 import 'td/workbench/services/themes/electron-sandbox/nativeHostColorSchemeService';
 import 'td/platform/extensionResourceLoader/common/extensionResourceLoaderService';
 import 'td/workbench/services/telemetry/electron-sandbox/telemetryService';
-// import 'td/workbench/services/extensions/electron-sandbox/nativeExtensionService';
+// 
+import 'td/workbench/services/extensions/electron-sandbox/nativeExtensionService';
 import 'td/workbench/services/contextmenu/electron-sandbox/contextmenuService';
 import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementService';
 import 'td/workbench/services/path/electron-sandbox/pathService';

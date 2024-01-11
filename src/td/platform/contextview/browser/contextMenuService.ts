@@ -24,7 +24,7 @@ export class ContextMenuService extends Disposable implements IContextMenuServic
 	private _contextMenuHandler: ContextMenuHandler | undefined = undefined;
 	private get contextMenuHandler(): ContextMenuHandler {
 		if (!this._contextMenuHandler) {
-			this._contextMenuHandler = new ContextMenuHandler(this.contextViewService, this.telemetryService, this.notificationService, this.keybindingService);
+			this._contextMenuHandler = new ContextMenuHandler(this.contextViewService, this.telemetryService, this.notificationService/* , this.keybindingService */);
 		}
 
 		return this._contextMenuHandler;
@@ -40,7 +40,7 @@ export class ContextMenuService extends Disposable implements IContextMenuServic
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
-		@IKeybindingService private readonly keybindingService: IKeybindingService,
+		// @IKeybindingService private readonly keybindingService: IKeybindingService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 	) {

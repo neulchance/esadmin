@@ -40,7 +40,7 @@ export class ContextMenuService implements IContextMenuService {
 	constructor(
 		@INotificationService notificationService: INotificationService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IKeybindingService keybindingService: IKeybindingService,
+		// @IKeybindingService keybindingService: IKeybindingService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IContextViewService contextViewService: IContextViewService,
 		@IMenuService menuService: IMenuService,
@@ -49,12 +49,12 @@ export class ContextMenuService implements IContextMenuService {
 
 		// Custom context menu: Linux/Windows if custom title is enabled
 		if (!isMacintosh && getTitleBarStyle(configurationService) === 'custom') {
-			this.impl = new HTMLContextMenuService(telemetryService, notificationService, contextViewService, keybindingService, menuService, contextKeyService);
+			this.impl = new HTMLContextMenuService(telemetryService, notificationService, contextViewService, /* keybindingService, */ menuService, contextKeyService);
 		}
 
 		// Native context menu: otherwise
 		else {
-			this.impl = new NativeContextMenuService(notificationService, telemetryService, keybindingService, menuService, contextKeyService);
+			this.impl = new NativeContextMenuService(notificationService, telemetryService, /* keybindingService, */ menuService, contextKeyService);
 		}
 	}
 
@@ -80,7 +80,7 @@ class NativeContextMenuService extends Disposable implements IContextMenuService
 	constructor(
 		@INotificationService private readonly notificationService: INotificationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IKeybindingService private readonly keybindingService: IKeybindingService,
+		// @IKeybindingService private readonly keybindingService: IKeybindingService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService
 	) {
@@ -230,18 +230,18 @@ class NativeContextMenuService extends Disposable implements IContextMenuService
 				}
 			};
 
-			const keybinding = delegate.getKeyBinding ? delegate.getKeyBinding(entry) : this.keybindingService.lookupKeybinding(entry.id);
-			if (keybinding) {
-				const electronAccelerator = keybinding.getElectronAccelerator();
-				if (electronAccelerator) {
-					item.accelerator = electronAccelerator;
-				} else {
-					const label = keybinding.getLabel();
-					if (label) {
-						item.label = `${item.label} [${label}]`;
-					}
-				}
-			}
+			// const keybinding = delegate.getKeyBinding ? delegate.getKeyBinding(entry) : this.keybindingService.lookupKeybinding(entry.id);
+			// if (keybinding) {
+			// 	const electronAccelerator = keybinding.getElectronAccelerator();
+			// 	if (electronAccelerator) {
+			// 		item.accelerator = electronAccelerator;
+			// 	} else {
+			// 		const label = keybinding.getLabel();
+			// 		if (label) {
+			// 			item.label = `${item.label} [${label}]`;
+			// 		}
+			// 	}
+			// }
 
 			return item;
 		}
