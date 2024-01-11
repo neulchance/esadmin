@@ -202,9 +202,9 @@ export class DevApplication extends Disposable {
 
 		// Native host (main & shared process)
 		this.nativeHostMainService = accessor.get(INativeHostMainService);
-		const nativeHostChannel = ProxyChannel.fromService(this.nativeHostMainService, disposables);
-		mainProcessElectronServer.registerChannel('nativeHost', nativeHostChannel);
-		sharedProcessClient.then(client => client.registerChannel('nativeHost', nativeHostChannel));
+		// const nativeHostChannel = ProxyChannel.fromService(this.nativeHostMainService, disposables);
+		// mainProcessElectronServer.registerChannel('nativeHost', nativeHostChannel);
+		// sharedProcessClient.then(client => client.registerChannel('nativeHost', nativeHostChannel));
 		
 		// User Data Profiles
 		const userDataProfilesService = ProxyChannel.fromService(accessor.get(IUserDataProfilesMainService), disposables);

@@ -27,7 +27,10 @@ import 'td/workbench/services/label/common/labelService';
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {ContextViewService} from 'td/platform/contextview/browser/contextViewService';
 import {IContextViewService} from 'td/platform/contextview/browser/contextView';
+import {ContextKeyService} from 'td/platform/contextkey/browser/contextKeyService';
+import {IContextKeyService} from 'td/platform/contextkey/common/contextkey';
 
-registerSingleton(IContextViewService, ContextViewService, InstantiationType.Eager);
+registerSingleton(IContextViewService, ContextViewService, InstantiationType.Delayed);
+registerSingleton(IContextKeyService, ContextKeyService, InstantiationType.Delayed);
 
 //#endregion
