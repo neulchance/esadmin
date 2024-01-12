@@ -4,6 +4,7 @@ import {ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
 import {Part} from 'td/workbench/browser/part';
 import {coalesce} from 'td/base/common/arrays';
 import {IStatusbarService} from 'td/workbench/services/statusbar/browser/statusbar';
+import {SerializableGrid, ISerializableView, ISerializedGrid, Orientation, ISerializedNode, ISerializedLeafNode, Direction, IViewSize, Sizing} from 'td/base/browser/ui/grid/grid';
 
 export abstract class Layout extends Disposable /* implements IWorkbenchLayoutService */ {
 
@@ -16,6 +17,8 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
   //#endregion
 
   private readonly parts = new Map<string, Part>();
+
+	private statusBarPartView!: ISerializableView;
 
 	private statusBarService!: IStatusbarService;
 
@@ -34,6 +37,12 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
   }
 
   protected createWorkbenchLayout(): void {
+		const statusBar = this.getPart(Parts.STATUSBAR_PART);
+		console.log(statusBar)
+
+		this.statusBarPartView = statusBar;
+
+		console.log('go ahead!!')
   }
 
   layout(): void {
