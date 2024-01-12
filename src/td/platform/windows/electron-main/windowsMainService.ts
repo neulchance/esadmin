@@ -20,6 +20,9 @@ import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
 import {Schemas} from 'td/base/common/network';
 import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
+import {Disposable} from 'td/base/common/lifecycle';
+import {Emitter} from 'td/base/common/event';
+import {IWindowsCountChangedEvent} from 'td/platform/windows/electron-main/windows';
 
 interface IOpenBrowserWindowOptions {
 	readonly userEnv?: IProcessEnvironment;
@@ -52,7 +55,33 @@ interface IFilesToOpen {
 	filesToWait?: IPathsToWaitFor;
 }
 
-export class WindowsMainService /* extends Disposable implements IWindowsMainService */ {
+export class WindowsMainService extends Disposable /* implements IWindowsMainService */ {
+
+  declare readonly _serviceBrand: undefined;
+
+  private readonly _onDidOpenWindow = this._register(new Emitter<IDevWindow>());
+	readonly onDidOpenWindow = this._onDidOpenWindow.event;
+
+  private readonly _onDidSignalReadyWindow = this._register(new Emitter<IDevWindow>());
+	readonly onDidSignalReadyWindow = this._onDidSignalReadyWindow.event;
+
+	private readonly _onDidDestroyWindow = this._register(new Emitter<IDevWindow>());
+	readonly onDidDestroyWindow = this._onDidDestroyWindow.event;
+
+	private readonly _onDidChangeWindowsCount = this._register(new Emitter<IWindowsCountChangedEvent>());
+	readonly onDidChangeWindowsCount = this._onDidChangeWindowsCount.event;
+
+	private readonly _onDidMaximizeWindow = this._register(new Emitter<IDevWindow>());
+	readonly onDidMaximizeWindow = this._onDidMaximizeWindow.event;
+
+	private readonly _onDidUnmaximizeWindow = this._register(new Emitter<IDevWindow>());
+	readonly onDidUnmaximizeWindow = this._onDidUnmaximizeWindow.event;
+
+	private readonly _onDidChangeFullScreen = this._register(new Emitter<IDevWindow>());
+	readonly onDidChangeFullScreen = this._onDidChangeFullScreen.event;
+
+  private readonly _onDidTriggerSystemContextMenu = this._register(new Emitter<{ window: IDevWindow; x: number; y: number }>());
+	readonly onDidTriggerSystemContextMenu = this._onDidTriggerSystemContextMenu.event;
 
   private readonly windows = new Map<number, IDevWindow>();
 
@@ -66,6 +95,7 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
     @IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService,
     @IConfigurationService private readonly configurationService: IConfigurationService,
   ) {
+    super()
   }
 
   async open(/* openConfig: IOpenConfiguration */): Promise<IDevWindow[]> {
@@ -137,7 +167,7 @@ export class WindowsMainService /* extends Disposable implements IWindowsMainSer
   }
 
   private async doOpenInBrowserWindow(window: IDevWindow, configuration: any, options?: IOpenBrowserWindowOptions, defaultProfile?: IUserDataProfile): Promise<void> {
-  console.log('configuration', configuration)
+  // console.log('configuration', configuration)
     window.load(configuration);
   }
 

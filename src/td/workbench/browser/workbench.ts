@@ -1,4 +1,4 @@
-import {Emitter} from 'td/base/common/event';
+import {Emitter, setGlobalLeakWarningThreshold} from 'td/base/common/event';
 import {getSingletonServiceDescriptors} from 'td/platform/instantiation/common/extensions';
 import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
 import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
@@ -40,27 +40,20 @@ export class Workbench extends Layout {
 		private readonly serviceCollection: ServiceCollection,
 		logService: ILogService
   ) {
-    const red = "\x1b[31m"
-    const green = "\x1b[32m"
-    const blue = "\x1b[34m"
-    const done = "\x1b[0m"
-    console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
-    console.log(`${green} Welcome to the app! ${done}`);
-    console.log(`${blue}parent${done}`, parent)
     super(parent);
     
   }
   startup() {
     try {
-      const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const done = "\x1b[0m"
-      console.log(`${blue}try startup${done}`)
+
+			// Configure emitter leak warning threshold
+			setGlobalLeakWarningThreshold(175);
 
       // Services
       const instantiationService = this.initServices(this.serviceCollection);
 
       instantiationService.invokeFunction(accessor => {
         const lifecycleService = accessor.get(ILifecycleService);
-        console.log('lifecycleService', lifecycleService)
 				const storageService = accessor.get(IStorageService);
 				const configurationService = accessor.get(IConfigurationService);
 				// const hostService = accessor.get(IHostService);
@@ -134,7 +127,6 @@ export class Workbench extends Layout {
 		
 		// ARIA
 		setARIAContainer(this.mainContainer);
-		console.log('this.mainContainer', this.mainContainer)
 
 		// State specific classes
 		const platformClass = isWindows ? 'windows' : isLinux ? 'linux' : 'mac';
@@ -150,8 +142,7 @@ export class Workbench extends Layout {
 		this.mainContainer.classList.add(...workbenchClasses);
     mainWindow.document.body.classList.add(platformClass); // used by our fonts
 
-		console.log('this.mainContainer 2', this.mainContainer)
-    console.log('mainWindow', mainWindow)
+    console.log('go ahead!')
 
 		// Create Parts
 		for (const {id, role, classes, options} of [
