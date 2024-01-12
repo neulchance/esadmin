@@ -15,11 +15,11 @@ let statusContainer: HTMLElement;
 let statusContainer2: HTMLElement;
 export function setARIAContainer(parent: HTMLElement) {
 	ariaContainer = document.createElement('div');
-	ariaContainer.className = 'jangdan-aria-container';
+	ariaContainer.className = 'monaco-aria-container';
 
 	const createAlertContainer = () => {
 		const element = document.createElement('div');
-		element.className = 'jangdan-alert';
+		element.className = 'monaco-alert';
 		element.setAttribute('role', 'alert');
 		element.setAttribute('aria-atomic', 'true');
 		ariaContainer.appendChild(element);
@@ -30,7 +30,7 @@ export function setARIAContainer(parent: HTMLElement) {
 
 	const createStatusContainer = () => {
 		const element = document.createElement('div');
-		element.className = 'jangdan-status';
+		element.className = 'monaco-status';
 		element.setAttribute('aria-live', 'polite');
 		element.setAttribute('aria-atomic', 'true');
 		ariaContainer.appendChild(element);
