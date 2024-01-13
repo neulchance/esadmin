@@ -27,6 +27,5 @@ fn:renderWorkbench
 ┃└─────
 ┗━━━━━
 
-
-
-
+this.getStoredPinnedViewContainersValue();
+.pinnedViewContainersKey
