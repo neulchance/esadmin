@@ -81,13 +81,19 @@
           {
             "types": {
               "Object": false,
-              "Function": false
+              "Function": false,
+              "Boolean": false
             },
             "extendDefaults": true
           }
         ],
         "no-empty-function": "off",
+        "no-useless-catch": "warn",
         "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+        // mainly td/editor
+        "@typescript-eslint/no-duplicate-enum-values": "warn",
+        "@typescript-eslint/no-unsafe-declaration-merging": "warn",
         "prefer-const": ["off"]
       }
     },

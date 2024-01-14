@@ -35,7 +35,8 @@ import {ViewPane} from 'td/workbench/browser/parts/views/viewPane';
 import {IViewletViewOptions} from 'td/workbench/browser/parts/views/viewsViewlet';
 import {Component} from 'td/workbench/common/component';
 import {PANEL_SECTION_BORDER, PANEL_SECTION_DRAG_AND_DROP_BACKGROUND, PANEL_SECTION_HEADER_BACKGROUND, PANEL_SECTION_HEADER_BORDER, PANEL_SECTION_HEADER_FOREGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_SECTION_HEADER_BORDER, SIDE_BAR_SECTION_HEADER_FOREGROUND} from 'td/workbench/common/theme';
-import {IAddedViewDescriptorRef, ICustomViewDescriptor, IView, IViewContainerModel, IViewDescriptor, IViewDescriptorRef, IViewDescriptorService, IViewPaneContainer, IViewsService, ViewContainer, ViewContainerLocation, ViewContainerLocationToString, ViewVisibilityState} from 'td/workbench/common/views';
+import {IAddedViewDescriptorRef, ICustomViewDescriptor, IView, IViewContainerModel, IViewDescriptor, IViewDescriptorRef, IViewDescriptorService, IViewPaneContainer, ViewContainer, ViewContainerLocation, ViewContainerLocationToString, ViewVisibilityState} from 'td/workbench/common/views';
+import {IViewsService} from 'td/workbench/services/views/common/viewsService';
 import {FocusedViewContext} from 'td/workbench/common/contextkeys';
 import {IExtensionService} from 'td/workbench/services/extensions/common/extensions';
 import {ActivityBarPosition, IWorkbenchLayoutService, LayoutSettings, Parts, Position} from 'td/workbench/services/layout/browser/layoutService';
@@ -375,7 +376,7 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
 		@IContextMenuService protected contextMenuService: IContextMenuService,
 		@ITelemetryService protected telemetryService: ITelemetryService,
-		// @IExtensionService protected extensionService: IExtensionService,
+		@IExtensionService protected extensionService: IExtensionService,
 		@IThemeService themeService: IThemeService,
 		@IStorageService protected storageService: IStorageService,
 		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
@@ -540,18 +541,18 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		}
 
 		// Update headers after and title contributed views after available, since we read from cache in the beginning to know if the viewlet has single view or not. Ref #29609
-		// this.extensionService.whenInstalledExtensionsRegistered().then(() => {
-		// 	this.areExtensionsReady = true;
-		// 	if (this.panes.length) {
-		// 		this.updateTitleArea();
-		// 		this.updateViewHeaders();
-		// 	}
-		// 	this._register(this.configurationService.onDidChangeConfiguration(e => {
-		// 		if (e.affectsConfiguration(LayoutSettings.ACTIVITY_BAR_LOCATION)) {
-		// 			this.updateViewHeaders();
-		// 		}
-		// 	}));
-		// });
+		this.extensionService.whenInstalledExtensionsRegistered().then(() => {
+			this.areExtensionsReady = true;
+			if (this.panes.length) {
+				this.updateTitleArea();
+				this.updateViewHeaders();
+			}
+			this._register(this.configurationService.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration(LayoutSettings.ACTIVITY_BAR_LOCATION)) {
+					this.updateViewHeaders();
+				}
+			}));
+		});
 
 		this._register(this.viewContainerModel.onDidChangeActiveViewDescriptors(() => this._onTitleAreaUpdate.fire()));
 	}

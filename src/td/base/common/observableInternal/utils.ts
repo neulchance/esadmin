@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event } from 'vs/base/common/event';
-import { DisposableStore, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { autorun } from 'vs/base/common/observableInternal/autorun';
-import { BaseObservable, ConvenientObservable, IObservable, IObserver, IReader, ITransaction, _setRecomputeInitiallyAndOnChange, getDebugName, getFunctionName, observableValue, subtransaction, transaction } from 'vs/base/common/observableInternal/base';
-import { derived } from 'vs/base/common/observableInternal/derived';
-import { getLogger } from 'vs/base/common/observableInternal/logging';
+import {Event} from 'td/base/common/event';
+import {DisposableStore, IDisposable, toDisposable} from 'td/base/common/lifecycle';
+import {autorun} from 'td/base/common/observableInternal/autorun';
+import {BaseObservable, ConvenientObservable, IObservable, IObserver, IReader, ITransaction, _setRecomputeInitiallyAndOnChange, getDebugName, getFunctionName, observableValue, subtransaction, transaction} from 'td/base/common/observableInternal/base';
+import {derived} from 'td/base/common/observableInternal/derived';
+import {getLogger} from 'td/base/common/observableInternal/logging';
 
 /**
  * Represents an efficient observable whose value never changes.
@@ -45,7 +45,7 @@ class ConstObservable<T> extends ConvenientObservable<T, void> {
 export function observableFromPromise<T>(promise: Promise<T>): IObservable<{ value?: T }> {
 	const observable = observableValue<{ value?: T }>('promiseValue', {});
 	promise.then((value) => {
-		observable.set({ value }, undefined);
+		observable.set({value}, undefined);
 	});
 	return observable;
 }
@@ -56,10 +56,10 @@ export function waitForState<T>(observable: IObservable<T>, predicate: (state: T
 	return new Promise(resolve => {
 		let didRun = false;
 		let shouldDispose = false;
-		const stateObs = observable.map(state => ({ isFinished: predicate(state), state }));
+		const stateObs = observable.map(state => ({isFinished: predicate(state), state}));
 		const d = autorun(reader => {
 			/** @description waitForState */
-			const { isFinished, state } = stateObs.read(reader);
+			const {isFinished, state} = stateObs.read(reader);
 			if (isFinished) {
 				if (!didRun) {
 					shouldDispose = true;
@@ -125,7 +125,7 @@ export class FromEventObservable<TArgs, T> extends BaseObservable<T> {
 				subtransaction(
 					FromEventObservable.globalTransaction,
 					(tx) => {
-						getLogger()?.handleFromEventObservableTriggered(this, { oldValue, newValue, change: undefined, didChange, hadValue: this.hasValue });
+						getLogger()?.handleFromEventObservableTriggered(this, {oldValue, newValue, change: undefined, didChange, hadValue: this.hasValue});
 
 						for (const o of this.observers) {
 							tx.updateObserver(o, this);
@@ -142,7 +142,7 @@ export class FromEventObservable<TArgs, T> extends BaseObservable<T> {
 		}
 
 		if (!didRunTransaction) {
-			getLogger()?.handleFromEventObservableTriggered(this, { oldValue, newValue, change: undefined, didChange, hadValue: this.hasValue });
+			getLogger()?.handleFromEventObservableTriggered(this, {oldValue, newValue, change: undefined, didChange, hadValue: this.hasValue});
 		}
 	};
 

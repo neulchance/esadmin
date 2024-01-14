@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
-import { recomputeInitiallyAndOnChange } from 'vs/base/common/observable';
-import type { derivedOpts } from 'vs/base/common/observableInternal/derived';
-import { getLogger } from 'vs/base/common/observableInternal/logging';
+import {DisposableStore, IDisposable} from 'td/base/common/lifecycle';
+import {recomputeInitiallyAndOnChange} from 'td/base/common/observable';
+import type {derivedOpts} from 'td/base/common/observableInternal/derived';
+import {getLogger} from 'td/base/common/observableInternal/logging';
 
 /**
  * Represents an observable value.
@@ -318,14 +318,14 @@ export class TransactionImpl implements ITransaction {
 
 	public updateObserver(observer: IObserver, observable: IObservable<any>): void {
 		// When this gets called while finish is active, they will still get considered
-		this.updatingObservers!.push({ observer, observable });
+		this.updatingObservers!.push({observer, observable});
 		observer.beginUpdate(observable);
 	}
 
 	public finish(): void {
 		const updatingObservers = this.updatingObservers!;
 		for (let i = 0; i < updatingObservers.length; i++) {
-			const { observer, observable } = updatingObservers[i];
+			const {observer, observable} = updatingObservers[i];
 			observer.endUpdate(observable);
 		}
 		// Prevent anyone from updating observers from now on.
@@ -484,7 +484,7 @@ export class ObservableValue<T, TChange = void>
 		try {
 			const oldValue = this._value;
 			this._setValue(value);
-			getLogger()?.handleObservableChanged(this, { oldValue, newValue: value, change, didChange: true, hadValue: true });
+			getLogger()?.handleObservableChanged(this, {oldValue, newValue: value, change, didChange: true, hadValue: true});
 
 			for (const observer of this.observers) {
 				tx.updateObserver(observer, this);

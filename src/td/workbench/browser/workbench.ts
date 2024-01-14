@@ -64,6 +64,9 @@ export class Workbench extends Layout {
 				this.initLayout(accessor);
 
 				// Registries
+				console.log(`
+				⭐️ workbench.common.main.ts
+				`)
 				// Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).start(accessor);
 				// Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).start(accessor);
 

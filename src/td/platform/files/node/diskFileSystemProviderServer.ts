@@ -3,19 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Emitter, Event } from 'vs/base/common/event';
-import { IServerChannel } from 'vs/base/parts/ipc/common/ipc';
-import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
-import { Disposable, dispose, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { ILogService } from 'vs/platform/log/common/log';
-import { IURITransformer } from 'vs/base/common/uriIpc';
-import { URI, UriComponents } from 'vs/base/common/uri';
-import { VSBuffer } from 'vs/base/common/buffer';
-import { ReadableStreamEventPayload, listenStream } from 'vs/base/common/stream';
-import { IStat, IFileReadStreamOptions, IFileWriteOptions, IFileOpenOptions, IFileDeleteOptions, IFileOverwriteOptions, IFileChange, IWatchOptions, FileType, IFileAtomicReadOptions } from 'vs/platform/files/common/files';
-import { CancellationTokenSource } from 'vs/base/common/cancellation';
-import { IRecursiveWatcherOptions } from 'vs/platform/files/common/watcher';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import {Emitter, Event} from 'td/base/common/event';
+import {IServerChannel} from 'td/base/parts/ipc/common/ipc';
+import {DiskFileSystemProvider} from 'td/platform/files/node/diskFileSystemProvider';
+import {Disposable, dispose, IDisposable, toDisposable} from 'td/base/common/lifecycle';
+import {ILogService} from 'td/platform/log/common/log';
+import {IURITransformer} from 'td/base/common/uriIpc';
+import {URI, UriComponents} from 'td/base/common/uri';
+import {VSBuffer} from 'td/base/common/buffer';
+import {ReadableStreamEventPayload, listenStream} from 'td/base/common/stream';
+import {IStat, IFileReadStreamOptions, IFileWriteOptions, IFileOpenOptions, IFileDeleteOptions, IFileOverwriteOptions, IFileChange, IWatchOptions, FileType, IFileAtomicReadOptions} from 'td/platform/files/common/files';
+import {CancellationTokenSource} from 'td/base/common/cancellation';
+import {IRecursiveWatcherOptions} from 'td/platform/files/common/watcher';
+import {IEnvironmentService} from 'td/platform/environment/common/environment';
 
 export interface ISessionFileWatcher extends IDisposable {
 	watch(req: number, resource: URI, opts: IWatchOptions): IDisposable;
@@ -272,7 +272,7 @@ export abstract class AbstractSessionFileWatcher extends Disposable implements I
 	// This is important because we want to ensure that we only
 	// forward events from the watched paths for this session and
 	// not other clients that asked to watch other paths.
-	private readonly fileWatcher = this._register(new DiskFileSystemProvider(this.logService, { watcher: { recursive: this.getRecursiveWatcherOptions(this.environmentService) } }));
+	private readonly fileWatcher = this._register(new DiskFileSystemProvider(this.logService, {watcher: {recursive: this.getRecursiveWatcherOptions(this.environmentService)}}));
 
 	constructor(
 		private readonly uriTransformer: IURITransformer,

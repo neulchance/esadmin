@@ -2,49 +2,49 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { $, getWindow, h } from 'td/base/browser/dom';
-import { IBoundarySashes } from 'td/base/browser/ui/sash/sash';
-import { findLast } from 'td/base/common/arraysFind';
-import { onUnexpectedError } from 'td/base/common/errors';
-import { Event } from 'td/base/common/event';
-import { toDisposable } from 'td/base/common/lifecycle';
-import { IObservable, ITransaction, autorun, autorunWithStore, derived, observableFromEvent, observableValue, recomputeInitiallyAndOnChange, subtransaction, transaction } from 'td/base/common/observable';
-import { derivedDisposable } from 'td/base/common/observableInternal/derived';
+import {$, getWindow, h} from 'td/base/browser/dom';
+import {IBoundarySashes} from 'td/base/browser/ui/sash/sash';
+import {findLast} from 'td/base/common/arraysFind';
+import {onUnexpectedError} from 'td/base/common/errors';
+import {Event} from 'td/base/common/event';
+import {toDisposable} from 'td/base/common/lifecycle';
+import {IObservable, ITransaction, autorun, autorunWithStore, derived, observableFromEvent, observableValue, recomputeInitiallyAndOnChange, subtransaction, transaction} from 'td/base/common/observable';
+import {derivedDisposable} from 'td/base/common/observableInternal/derived';
 import 'td/css!./style';
-import { IEditorConstructionOptions } from 'td/editor/browser/config/editorConfiguration';
-import { ICodeEditor, IDiffEditor, IDiffEditorConstructionOptions } from 'td/editor/browser/editorBrowser';
-import { EditorExtensionsRegistry, IDiffEditorContributionDescription } from 'td/editor/browser/editorExtensions';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { StableEditorScrollState } from 'td/editor/browser/stableEditorScroll';
-import { CodeEditorWidget, ICodeEditorWidgetOptions } from 'td/editor/browser/widget/codeEditorWidget';
-import { AccessibleDiffViewer } from 'td/editor/browser/widget/diffEditor/components/accessibleDiffViewer';
-import { DiffEditorDecorations } from 'td/editor/browser/widget/diffEditor/components/diffEditorDecorations';
-import { DiffEditorSash } from 'td/editor/browser/widget/diffEditor/components/diffEditorSash';
-import { HideUnchangedRegionsFeature } from 'td/editor/browser/widget/diffEditor/features/hideUnchangedRegionsFeature';
-import { DiffEditorViewZones } from 'td/editor/browser/widget/diffEditor/components/diffEditorViewZones/diffEditorViewZones';
-import { MovedBlocksLinesFeature } from 'td/editor/browser/widget/diffEditor/features/movedBlocksLinesFeature';
-import { OverviewRulerFeature } from 'td/editor/browser/widget/diffEditor/features/overviewRulerFeature';
-import { CSSStyle, ObservableElementSizeObserver, applyStyle, applyViewZones, bindContextKey, readHotReloadableExport, translatePosition } from 'td/editor/browser/widget/diffEditor/utils';
-import { IDiffEditorOptions } from 'td/editor/common/config/editorOptions';
-import { IDimension } from 'td/editor/common/core/dimension';
-import { Position } from 'td/editor/common/core/position';
-import { Range } from 'td/editor/common/core/range';
-import { CursorChangeReason } from 'td/editor/common/cursorEvents';
-import { IDiffComputationResult, ILineChange } from 'td/editor/common/diff/legacyLinesDiffComputer';
-import { DetailedLineRangeMapping, RangeMapping } from 'td/editor/common/diff/rangeMapping';
-import { EditorType, IDiffEditorModel, IDiffEditorViewModel, IDiffEditorViewState } from 'td/editor/common/editorCommon';
-import { EditorContextKeys } from 'td/editor/common/editorContextKeys';
-import { IIdentifiedSingleEditOperation } from 'td/editor/common/model';
-import { AudioCue, IAudioCueService } from 'td/platform/audioCues/browser/audioCueService';
-import { IContextKeyService } from 'td/platform/contextkey/common/contextkey';
-import { IInstantiationService } from 'td/platform/instantiation/common/instantiation';
-import { ServiceCollection } from 'td/platform/instantiation/common/serviceCollection';
-import { IEditorProgressService } from 'td/platform/progress/common/progress';
-import { DelegatingEditor } from './delegatingEditorImpl';
-import { DiffEditorEditors } from './components/diffEditorEditors';
-import { DiffEditorOptions } from './diffEditorOptions';
-import { DiffEditorViewModel, DiffMapping, DiffState } from './diffEditorViewModel';
-import { RevertButtonsFeature } from 'td/editor/browser/widget/diffEditor/features/revertButtonsFeature';
+import {IEditorConstructionOptions} from 'td/editor/browser/config/editorConfiguration';
+import {ICodeEditor, IDiffEditor, IDiffEditorConstructionOptions} from 'td/editor/browser/editorBrowser';
+import {EditorExtensionsRegistry, IDiffEditorContributionDescription} from 'td/editor/browser/editorExtensions';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {StableEditorScrollState} from 'td/editor/browser/stableEditorScroll';
+import {CodeEditorWidget, ICodeEditorWidgetOptions} from 'td/editor/browser/widget/codeEditorWidget';
+import {AccessibleDiffViewer} from 'td/editor/browser/widget/diffEditor/components/accessibleDiffViewer';
+import {DiffEditorDecorations} from 'td/editor/browser/widget/diffEditor/components/diffEditorDecorations';
+import {DiffEditorSash} from 'td/editor/browser/widget/diffEditor/components/diffEditorSash';
+import {HideUnchangedRegionsFeature} from 'td/editor/browser/widget/diffEditor/features/hideUnchangedRegionsFeature';
+import {DiffEditorViewZones} from 'td/editor/browser/widget/diffEditor/components/diffEditorViewZones/diffEditorViewZones';
+import {MovedBlocksLinesFeature} from 'td/editor/browser/widget/diffEditor/features/movedBlocksLinesFeature';
+import {OverviewRulerFeature} from 'td/editor/browser/widget/diffEditor/features/overviewRulerFeature';
+import {CSSStyle, ObservableElementSizeObserver, applyStyle, applyViewZones, bindContextKey, readHotReloadableExport, translatePosition} from 'td/editor/browser/widget/diffEditor/utils';
+import {IDiffEditorOptions} from 'td/editor/common/config/editorOptions';
+import {IDimension} from 'td/editor/common/core/dimension';
+import {Position} from 'td/editor/common/core/position';
+import {Range} from 'td/editor/common/core/range';
+import {CursorChangeReason} from 'td/editor/common/cursorEvents';
+import {IDiffComputationResult, ILineChange} from 'td/editor/common/diff/legacyLinesDiffComputer';
+import {DetailedLineRangeMapping, RangeMapping} from 'td/editor/common/diff/rangeMapping';
+import {EditorType, IDiffEditorModel, IDiffEditorViewModel, IDiffEditorViewState} from 'td/editor/common/editorCommon';
+import {EditorContextKeys} from 'td/editor/common/editorContextKeys';
+import {IIdentifiedSingleEditOperation} from 'td/editor/common/model';
+import {AudioCue, IAudioCueService} from 'td/platform/audioCues/browser/audioCueService';
+import {IContextKeyService} from 'td/platform/contextkey/common/contextkey';
+import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
+import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
+import {IEditorProgressService} from 'td/platform/progress/common/progress';
+import {DelegatingEditor} from './delegatingEditorImpl';
+import {DiffEditorEditors} from './components/diffEditorEditors';
+import {DiffEditorOptions} from './diffEditorOptions';
+import {DiffEditorViewModel, DiffMapping, DiffState} from './diffEditorViewModel';
+import {RevertButtonsFeature} from 'td/editor/browser/widget/diffEditor/features/revertButtonsFeature';
 
 export interface IDiffCodeEditorWidgetOptions {
 	originalEditor?: ICodeEditorWidgetOptions;
@@ -54,11 +54,11 @@ export interface IDiffCodeEditorWidgetOptions {
 export class DiffEditorWidget extends DelegatingEditor implements IDiffEditor {
 	public static ENTIRE_DIFF_OVERVIEW_WIDTH = OverviewRulerFeature.ENTIRE_DIFF_OVERVIEW_WIDTH;
 
-	private readonly elements = h('div.monaco-diff-editor.side-by-side', { style: { position: 'relative', height: '100%' } }, [
-		h('div.noModificationsOverlay@overlay', { style: { position: 'absolute', height: '100%', visibility: 'hidden', } }, [$('span', {}, 'No Changes')]),
-		h('div.editor.original@original', { style: { position: 'absolute', height: '100%' } }),
-		h('div.editor.modified@modified', { style: { position: 'absolute', height: '100%' } }),
-		h('div.accessibleDiffViewer@accessibleDiffViewer', { style: { position: 'absolute', height: '100%' } }),
+	private readonly elements = h('div.monaco-diff-editor.side-by-side', {style: {position: 'relative', height: '100%'}}, [
+		h('div.noModificationsOverlay@overlay', {style: {position: 'absolute', height: '100%', visibility: 'hidden',}}, [$('span', {}, 'No Changes')]),
+		h('div.editor.original@original', {style: {position: 'absolute', height: '100%'}}),
+		h('div.editor.modified@modified', {style: {position: 'absolute', height: '100%'}}),
+		h('div.accessibleDiffViewer@accessibleDiffViewer', {style: {position: 'absolute', height: '100%'}}),
 	]);
 	private readonly _diffModel = observableValue<DiffEditorViewModel | undefined>(this, undefined);
 	private _shouldDisposeDiffModel = false;
@@ -238,8 +238,8 @@ export class DiffEditorWidget extends DelegatingEditor implements IDiffEditor {
 		).recomputeInitiallyAndOnChange(this._store);
 
 		const visibility = this._accessibleDiffViewerVisible.map<CSSStyle['visibility']>(v => v ? 'hidden' : 'visible');
-		this._register(applyStyle(this.elements.modified, { visibility }));
-		this._register(applyStyle(this.elements.original, { visibility }));
+		this._register(applyStyle(this.elements.modified, {visibility}));
+		this._register(applyStyle(this.elements.original, {visibility}));
 
 		this._createDiffEditorContributions();
 
@@ -271,11 +271,11 @@ export class DiffEditorWidget extends DelegatingEditor implements IDiffEditor {
 			if (e?.reason === CursorChangeReason.Explicit) {
 				const diff = this._diffModel.get()?.diff.get()?.mappings.find(m => m.lineRangeMapping.modified.contains(e.position.lineNumber));
 				if (diff?.lineRangeMapping.modified.isEmpty) {
-					this._audioCueService.playAudioCue(AudioCue.diffLineDeleted, { source: 'diffEditor.cursorPositionChanged' });
+					this._audioCueService.playAudioCue(AudioCue.diffLineDeleted, {source: 'diffEditor.cursorPositionChanged'});
 				} else if (diff?.lineRangeMapping.original.isEmpty) {
-					this._audioCueService.playAudioCue(AudioCue.diffLineInserted, { source: 'diffEditor.cursorPositionChanged' });
+					this._audioCueService.playAudioCue(AudioCue.diffLineInserted, {source: 'diffEditor.cursorPositionChanged'});
 				} else if (diff) {
-					this._audioCueService.playAudioCue(AudioCue.diffLineModified, { source: 'diffEditor.cursorPositionChanged' });
+					this._audioCueService.playAudioCue(AudioCue.diffLineModified, {source: 'diffEditor.cursorPositionChanged'});
 				}
 			}
 		}));
@@ -331,8 +331,8 @@ export class DiffEditorWidget extends DelegatingEditor implements IDiffEditor {
 		this.elements.modified.style.width = modifiedWidth + 'px';
 		this.elements.modified.style.left = originalWidth + 'px';
 
-		this._editors.original.layout({ width: originalWidthWithoutMovedBlockLines, height }, true);
-		this._editors.modified.layout({ width: modifiedWidth, height }, true);
+		this._editors.original.layout({width: originalWidthWithoutMovedBlockLines, height}, true);
+		this._editors.modified.layout({width: modifiedWidth, height}, true);
 
 		return {
 			modifiedEditor: this._editors.modified.getLayoutInfo(),
@@ -410,7 +410,7 @@ export class DiffEditorWidget extends DelegatingEditor implements IDiffEditor {
 			this._accessibleDiffViewer.get().close();
 		}
 
-		const vm = model ? ('model' in model) ? { model, shouldDispose: false } : { model: this.createViewModel(model), shouldDispose: true } : undefined;
+		const vm = model ? ('model' in model) ? {model, shouldDispose: false} : {model: this.createViewModel(model), shouldDispose: true} : undefined;
 
 		if (this._diffModel.get() !== vm?.model) {
 			subtransaction(tx, tx => {
@@ -528,11 +528,11 @@ export class DiffEditorWidget extends DelegatingEditor implements IDiffEditor {
 		this._goTo(diff);
 
 		if (diff.lineRangeMapping.modified.isEmpty) {
-			this._audioCueService.playAudioCue(AudioCue.diffLineDeleted, { source: 'diffEditor.goToDiff' });
+			this._audioCueService.playAudioCue(AudioCue.diffLineDeleted, {source: 'diffEditor.goToDiff'});
 		} else if (diff.lineRangeMapping.original.isEmpty) {
-			this._audioCueService.playAudioCue(AudioCue.diffLineInserted, { source: 'diffEditor.goToDiff' });
+			this._audioCueService.playAudioCue(AudioCue.diffLineInserted, {source: 'diffEditor.goToDiff'});
 		} else if (diff) {
-			this._audioCueService.playAudioCue(AudioCue.diffLineModified, { source: 'diffEditor.goToDiff' });
+			this._audioCueService.playAudioCue(AudioCue.diffLineModified, {source: 'diffEditor.goToDiff'});
 		}
 	}
 
@@ -577,11 +577,11 @@ export class DiffEditorWidget extends DelegatingEditor implements IDiffEditor {
 				destinationSelection = Range.plusRange(newRange1, newRange2);
 			}
 		}
-		return { destination, destinationSelection };
+		return {destination, destinationSelection};
 	}
 
 	switchSide(): void {
-		const { destination, destinationSelection } = this.mapToOtherSide();
+		const {destination, destinationSelection} = this.mapToOtherSide();
 		destination.focus();
 		if (destinationSelection) {
 			destination.setSelection(destinationSelection);

@@ -8,26 +8,26 @@ import {Event} from 'td/base/common/event';
 import {DeepRequiredNonNullable, assertIsDefined} from 'td/base/common/types';
 import {URI} from 'td/base/common/uri';
 import {Disposable, IDisposable, toDisposable} from 'td/base/common/lifecycle';
-// import {ICodeEditorViewState, IDiffEditor, IDiffEditorViewState, IEditor, IEditorViewState} from 'td/editor/common/editorCommon';
+import {ICodeEditorViewState, IDiffEditor, IDiffEditorViewState, IEditor, IEditorViewState} from 'td/editor/common/editorCommon';
 import {IEditorOptions, IResourceEditorInput, ITextResourceEditorInput, IBaseTextResourceEditorInput, IBaseUntypedEditorInput, ITextEditorOptions} from 'td/platform/editor/common/editor';
 import type {EditorInput} from 'td/workbench/common/editor/editorInput';
 import {IInstantiationService, IConstructorSignature, ServicesAccessor, BrandedService} from 'td/platform/instantiation/common/instantiation';
 import {IContextKeyService} from 'td/platform/contextkey/common/contextkey';
 import {Registry} from 'td/platform/registry/common/platform';
-// import {IEncodingSupport, ILanguageSupport} from 'td/workbench/services/textfile/common/textfiles';
-// import {IEditorGroup} from 'td/workbench/services/editor/common/editorGroupsService';
-// import {ICompositeControl, IComposite} from 'td/workbench/common/composite';
+import {IEncodingSupport, ILanguageSupport} from 'td/workbench/services/textfile/common/textfiles';
+import {IEditorGroup} from 'td/workbench/services/editor/common/editorGroupsService';
+import {ICompositeControl, IComposite} from 'td/workbench/common/composite';
 import {FileType, IFileReadLimits, IFileService} from 'td/platform/files/common/files';
 import {IPathData} from 'td/platform/window/common/window';
 import {IExtUri} from 'td/base/common/resources';
 import {Schemas} from 'td/base/common/network';
-// import {IEditorService} from 'td/workbench/services/editor/common/editorService';
+import {IEditorService} from 'td/workbench/services/editor/common/editorService';
 import {ILogService} from 'td/platform/log/common/log';
 import {IErrorWithActions, createErrorWithActions, isErrorWithActions} from 'td/base/common/errorMessage';
 import {IAction, toAction} from 'td/base/common/actions';
 import Severity from 'td/base/common/severity';
 import {IPreferencesService} from 'td/workbench/services/preferences/common/preferences';
-// import {IReadonlyEditorGroupModel} from 'td/workbench/common/editor/editorGroupModel';
+import {IReadonlyEditorGroupModel} from 'td/workbench/common/editor/editorGroupModel';
 
 // Static values for editor contributions
 export const EditorExtensions = {
@@ -85,7 +85,7 @@ export interface IEditorDescriptor<T extends IEditorPane> {
 /**
  * The editor pane is the container for workbench editors.
  */
-export interface IEditorPane /* extends IComposite */ {
+export interface IEditorPane extends IComposite {
 
 	/**
 	 * An event to notify when the `IEditorControl` in this
@@ -119,7 +119,7 @@ export interface IEditorPane /* extends IComposite */ {
 	/**
 	 * The assigned group this editor is showing in.
 	 */
-	readonly group: /* IEditorGroup */ | undefined;
+	readonly group: IEditorGroup | undefined;
 
 	/**
 	 * The minimum width of this editor.
@@ -312,7 +312,7 @@ export function isEditorPaneWithSelection(editorPane: IEditorPane | undefined): 
  * This method will return `undefined` if the editor input
  * is not visible in any of the opened editor panes.
  */
-export function findViewStateForEditor(input: EditorInput, group: GroupIdentifier, editorService: /* IEditorService */any): object | undefined {
+export function findViewStateForEditor(input: EditorInput, group: GroupIdentifier, editorService: IEditorService): object | undefined {
 	for (const editorPane of editorService.visibleEditorPanes) {
 		if (editorPane.group.id === group && input.matches(editorPane.input)) {
 			return editorPane.getViewState();
@@ -327,7 +327,7 @@ export function findViewStateForEditor(input: EditorInput, group: GroupIdentifie
  */
 export interface IVisibleEditorPane extends IEditorPane {
 	readonly input: EditorInput;
-	readonly group: /* IEditorGroup */any;
+	readonly group: IEditorGroup;
 }
 
 /**
@@ -338,7 +338,7 @@ export interface ITextEditorPane extends IEditorPane {
 	/**
 	 * Returns the underlying text editor widget of this editor.
 	 */
-	getControl(): /* IEditor */ | undefined;
+	getControl(): IEditor | undefined;
 }
 
 /**
@@ -349,7 +349,7 @@ export interface ITextDiffEditorPane extends IEditorPane {
 	/**
 	 * Returns the underlying text diff editor widget of this editor.
 	 */
-	getControl(): /* IDiffEditor */ | undefined;
+	getControl(): IDiffEditor | undefined;
 }
 
 /**
@@ -357,7 +357,7 @@ export interface ITextDiffEditorPane extends IEditorPane {
  * have to cast the control to work with it, e.g. via methods
  * such as `isCodeEditor(control)`.
  */
-export interface IEditorControl /* extends ICompositeControl */ { }
+export interface IEditorControl extends ICompositeControl { }
 
 export interface IFileEditorFactory {
 
@@ -495,9 +495,16 @@ export interface IResourceDiffEditorInput extends IBaseUntypedEditorInput {
  */
 export interface IResourceMultiDiffEditorInput extends IBaseUntypedEditorInput {
 	/**
-	 * The list of resources to compare.
+	 * A unique identifier of this multi diff editor input.
+	 * If a second multi diff editor with the same uri is opened, the existing one is revealed instead (even if the resources list is different!).
 	 */
-	readonly resources: (IResourceDiffEditorInput & { readonly resource: URI })[];
+	readonly multiDiffSource?: URI;
+
+	/**
+	 * The list of resources to compare.
+	 * If not set, the resources are dynamically derived from the {@link multiDiffSource}.
+	 */
+	readonly resources?: IResourceDiffEditorInput[];
 }
 
 export type IResourceMergeEditorInputSide = (IResourceEditorInput | ITextResourceEditorInput) & { detail?: string };
@@ -558,8 +565,14 @@ export function isResourceDiffListEditorInput(editor: unknown): editor is IResou
 	}
 
 	const candidate = editor as IResourceMultiDiffEditorInput | undefined;
+	if (!candidate) {
+		return false;
+	}
+	if (candidate.resources && !Array.isArray(candidate.resources)) {
+		return false;
+	}
 
-	return Array.isArray(candidate?.resources);
+	return !!candidate.resources || !!candidate.multiDiffSource;
 }
 
 export function isResourceSideBySideEditorInput(editor: unknown): editor is IResourceSideBySideEditorInput {
@@ -869,7 +882,7 @@ export interface IUntypedFileEditorInput extends ITextResourceEditorInput {
  * This is a tagging interface to declare an editor input being capable of dealing with files. It is only used in the editor registry
  * to register this kind of input to the platform.
  */
-export interface IFileEditorInput extends EditorInput, /* IEncodingSupport, ILanguageSupport, */ EditorInputWithPreferredResource {
+export interface IFileEditorInput extends EditorInput, IEncodingSupport, ILanguageSupport, EditorInputWithPreferredResource {
 
 	/**
 	 * Gets the resource this file input is about. This will always be the
@@ -939,7 +952,7 @@ export interface IFileLimitedEditorInputOptions extends IEditorOptions {
 
 export interface IFileEditorInputOptions extends ITextEditorOptions, IFileLimitedEditorInputOptions { }
 
-export function createTooLargeFileError(group: /* IEditorGroup */any, input: EditorInput, options: IEditorOptions | undefined, message: string, preferencesService: IPreferencesService): Error {
+export function createTooLargeFileError(group: IEditorGroup, input: EditorInput, options: IEditorOptions | undefined, message: string, preferencesService: IPreferencesService): Error {
 	return createEditorOpenError(message, [
 		toAction({
 			id: 'workbench.action.openLargeFile', label: localize('openLargeFile', "Open Anyway"), run: () => {
@@ -970,7 +983,7 @@ export interface EditorInputWithOptions {
 }
 
 export interface EditorInputWithOptionsAndGroup extends EditorInputWithOptions {
-	group: /* IEditorGroup */any;
+	group: IEditorGroup;
 }
 
 export function isEditorInputWithOptions(editor: unknown): editor is EditorInputWithOptions {
@@ -1394,7 +1407,7 @@ export enum EditorCloseMethod {
 	MOUSE
 }
 
-export function preventEditorClose(group: /* IEditorGroup | IReadonlyEditorGroupModel */ any, editor: EditorInput, method: EditorCloseMethod, configuration: IEditorPartConfiguration): boolean {
+export function preventEditorClose(group: IEditorGroup | IReadonlyEditorGroupModel, editor: EditorInput, method: EditorCloseMethod, configuration: IEditorPartConfiguration): boolean {
 	if (!group.isSticky(editor)) {
 		return false; // only interested in sticky editors
 	}
@@ -1417,14 +1430,14 @@ export const enum CloseDirection {
 
 export interface IEditorMemento<T> {
 
-	saveEditorState(group: /* IEditorGroup */any, resource: URI, state: T): void;
-	saveEditorState(group: /* IEditorGroup */any, editor: EditorInput, state: T): void;
+	saveEditorState(group: IEditorGroup, resource: URI, state: T): void;
+	saveEditorState(group: IEditorGroup, editor: EditorInput, state: T): void;
 
-	loadEditorState(group: /* IEditorGroup */any, resource: URI): T | undefined;
-	loadEditorState(group: /* IEditorGroup */any, editor: EditorInput): T | undefined;
+	loadEditorState(group: IEditorGroup, resource: URI): T | undefined;
+	loadEditorState(group: IEditorGroup, editor: EditorInput): T | undefined;
 
-	clearEditorState(resource: URI, group?: /* IEditorGroup */any): void;
-	clearEditorState(editor: EditorInput, group?: /* IEditorGroup */any): void;
+	clearEditorState(resource: URI, group?: IEditorGroup): void;
+	clearEditorState(editor: EditorInput, group?: IEditorGroup): void;
 
 	clearEditorStateOnDispose(resource: URI, editor: EditorInput): void;
 
@@ -1558,18 +1571,18 @@ export const enum EditorsOrder {
 	SEQUENTIAL
 }
 
-export function isTextEditorViewState(candidate: unknown): candidate is /* IEditorViewState */any {
-	const viewState = candidate as /* IEditorViewState */any | undefined;
+export function isTextEditorViewState(candidate: unknown): candidate is IEditorViewState {
+	const viewState = candidate as IEditorViewState | undefined;
 	if (!viewState) {
 		return false;
 	}
 
-	const diffEditorViewState = viewState as /* IDiffEditorViewState */ any;
+	const diffEditorViewState = viewState as IDiffEditorViewState;
 	if (diffEditorViewState.modified) {
 		return isTextEditorViewState(diffEditorViewState.modified);
 	}
 
-	const codeEditorViewState = viewState as /* ICodeEditorViewState */ any;
+	const codeEditorViewState = viewState as ICodeEditorViewState;
 
 	return !!(codeEditorViewState.contributionsState && codeEditorViewState.viewState && Array.isArray(codeEditorViewState.cursorState));
 }

@@ -17,16 +17,15 @@ import {IKeybindings} from 'td/platform/keybinding/common/keybindingsRegistry';
 import {ExtensionIdentifier} from 'td/platform/extensions/common/extensions';
 import {flatten} from 'td/base/common/arrays';
 import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors';
-// import {IProgressIndicator} from 'td/platform/progress/common/progress';
+import {IProgressIndicator} from 'td/platform/progress/common/progress';
 import Severity from 'td/base/common/severity';
-import {IPaneComposite} from 'td/workbench/common/panecomposite';
-// import {IAccessibilityInformation} from 'td/platform/accessibility/common/accessibility';
+import {IAccessibilityInformation} from 'td/platform/accessibility/common/accessibility';
 import {IMarkdownString} from 'td/base/common/htmlContent';
 import {mixin} from 'td/base/common/objects';
 import {Codicon} from 'td/base/common/codicons';
 import {registerIcon} from 'td/platform/theme/common/iconRegistry';
 import {CancellationToken} from 'td/base/common/cancellation';
-// import {VSDataTransfer} from 'td/base/common/dataTransfer';
+import {VSDataTransfer} from 'td/base/common/dataTransfer';
 import {ILocalizedString} from 'td/platform/action/common/action';
 
 export const VIEWS_LOG_ID = 'views';
@@ -115,7 +114,7 @@ export interface IViewContainerDescriptor {
 	/**
 	 * Id of the extension that contributed the view container
 	 */
-	// readonly extensionId?: ExtensionIdentifier;
+	readonly extensionId?: ExtensionIdentifier;
 
 	readonly alwaysUseContainerInfo?: boolean;
 
@@ -564,32 +563,7 @@ export interface IView {
 
 	setExpanded(expanded: boolean): boolean;
 
-	// getProgressIndicator(): IProgressIndicator | undefined;
-}
-
-export const IViewsService = createDecorator<IViewsService>('viewsService');
-export interface IViewsService {
-
-	readonly _serviceBrand: undefined;
-
-	// View Container APIs
-	readonly onDidChangeViewContainerVisibility: Event<{ id: string; visible: boolean; location: ViewContainerLocation }>;
-	isViewContainerVisible(id: string): boolean;
-	openViewContainer(id: string, focus?: boolean): Promise<IPaneComposite | null>;
-	closeViewContainer(id: string): void;
-	getVisibleViewContainer(location: ViewContainerLocation): ViewContainer | null;
-	getActiveViewPaneContainerWithId(viewContainerId: string): IViewPaneContainer | null;
-	getFocusedViewName(): string;
-
-	// View APIs
-	readonly onDidChangeViewVisibility: Event<{ id: string; visible: boolean }>;
-	readonly onDidChangeFocusedView: Event<void>;
-	isViewVisible(id: string): boolean;
-	openView<T extends IView>(id: string, focus?: boolean): Promise<T | null>;
-	closeView(id: string): void;
-	getActiveViewWithId<T extends IView>(id: string): T | null;
-	getViewWithId<T extends IView>(id: string): T | null;
-	// getViewProgressIndicator(id: string): IProgressIndicator | undefined;
+	getProgressIndicator(): IProgressIndicator | undefined;
 }
 
 export const IViewDescriptorService = createDecorator<IViewDescriptorService>('viewDescriptorService');
@@ -746,12 +720,12 @@ export interface ITreeItemLabel {
 
 }
 
-// export type TreeCommand = Command & { originalId?: string };
+export type TreeCommand = /* Command &  */{ originalId?: string };
 
 export interface ITreeItemCheckboxState {
 	isChecked: boolean;
 	tooltip?: string;
-	// accessibilityInformation?: IAccessibilityInformation;
+	accessibilityInformation?: IAccessibilityInformation;
 }
 
 export interface ITreeItem {
@@ -778,13 +752,13 @@ export interface ITreeItem {
 
 	contextValue?: string;
 
-	// command?: TreeCommand;
+	command?: TreeCommand;
 
 	children?: ITreeItem[];
 
 	parent?: ITreeItem;
 
-	// accessibilityInformation?: IAccessibilityInformation;
+	accessibilityInformation?: IAccessibilityInformation;
 
 	checkbox?: ITreeItemCheckboxState;
 }
@@ -801,9 +775,9 @@ export class ResolvableTreeItem implements ITreeItem {
 	resourceUri?: UriComponents;
 	tooltip?: string | IMarkdownString;
 	contextValue?: string;
-	// command?: Command & { originalId?: string };
+	command?: /* Command &  */{ originalId?: string };
 	children?: ITreeItem[];
-	// accessibilityInformation?: IAccessibilityInformation;
+	accessibilityInformation?: IAccessibilityInformation;
 	resolve: (token: CancellationToken) => Promise<void>;
 	private resolved: boolean = false;
 	private _hasResolve: boolean = false;
@@ -816,7 +790,7 @@ export class ResolvableTreeItem implements ITreeItem {
 				if (resolvedItem) {
 					// Resolvable elements. Currently tooltip and command.
 					this.tooltip = this.tooltip ?? resolvedItem.tooltip;
-					// this.command = this.command ?? resolvedItem.command;
+					this.command = this.command ?? resolvedItem.command;
 				}
 			}
 			if (!token.isCancellationRequested) {
@@ -843,9 +817,9 @@ export class ResolvableTreeItem implements ITreeItem {
 			resourceUri: this.resourceUri,
 			tooltip: this.tooltip,
 			contextValue: this.contextValue,
-			// command: this.command,
+			command: this.command,
 			children: this.children,
-			// accessibilityInformation: this.accessibilityInformation
+			accessibilityInformation: this.accessibilityInformation
 		};
 	}
 }
@@ -869,8 +843,8 @@ export interface ITreeViewDataProvider {
 export interface ITreeViewDragAndDropController {
 	readonly dropMimeTypes: string[];
 	readonly dragMimeTypes: string[];
-	// handleDrag(sourceTreeItemHandles: string[], operationUuid: string, token: CancellationToken): Promise<VSDataTransfer | undefined>;
-	// handleDrop(elements: VSDataTransfer, target: ITreeItem | undefined, token: CancellationToken, operationUuid?: string, sourceTreeId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
+	handleDrag(sourceTreeItemHandles: string[], operationUuid: string, token: CancellationToken): Promise<VSDataTransfer | undefined>;
+	handleDrop(elements: VSDataTransfer, target: ITreeItem | undefined, token: CancellationToken, operationUuid?: string, sourceTreeId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
 }
 
 export interface IEditableData {

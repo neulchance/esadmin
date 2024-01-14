@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AutorunObserver } from 'vs/base/common/observableInternal/autorun';
-import { IObservable, ObservableValue, TransactionImpl } from 'vs/base/common/observableInternal/base';
-import { Derived } from 'vs/base/common/observableInternal/derived';
-import { FromEventObservable } from 'vs/base/common/observableInternal/utils';
+import {AutorunObserver} from 'td/base/common/observableInternal/autorun';
+import {IObservable, ObservableValue, TransactionImpl} from 'td/base/common/observableInternal/base';
+import {Derived} from 'td/base/common/observableInternal/derived';
+import {FromEventObservable} from 'td/base/common/observableInternal/utils';
 
 let globalObservableLogger: IObservableLogger | undefined;
 
@@ -79,7 +79,7 @@ export class ConsoleObservableLogger implements IObservableLogger {
 	handleObservableChanged(observable: IObservable<unknown, unknown>, info: IChangeInformation): void {
 		console.log(...this.textToConsoleArgs([
 			formatKind('observable value changed'),
-			styled(observable.debugName, { color: 'BlueViolet' }),
+			styled(observable.debugName, {color: 'BlueViolet'}),
 			...this.formatInfo(info),
 		]));
 	}
@@ -94,7 +94,7 @@ export class ConsoleObservableLogger implements IObservableLogger {
 			' (changed deps: ' +
 			[...changes].map((o) => o.debugName).join(', ') +
 			')',
-			{ color: 'gray' }
+			{color: 'gray'}
 		);
 	}
 
@@ -111,10 +111,10 @@ export class ConsoleObservableLogger implements IObservableLogger {
 		const changedObservables = this.changedObservablesSets.get(derived)!;
 		console.log(...this.textToConsoleArgs([
 			formatKind('derived recomputed'),
-			styled(derived.debugName, { color: 'BlueViolet' }),
+			styled(derived.debugName, {color: 'BlueViolet'}),
 			...this.formatInfo(info),
 			this.formatChanges(changedObservables),
-			{ data: [{ fn: derived._computeFn }] }
+			{data: [{fn: derived._computeFn}]}
 		]));
 		changedObservables.clear();
 	}
@@ -122,9 +122,9 @@ export class ConsoleObservableLogger implements IObservableLogger {
 	handleFromEventObservableTriggered(observable: FromEventObservable<any, any>, info: IChangeInformation): void {
 		console.log(...this.textToConsoleArgs([
 			formatKind('observable from event triggered'),
-			styled(observable.debugName, { color: 'BlueViolet' }),
+			styled(observable.debugName, {color: 'BlueViolet'}),
 			...this.formatInfo(info),
-			{ data: [{ fn: observable._getValue }] }
+			{data: [{fn: observable._getValue}]}
 		]));
 	}
 
@@ -141,9 +141,9 @@ export class ConsoleObservableLogger implements IObservableLogger {
 		const changedObservables = this.changedObservablesSets.get(autorun)!;
 		console.log(...this.textToConsoleArgs([
 			formatKind('autorun'),
-			styled(autorun.debugName, { color: 'BlueViolet' }),
+			styled(autorun.debugName, {color: 'BlueViolet'}),
 			this.formatChanges(changedObservables),
-			{ data: [{ fn: autorun._runFn }] }
+			{data: [{fn: autorun._runFn}]}
 		]));
 		changedObservables.clear();
 		this.indentation++;
@@ -160,8 +160,8 @@ export class ConsoleObservableLogger implements IObservableLogger {
 		}
 		console.log(...this.textToConsoleArgs([
 			formatKind('transaction'),
-			styled(transactionName, { color: 'BlueViolet' }),
-			{ data: [{ fn: transaction._fn }] }
+			styled(transactionName, {color: 'BlueViolet'}),
+			{data: [{fn: transaction._fn}]}
 		]));
 		this.indentation++;
 	}
@@ -207,11 +207,11 @@ function consoleTextToArgs(text: ConsoleText): unknown[] {
 }
 
 function normalText(text: string): ConsoleText {
-	return styled(text, { color: 'black' });
+	return styled(text, {color: 'black'});
 }
 
 function formatKind(kind: string): ConsoleText {
-	return styled(padStr(`${kind}: `, 10), { color: 'black', bold: true });
+	return styled(padStr(`${kind}: `, 10), {color: 'black', bold: true});
 }
 
 function styled(

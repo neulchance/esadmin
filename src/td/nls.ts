@@ -244,7 +244,7 @@ export function create(key: string, data: IBundledStrings & IConsumerAPI): ICons
  * @skipMangle
  */
 export function load(name: string, req: AMDLoader.IRelativeRequire, load: AMDLoader.IPluginLoadCallback, config: AMDLoader.IConfigurationOptions): void {
-	const pluginConfig: INLSPluginConfig = config['vs/nls'] ?? {};
+	const pluginConfig: INLSPluginConfig = config['td/nls'] ?? {};
 	if (!name || name.length === 0) {
 		// TODO: We need to give back the mangled names here
 		return load({

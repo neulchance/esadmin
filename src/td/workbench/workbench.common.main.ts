@@ -25,6 +25,7 @@ import 'td/workbench/services/remote/common/remoteExtensionsScanner';
 import 'td/workbench/services/extensionManagement/browser/extensionEnablementService';
 import 'td/workbench/services/label/common/labelService';
 import 'td/workbench/services/commands/common/commandService';
+import 'td/workbench/services/views/browser/viewDescriptorService';
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {ContextViewService} from 'td/platform/contextview/browser/contextViewService';
@@ -40,6 +41,9 @@ registerSingleton(IContextKeyService, ContextKeyService, InstantiationType.Delay
 
 //#region --- workbench contributions
 
-
+// Explorer
+import 'td/workbench/contrib/files/browser/explorerViewlet';
+// import 'td/workbench/contrib/files/browser/fileActions.contribution';
+// import 'td/workbench/contrib/files/browser/files.contribution';
 
 //#endregion

@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { BugIndicatingError } from 'vs/base/common/errors';
-import { IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IReader, IObservable, BaseObservable, IObserver, _setDerivedOpts, IChangeContext, getFunctionName, DebugNameFn, getDebugName } from 'vs/base/common/observableInternal/base';
-import { getLogger } from 'vs/base/common/observableInternal/logging';
+import {BugIndicatingError} from 'td/base/common/errors';
+import {IDisposable, DisposableStore} from 'td/base/common/lifecycle';
+import {IReader, IObservable, BaseObservable, IObserver, _setDerivedOpts, IChangeContext, getFunctionName, DebugNameFn, getDebugName} from 'td/base/common/observableInternal/base';
+import {getLogger} from 'td/base/common/observableInternal/logging';
 
 export type EqualityComparer<T> = (a: T, b: T) => boolean;
 const defaultEqualityComparer: EqualityComparer<any> = (a, b) => a === b;
