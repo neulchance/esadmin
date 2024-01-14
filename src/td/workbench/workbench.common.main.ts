@@ -36,3 +36,10 @@ registerSingleton(IContextViewService, ContextViewService, InstantiationType.Del
 registerSingleton(IContextKeyService, ContextKeyService, InstantiationType.Delayed);
 
 //#endregion
+
+
+//#region --- workbench contributions
+
+
+
+//#endregion

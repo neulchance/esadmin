@@ -25,7 +25,19 @@ fn:renderWorkbench
 ┃│└>td/workbench/browser/parts/activitybar/activitybarPart
 ┃│  └>td/workbench/browser/parts/sidebar/sidebarPart
 ┃└─────
+┃┌workbench.common.main.ts
+┃│td/workbench/api/browser/viewsExtensionPoint
+┃│td/workbench/contrib/files/common/files
 ┗━━━━━
 
 this.getStoredPinnedViewContainersValue();
 .pinnedViewContainersKey
+
+
+
+workbench.view.explorer
+ViewContainersRegistryImpl
+
+viewContainersRegistry
+registerCustomViewContainer
+defaultViewContainers
