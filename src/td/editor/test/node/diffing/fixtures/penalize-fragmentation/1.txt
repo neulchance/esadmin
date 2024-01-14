@@ -1,0 +1,1 @@
+import { IChange, IDiffComputationResult } from 'td/editor/common/diff/diffComputer';

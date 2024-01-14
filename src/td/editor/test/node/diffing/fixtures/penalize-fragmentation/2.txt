@@ -1,0 +1,2 @@
+import { IDocumentDiffProviderOptions } from 'td/editor/common/diff/documentDiffProvider';
+import { IChange } from 'td/editor/common/diff/smartLinesDiffComputer';

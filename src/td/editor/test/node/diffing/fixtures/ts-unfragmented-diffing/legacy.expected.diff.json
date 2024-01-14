@@ -1,0 +1,27 @@
+{
+	"original": {
+		"content": "import { KeyCode, KeyMod } from 'td/base/common/keyCodes';\nimport { Disposable } from 'td/base/common/lifecycle';\nimport { ICodeEditor } from 'td/editor/browser/editorBrowser';\nimport { EditorAction, EditorCommand, registerEditorAction, registerEditorCommand, registerEditorContribution, ServicesAccessor } from 'td/editor/browser/editorExtensions';\nimport { IEditorContribution } from 'td/editor/common/editorCommon';\nimport { EditorContextKeys } from 'td/editor/common/editorContextKeys';\nimport * as languages from 'td/editor/common/languages';\nimport { TriggerContext } from 'td/editor/contrib/parameterHints/browser/parameterHintsModel';\nimport { Context } from 'td/editor/contrib/parameterHints/browser/provideSignatureHelp';\nimport * as nls from 'td/nls';\nimport { ContextKeyExpr } from 'td/platform/contextkey/common/contextkey';\nimport { IInstantiationService } from 'td/platform/instantiation/common/instantiation';\nimport { KeybindingWeight } from 'td/platform/keybinding/common/keybindingsRegistry';\nimport { ParameterHintsWidget } from './parameterHintsWidget';\n",
+		"fileName": "./1.tst"
+	},
+	"modified": {
+		"content": "import { KeyCode, KeyMod } from 'td/base/common/keyCodes';\nimport { Lazy } from 'td/base/common/lazy';\nimport { Disposable } from 'td/base/common/lifecycle';\nimport { ICodeEditor } from 'td/editor/browser/editorBrowser';\nimport { EditorAction, EditorCommand, registerEditorAction, registerEditorCommand, registerEditorContribution, ServicesAccessor } from 'td/editor/browser/editorExtensions';\nimport { IEditorContribution } from 'td/editor/common/editorCommon';\nimport { EditorContextKeys } from 'td/editor/common/editorContextKeys';\nimport * as languages from 'td/editor/common/languages';\nimport { ILanguageFeaturesService } from 'td/editor/common/services/languageFeatures';\nimport { ParameterHintsModel, TriggerContext } from 'td/editor/contrib/parameterHints/browser/parameterHintsModel';\nimport { Context } from 'td/editor/contrib/parameterHints/browser/provideSignatureHelp';\nimport * as nls from 'td/nls';\nimport { ContextKeyExpr } from 'td/platform/contextkey/common/contextkey';\nimport { IInstantiationService } from 'td/platform/instantiation/common/instantiation';\nimport { KeybindingWeight } from 'td/platform/keybinding/common/keybindingsRegistry';\nimport { ParameterHintsWidget } from './parameterHintsWidget';\n",
+		"fileName": "./2.tst"
+	},
+	"diffs": [
+		{
+			"originalRange": "[2,2)",
+			"modifiedRange": "[2,3)",
+			"innerChanges": null
+		},
+		{
+			"originalRange": "[8,9)",
+			"modifiedRange": "[9,11)",
+			"innerChanges": [
+				{
+					"originalRange": "[8,10 -> 8,10]",
+					"modifiedRange": "[9,10 -> 10,31]"
+				}
+			]
+		}
+	]
+}

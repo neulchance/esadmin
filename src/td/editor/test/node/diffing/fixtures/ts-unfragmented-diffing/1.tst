@@ -1,0 +1,14 @@
+import { KeyCode, KeyMod } from 'td/base/common/keyCodes';
+import { Disposable } from 'td/base/common/lifecycle';
+import { ICodeEditor } from 'td/editor/browser/editorBrowser';
+import { EditorAction, EditorCommand, registerEditorAction, registerEditorCommand, registerEditorContribution, ServicesAccessor } from 'td/editor/browser/editorExtensions';
+import { IEditorContribution } from 'td/editor/common/editorCommon';
+import { EditorContextKeys } from 'td/editor/common/editorContextKeys';
+import * as languages from 'td/editor/common/languages';
+import { TriggerContext } from 'td/editor/contrib/parameterHints/browser/parameterHintsModel';
+import { Context } from 'td/editor/contrib/parameterHints/browser/provideSignatureHelp';
+import * as nls from 'td/nls';
+import { ContextKeyExpr } from 'td/platform/contextkey/common/contextkey';
+import { IInstantiationService } from 'td/platform/instantiation/common/instantiation';
+import { KeybindingWeight } from 'td/platform/keybinding/common/keybindingsRegistry';
+import { ParameterHintsWidget } from './parameterHintsWidget';
