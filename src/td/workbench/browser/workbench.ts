@@ -17,6 +17,8 @@ import {isChrome, isFirefox, isLinux, isSafari, isWeb, isWindows} from 'td/base/
 import {coalesce} from 'td/base/common/arrays';
 import {mainWindow} from 'td/base/browser/window';
 import {Part} from 'td/workbench/browser/part';
+import {Registry} from 'td/platform/registry/common/platform';
+import {IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from 'td/workbench/common/contributions';
 
 export interface IWorkbenchOptions {
 
@@ -67,7 +69,7 @@ export class Workbench extends Layout {
 				console.log(`
 				⭐️ workbench.common.main.ts
 				`)
-				// Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).start(accessor);
+				Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).start(accessor);
 				// Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).start(accessor);
 
 				// Context Keys
