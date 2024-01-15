@@ -32,7 +32,7 @@ export interface IPathService {
 	 * path library of the remote file system. Otherwise it will be
 	 * the local file system's path library depending on the OS.
 	 */
-	// readonly path: Promise<IPath>;
+	readonly path: Promise<IPath>;
 
 	/**
 	 * Determines the best default URI scheme for the current workspace.
@@ -82,70 +82,58 @@ export abstract class AbstractPathService implements IPathService {
 
 	declare readonly _serviceBrand: undefined;
 
-	// private resolveOS: Promise<OperatingSystem>;
+	private resolveOS: Promise<OperatingSystem>;
 
-	// private resolveUserHome: Promise<URI>;
+	private resolveUserHome: Promise<URI>;
 	private maybeUnresolvedUserHome: URI | undefined;
 
 	constructor(
 		private localUserHome: URI,
-		// @IRemoteAgentService private readonly remoteAgentService: IRemoteAgentService,
+		@IRemoteAgentService private readonly remoteAgentService: IRemoteAgentService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
 		@IWorkspaceContextService private contextService: IWorkspaceContextService
 	) {
 
 		// OS
-		// this.resolveOS = (async () => {
-		// 	const env = await this.remoteAgentService.getEnvironment();
+		this.resolveOS = (async () => {
+			const env = await this.remoteAgentService.getEnvironment();
 
-		// 	return env?.os || OS;
-		// })();
+			return env?.os || OS;
+		})();
 
 		// User Home
-		// this.resolveUserHome = (async () => {
-		// 	const env = await this.remoteAgentService.getEnvironment();
-		// 	const userHome = this.maybeUnresolvedUserHome = env?.userHome ?? localUserHome;
+		this.resolveUserHome = (async () => {
+			const env = await this.remoteAgentService.getEnvironment();
+			const userHome = this.maybeUnresolvedUserHome = env?.userHome ?? localUserHome;
 
-		// 	return userHome;
-		// })();
+			return userHome;
+		})();
 	}
 
-	// path: Promise<IPath>;
-	userHome(options: { preferLocal: true; }): URI;
-	userHome(options?: { preferLocal: boolean; } | undefined): Promise<URI>;
-	userHome(options?: unknown): URI | Promise<URI> {
-		throw new Error('Method not implemented.');
-	}
-	hasValidBasename(resource: URI, basename?: string | undefined): Promise<boolean>;
-	hasValidBasename(resource: URI, os: OperatingSystem, basename?: string | undefined): boolean;
-	hasValidBasename(resource: unknown, os?: unknown, basename?: unknown): boolean | Promise<boolean> {
-		throw new Error('Method not implemented.');
-	}
-
-	// hasValidBasename(resource: URI, basename?: string): Promise<boolean>;
-	// hasValidBasename(resource: URI, os: OperatingSystem, basename?: string): boolean;
-	// hasValidBasename(resource: URI, arg2?: string | OperatingSystem, basename?: string): boolean | Promise<boolean> {
+	hasValidBasename(resource: URI, basename?: string): Promise<boolean>;
+	hasValidBasename(resource: URI, os: OperatingSystem, basename?: string): boolean;
+	hasValidBasename(resource: URI, arg2?: string | OperatingSystem, basename?: string): boolean | Promise<boolean> {
 
 		// async version
-		// if (typeof arg2 === 'string' || typeof arg2 === 'undefined') {
-			// return this.resolveOS.then(os => this.doHasValidBasename(resource, os, arg2));
-		// }
+		if (typeof arg2 === 'string' || typeof arg2 === 'undefined') {
+			return this.resolveOS.then(os => this.doHasValidBasename(resource, os, arg2));
+		}
 
 		// sync version
-		// return this.doHasValidBasename(resource, arg2, basename);
-	// }
+		return this.doHasValidBasename(resource, arg2, basename);
+	}
 
-	// private doHasValidBasename(resource: URI, os: OperatingSystem, name?: string): boolean {
+	private doHasValidBasename(resource: URI, os: OperatingSystem, name?: string): boolean {
 
-	// 	// Our `isValidBasename` method only works with our
-	// 	// standard schemes for files on disk, either locally
-	// 	// or remote.
-	// 	if (resource.scheme === Schemas.file || resource.scheme === Schemas.vscodeRemote) {
-	// 		return isValidBasename(name ?? basename(resource), os === OperatingSystem.Windows);
-	// 	}
+		// Our `isValidBasename` method only works with our
+		// standard schemes for files on disk, either locally
+		// or remote.
+		if (resource.scheme === Schemas.file || resource.scheme === Schemas.vscodeRemote) {
+			return isValidBasename(name ?? basename(resource), os === OperatingSystem.Windows);
+		}
 
-	// 	return true;
-	// }
+		return true;
+	}
 
 	get defaultUriScheme(): string {
 		return AbstractPathService.findDefaultUriScheme(this.environmentService, this.contextService);
@@ -174,23 +162,23 @@ export abstract class AbstractPathService implements IPathService {
 		return Schemas.file;
 	}
 
-	// userHome(options?: { preferLocal: boolean }): Promise<URI>;
-	// userHome(options: { preferLocal: true }): URI;
-	// userHome(options?: { preferLocal: boolean }): Promise<URI> | URI {
-	// 	return options?.preferLocal ? this.localUserHome : this.resolveUserHome;
-	// }
+	userHome(options?: { preferLocal: boolean }): Promise<URI>;
+	userHome(options: { preferLocal: true }): URI;
+	userHome(options?: { preferLocal: boolean }): Promise<URI> | URI {
+		return options?.preferLocal ? this.localUserHome : this.resolveUserHome;
+	}
 
 	get resolvedUserHome(): URI | undefined {
 		return this.maybeUnresolvedUserHome;
 	}
 
-	// get path(): Promise<IPath> {
-		// return this.resolveOS.then(os => {
-		// 	return os === OperatingSystem.Windows ?
-		// 		win32 :
-		// 		posix;
-		// });
-	// }
+	get path(): Promise<IPath> {
+		return this.resolveOS.then(os => {
+			return os === OperatingSystem.Windows ?
+				win32 :
+				posix;
+		});
+	}
 
 	async fileURI(_path: string): Promise<URI> {
 		let authority = '';
@@ -198,10 +186,10 @@ export abstract class AbstractPathService implements IPathService {
 		// normalize to fwd-slashes on windows,
 		// on other systems bwd-slashes are valid
 		// filename character, eg /f\oo/ba\r.txt
-		// const os = await this.resolveOS;
-		// if (os === OperatingSystem.Windows) {
-		// 	_path = _path.replace(/\\/g, '/');
-		// }
+		const os = await this.resolveOS;
+		if (os === OperatingSystem.Windows) {
+			_path = _path.replace(/\\/g, '/');
+		}
 
 		// check for authority as used in UNC shares
 		// or use the path as given

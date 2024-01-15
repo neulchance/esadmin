@@ -6,7 +6,7 @@
 import {createDecorator} from 'td/platform/instantiation/common/instantiation';
 import {DisposableStore, IDisposable} from 'td/base/common/lifecycle';
 import {ThemeColor} from 'td/base/common/themables';
-// import {Command} from 'td/editor/common/languages';
+import {Command} from 'td/editor/common/languages';
 import {IMarkdownString} from 'td/base/common/htmlContent';
 import {ColorIdentifier} from 'td/platform/theme/common/colorRegistry';
 import {IAuxiliaryStatusbarPart, IStatusbarEntryContainer} from 'td/workbench/browser/parts/statusbar/statusbarPart';
@@ -96,10 +96,10 @@ export function isStatusbarEntryPriority(thing: unknown): thing is IStatusbarEnt
 	return (typeof candidate?.primary === 'number' || isStatusbarEntryLocation(candidate?.primary)) && typeof candidate?.secondary === 'number';
 }
 
-// export const ShowTooltipCommand: Command = {
-// 	id: 'statusBar.entry.showTooltip',
-// 	title: ''
-// };
+export const ShowTooltipCommand: Command = {
+	id: 'statusBar.entry.showTooltip',
+	title: ''
+};
 
 export interface IStatusbarStyleOverride {
 	readonly priority: number; // lower has higher priority
@@ -165,7 +165,7 @@ export interface IStatusbarEntry {
 	 * Can use the special `ShowTooltipCommand` to
 	 * show the tooltip on click if provided.
 	 */
-	// readonly command?: string | Command | typeof ShowTooltipCommand;
+	readonly command?: string | Command | typeof ShowTooltipCommand;
 
 	/**
 	 * Whether to show a beak above the status bar entry.

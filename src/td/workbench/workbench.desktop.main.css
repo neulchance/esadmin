@@ -5,14 +5,5 @@
 
 /* NOTE: THIS FILE WILL BE OVERWRITTEN DURING BUILD TIME, DO NOT EDIT */
 
-#info {
-  color: purple;
-}
-
-#info2 {
-  color: blue;
-}
-
-#info3 {
-  color: blue;
+div.monaco.main.css {
 }

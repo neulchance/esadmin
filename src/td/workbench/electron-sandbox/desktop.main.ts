@@ -1,4 +1,5 @@
 import product from 'td/platform/product/common/product';
+import {NativeWindow} from 'td/workbench/electron-sandbox/window';
 import {domContentLoaded} from 'td/base/browser/dom';
 import {mainWindow} from 'td/base/browser/window';
 import {Disposable} from 'td/base/common/lifecycle';
@@ -65,7 +66,7 @@ export class DesktopMain extends Disposable {
 		const instantiationService = workbench.startup();
 
 		// Window
-		// this._register(instantiationService.createInstance(NativeWindow));
+		this._register(instantiationService.createInstance(NativeWindow));
   }
 
   private async initServices(): Promise<{serviceCollection: ServiceCollection; logService: ILogService; storageService: NativeWorkbenchStorageService; configurationService: IConfigurationService}> {

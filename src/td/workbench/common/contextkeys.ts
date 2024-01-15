@@ -8,12 +8,12 @@ import {URI} from 'td/base/common/uri';
 import {localize} from 'td/nls';
 import {IContextKeyService, IContextKey, RawContextKey} from 'td/platform/contextkey/common/contextkey';
 import {basename, dirname, extname, isEqual} from 'td/base/common/resources';
-// import {ILanguageService} from 'td/editor/common/languages/language';
+import {ILanguageService} from 'td/editor/common/languages/language';
 import {IFileService} from 'td/platform/files/common/files';
-// import {IModelService} from 'td/editor/common/services/model';
+import {IModelService} from 'td/editor/common/services/model';
 import {Schemas} from 'td/base/common/network';
 import {EditorInput} from 'td/workbench/common/editor/editorInput';
-// import {IEditorResolverService} from 'td/workbench/services/editor/common/editorResolverService';
+import {IEditorResolverService} from 'td/workbench/services/editor/common/editorResolverService';
 import {DEFAULT_EDITOR_ASSOCIATION} from 'td/workbench/common/editor';
 import {isLinux} from 'td/base/common/platform';
 
@@ -192,8 +192,8 @@ export class ResourceContextKey {
 	constructor(
 		@IContextKeyService private readonly _contextKeyService: IContextKeyService,
 		@IFileService private readonly _fileService: IFileService,
-		// @ILanguageService private readonly _languageService: ILanguageService,
-		// @IModelService private readonly _modelService: IModelService
+		@ILanguageService private readonly _languageService: ILanguageService,
+		@IModelService private readonly _modelService: IModelService
 	) {
 		this._schemeKey = ResourceContextKey.Scheme.bindTo(this._contextKeyService);
 		this._filenameKey = ResourceContextKey.Filename.bindTo(this._contextKeyService);
@@ -210,16 +210,16 @@ export class ResourceContextKey {
 			this._isFileSystemResource.set(Boolean(resource && _fileService.hasProvider(resource)));
 		}));
 
-		// this._disposables.add(_modelService.onModelAdded(model => {
-		// 	if (isEqual(model.uri, this.get())) {
-		// 		this._setLangId();
-		// 	}
-		// }));
-		// this._disposables.add(_modelService.onModelLanguageChanged(e => {
-		// 	if (isEqual(e.model.uri, this.get())) {
-		// 		this._setLangId();
-		// 	}
-		// }));
+		this._disposables.add(_modelService.onModelAdded(model => {
+			if (isEqual(model.uri, this.get())) {
+				this._setLangId();
+			}
+		}));
+		this._disposables.add(_modelService.onModelLanguageChanged(e => {
+			if (isEqual(e.model.uri, this.get())) {
+				this._setLangId();
+			}
+		}));
 	}
 
 	dispose(): void {
@@ -232,8 +232,8 @@ export class ResourceContextKey {
 			this._langIdKey.set(null);
 			return;
 		}
-		// const langId = this._modelService.getModel(value)?.getLanguageId() ?? this._languageService.guessLanguageIdByFilepathOrFirstLine(value);
-		// this._langIdKey.set(langId);
+		const langId = this._modelService.getModel(value)?.getLanguageId() ?? this._languageService.guessLanguageIdByFilepathOrFirstLine(value);
+		this._langIdKey.set(langId);
 	}
 
 	set(value: URI | null | undefined) {
@@ -285,7 +285,7 @@ export class ResourceContextKey {
 
 //#endregion
 
-/* export function applyAvailableEditorIds(contextKey: IContextKey<string>, editor: EditorInput | undefined | null, editorResolverService: IEditorResolverService): void {
+export function applyAvailableEditorIds(contextKey: IContextKey<string>, editor: EditorInput | undefined | null, editorResolverService: IEditorResolverService): void {
 	if (!editor) {
 		contextKey.set('');
 		return;
@@ -301,4 +301,4 @@ export class ResourceContextKey {
 	} else {
 		contextKey.set(editors.join(','));
 	}
-} */
+}

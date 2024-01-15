@@ -127,9 +127,6 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 			{proportionalLayout: false}
 		);
 
-		console.log('this.mainContainer', this.mainContainer)
-		console.log('workbenchGrid', workbenchGrid)
-		console.log('workbenchGrid.element', workbenchGrid.element)
 		this.mainContainer.prepend(workbenchGrid.element);
 		this.mainContainer.setAttribute('role', 'application');
 		this.workbenchGrid = workbenchGrid;

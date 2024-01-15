@@ -8,15 +8,15 @@ import {Disposable, MutableDisposable} from 'td/base/common/lifecycle';
 import {SimpleIconLabel} from 'td/base/browser/ui/iconLabel/simpleIconLabel';
 import {ICommandService} from 'td/platform/commands/common/commands';
 import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
-import {IStatusbarEntry, StatusbarEntryKinds} from 'td/workbench/services/statusbar/browser/statusbar';
+import {IStatusbarEntry, ShowTooltipCommand, StatusbarEntryKinds} from 'td/workbench/services/statusbar/browser/statusbar';
 import {WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification} from 'td/base/common/actions';
 import {IThemeService} from 'td/platform/theme/common/themeService';
 import {ThemeColor} from 'td/base/common/themables';
-// import {isThemeColor} from 'td/editor/common/editorCommon';
+import {isThemeColor} from 'td/editor/common/editorCommon';
 import {addDisposableListener, EventType, hide, show, append, EventHelper} from 'td/base/browser/dom';
 import {INotificationService} from 'td/platform/notification/common/notification';
 import {assertIsDefined} from 'td/base/common/types';
-// import {Command} from 'td/editor/common/languages';
+import {Command} from 'td/editor/common/languages';
 import {StandardKeyboardEvent} from 'td/base/browser/keyboardEvent';
 import {KeyCode} from 'td/base/common/keyCodes';
 import {renderIcon, renderLabelWithIcons} from 'td/base/browser/ui/iconLabel/iconLabels';
@@ -50,9 +50,9 @@ export class StatusbarEntryItem extends Disposable {
 		return assertIsDefined(this.entry).name;
 	}
 
-	// get hasCommand(): boolean {
-	// 	return typeof this.entry?.command !== 'undefined';
-	// }
+	get hasCommand(): boolean {
+		return typeof this.entry?.command !== 'undefined';
+	}
 
 	constructor(
 		private container: HTMLElement,
@@ -117,49 +117,52 @@ export class StatusbarEntryItem extends Disposable {
 		// Update: Hover
 		if (!this.entry || !this.isEqualTooltip(this.entry, entry)) {
 			const hoverContents = isMarkdownString(entry.tooltip) ? {markdown: entry.tooltip, markdownNotSupportedFallback: undefined} : entry.tooltip;
+			const entryOpensTooltip = entry.command === ShowTooltipCommand;
 			if (this.hover) {
-				this.hover.update(hoverContents);
+				this.hover.update(hoverContents, {disableHideOnClick: entryOpensTooltip});
 			} else {
-				this.hover = this._register(setupCustomHover(this.hoverDelegate, this.container, hoverContents));
+				this.hover = this._register(setupCustomHover(this.hoverDelegate, this.container, hoverContents, {disableHideOnClick: entryOpensTooltip}));
 			}
-			this.focusListener.value = addDisposableListener(this.labelContainer, EventType.FOCUS, (e) => {
-				EventHelper.stop(e);
-				this.hover?.show(false);
-			});
-			this.focusOutListener.value = addDisposableListener(this.labelContainer, EventType.FOCUS_OUT, (e) => {
-				EventHelper.stop(e);
-				this.hover?.hide();
-			});
+			if (!entryOpensTooltip) {
+				this.focusListener.value = addDisposableListener(this.labelContainer, EventType.FOCUS, e => {
+					EventHelper.stop(e);
+					this.hover?.show(false);
+				});
+				this.focusOutListener.value = addDisposableListener(this.labelContainer, EventType.FOCUS_OUT, e => {
+					EventHelper.stop(e);
+					this.hover?.hide();
+				});
+			}
 		}
 
 		// Update: Command
-		// if (!this.entry || entry.command !== this.entry.command) {
-		// 	this.commandMouseListener.clear();
-		// 	this.commandTouchListener.clear();
-		// 	this.commandKeyboardListener.clear();
+		if (!this.entry || entry.command !== this.entry.command) {
+			this.commandMouseListener.clear();
+			this.commandTouchListener.clear();
+			this.commandKeyboardListener.clear();
 
-		// 	const command = entry.command;
-		// 	if (command && (command !== ShowTooltipCommand || this.hover) /* "Show Hover" is only valid when we have a hover */) {
-		// 		this.commandMouseListener.value = addDisposableListener(this.labelContainer, EventType.CLICK, () => this.executeCommand(command));
-		// 		this.commandTouchListener.value = addDisposableListener(this.labelContainer, TouchEventType.Tap, () => this.executeCommand(command));
-		// 		this.commandKeyboardListener.value = addDisposableListener(this.labelContainer, EventType.KEY_DOWN, e => {
-		// 			const event = new StandardKeyboardEvent(e);
-		// 			if (event.equals(KeyCode.Space) || event.equals(KeyCode.Enter)) {
-		// 				EventHelper.stop(e);
+			const command = entry.command;
+			if (command && (command !== ShowTooltipCommand || this.hover) /* "Show Hover" is only valid when we have a hover */) {
+				this.commandMouseListener.value = addDisposableListener(this.labelContainer, EventType.CLICK, () => this.executeCommand(command));
+				this.commandTouchListener.value = addDisposableListener(this.labelContainer, TouchEventType.Tap, () => this.executeCommand(command));
+				this.commandKeyboardListener.value = addDisposableListener(this.labelContainer, EventType.KEY_DOWN, e => {
+					const event = new StandardKeyboardEvent(e);
+					if (event.equals(KeyCode.Space) || event.equals(KeyCode.Enter)) {
+						EventHelper.stop(e);
 
-		// 				this.executeCommand(command);
-		// 			} else if (event.equals(KeyCode.Escape) || event.equals(KeyCode.LeftArrow) || event.equals(KeyCode.RightArrow)) {
-		// 				EventHelper.stop(e);
+						this.executeCommand(command);
+					} else if (event.equals(KeyCode.Escape) || event.equals(KeyCode.LeftArrow) || event.equals(KeyCode.RightArrow)) {
+						EventHelper.stop(e);
 
-		// 				this.hover?.hide();
-		// 			}
-		// 		});
+						this.hover?.hide();
+					}
+				});
 
-		// 		this.labelContainer.classList.remove('disabled');
-		// 	} else {
-		// 		this.labelContainer.classList.add('disabled');
-		// 	}
-		// }
+				this.labelContainer.classList.remove('disabled');
+			} else {
+				this.labelContainer.classList.add('disabled');
+			}
+		}
 
 		// Update: Beak
 		if (!this.entry || entry.showBeak !== this.entry.showBeak) {
@@ -212,26 +215,26 @@ export class StatusbarEntryItem extends Disposable {
 		return tooltip === otherTooltip;
 	}
 
-	// private async executeCommand(command: string | Command): Promise<void> {
+	private async executeCommand(command: string | Command): Promise<void> {
 
-	// 	// Custom command from us: Show tooltip
-	// 	if (command === ShowTooltipCommand) {
-	// 		this.hover?.show(true /* focus */);
-	// 	}
+		// Custom command from us: Show tooltip
+		if (command === ShowTooltipCommand) {
+			this.hover?.show(true /* focus */);
+		}
 
-	// 	// Any other command is going through command service
-	// 	else {
-	// 		const id = typeof command === 'string' ? command : command.id;
-	// 		const args = typeof command === 'string' ? [] : command.arguments ?? [];
+		// Any other command is going through command service
+		else {
+			const id = typeof command === 'string' ? command : command.id;
+			const args = typeof command === 'string' ? [] : command.arguments ?? [];
 
-	// 		this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {id, from: 'status bar'});
-	// 		try {
-	// 			await this.commandService.executeCommand(id, ...args);
-	// 		} catch (error) {
-	// 			this.notificationService.error(toErrorMessage(error));
-	// 		}
-	// 	}
-	// }
+			this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {id, from: 'status bar'});
+			try {
+				await this.commandService.executeCommand(id, ...args);
+			} catch (error) {
+				this.notificationService.error(toErrorMessage(error));
+			}
+		}
+	}
 
 	private applyColor(container: HTMLElement, color: string | ThemeColor | undefined, isBackground?: boolean): void {
 		let colorResult: string | undefined = undefined;
@@ -242,29 +245,29 @@ export class StatusbarEntryItem extends Disposable {
 			this.foregroundListener.clear();
 		}
 
-		// if (color) {
-		// 	if (isThemeColor(color)) {
-		// 		colorResult = this.themeService.getColorTheme().getColor(color.id)?.toString();
+		if (color) {
+			if (isThemeColor(color)) {
+				colorResult = this.themeService.getColorTheme().getColor(color.id)?.toString();
 
-		// 		const listener = this.themeService.onDidColorThemeChange(theme => {
-		// 			const colorValue = theme.getColor(color.id)?.toString();
+				const listener = this.themeService.onDidColorThemeChange(theme => {
+					const colorValue = theme.getColor(color.id)?.toString();
 
-		// 			if (isBackground) {
-		// 				container.style.backgroundColor = colorValue ?? '';
-		// 			} else {
-		// 				container.style.color = colorValue ?? '';
-		// 			}
-		// 		});
+					if (isBackground) {
+						container.style.backgroundColor = colorValue ?? '';
+					} else {
+						container.style.color = colorValue ?? '';
+					}
+				});
 
-		// 		if (isBackground) {
-		// 			this.backgroundListener.value = listener;
-		// 		} else {
-		// 			this.foregroundListener.value = listener;
-		// 		}
-		// 	} else {
-		// 		colorResult = color;
-		// 	}
-		// }
+				if (isBackground) {
+					this.backgroundListener.value = listener;
+				} else {
+					this.foregroundListener.value = listener;
+				}
+			} else {
+				colorResult = color;
+			}
+		}
 
 		if (isBackground) {
 			container.style.backgroundColor = colorResult ?? '';

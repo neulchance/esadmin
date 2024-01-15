@@ -204,6 +204,7 @@ export class BrowserWindow extends BaseWindow {
 
 		// Layout
 		const viewport = isIOS && mainWindow.visualViewport ? mainWindow.visualViewport /** Visual viewport */ : mainWindow /** Layout viewport */;
+		console.log('EventType.RESIZE', EventType.RESIZE)
 		this._register(addDisposableListener(viewport, EventType.RESIZE, () => {
 			this.layoutService.layout();
 
