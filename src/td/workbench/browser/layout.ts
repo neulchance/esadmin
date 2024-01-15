@@ -6,17 +6,27 @@ import {coalesce} from 'td/base/common/arrays';
 import {IStatusbarService} from 'td/workbench/services/statusbar/browser/statusbar';
 import {SerializableGrid, ISerializableView, ISerializedGrid, Orientation, ISerializedNode, ISerializedLeafNode, Direction, IViewSize, Sizing} from 'td/base/browser/ui/grid/grid';
 import {IUntypedEditorInput} from 'td/workbench/common/editor';
-import {ILifecycleService} from '../services/lifecycle/common/lifecycle';
+import {ILifecycleService, StartupKind} from 'td/workbench//services/lifecycle/common/lifecycle';
 import {IFileService} from 'td/platform/files/common/files';
 import {IStorageService, StorageScope, StorageTarget} from 'td/platform/storage/common/storage';
 import {IConfigurationChangeEvent, IConfigurationService} from 'td/platform/configuration/common/configuration';
-import {IWorkspaceContextService} from 'td/platform/workspace/common/workspace';
+import {IWorkspaceContextService, WorkbenchState, isTemporaryWorkspace} from 'td/platform/workspace/common/workspace';
 import {Emitter} from 'td/base/common/event';
-import {IDimension, getClientArea, position, size} from 'td/base/browser/dom';
+import {IDimension, getActiveDocument, getClientArea, getWindow, getWindowId, getWindows, position, size} from 'td/base/browser/dom';
 import {ILogService} from 'td/platform/log/common/log';
-import {mainWindow} from 'td/base/browser/window';
 import {IPaneCompositePartService} from '../services/panecomposite/browser/panecomposite';
-import {IViewDescriptorService} from '../common/views';
+import {IViewDescriptorService, ViewContainerLocation} from 'td/workbench/common/views';
+import {IBrowserWorkbenchEnvironmentService} from '../services/environment/browser/environmentService';
+import {IPath, getTitleBarStyle} from 'td/platform/window/common/window';
+import {EditorGroupLayout, GroupsOrder, IEditorGroupsService} from 'td/workbench/services/editor/common/editorGroupsService';
+import {URI} from 'td/base/common/uri';
+import {IHostService} from 'td/workbench/services/host/browser/host';
+import {mainWindow} from 'td/base/browser/window';
+import {isFullscreen} from 'td/base/browser/browser';
+import {isWeb, isWindows} from 'td/base/common/platform';
+import {SidebarPart} from 'td/workbench/browser/parts/sidebar/sidebarPart';
+import {WINDOW_ACTIVE_BORDER, WINDOW_INACTIVE_BORDER} from 'td/workbench/common/theme';
+import {IThemeService} from 'td/platform/theme/common/themeService';
 
 interface ILayoutRuntimeState {
 	activeContainerId: number;
@@ -60,6 +70,29 @@ interface ILayoutState {
 	readonly initialization: ILayoutInitializationState;
 }
 
+enum LayoutClasses {
+	SIDEBAR_HIDDEN = 'nosidebar',
+	MAIN_EDITOR_AREA_HIDDEN = 'nomaineditorarea',
+	PANEL_HIDDEN = 'nopanel',
+	AUXILIARYBAR_HIDDEN = 'noauxiliarybar',
+	STATUSBAR_HIDDEN = 'nostatusbar',
+	FULLSCREEN = 'fullscreen',
+	MAXIMIZED = 'maximized',
+	WINDOW_BORDER = 'border'
+}
+
+interface IPathToOpen extends IPath {
+	readonly viewColumn?: number;
+}
+
+interface IInitialEditorsState {
+	readonly filesToOpenOrCreate?: IPathToOpen[];
+	readonly filesToDiff?: IPathToOpen[];
+	readonly filesToMerge?: IPathToOpen[];
+
+	readonly layout?: EditorGroupLayout;
+}
+
 export abstract class Layout extends Disposable /* implements IWorkbenchLayoutService */ {
 
   declare readonly _serviceBrand: undefined;
@@ -67,6 +100,25 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
   //#region Properties
 
   readonly mainContainer = document.createElement('div');
+	get activeContainer() { return this.getContainerFromDocument(getActiveDocument()); }
+	get containers(): Iterable<HTMLElement> {
+		const containers: HTMLElement[] = [];
+		for (const {window} of getWindows()) {
+			containers.push(this.getContainerFromDocument(window.document));
+		}
+
+		return containers;
+	}
+
+	private getContainerFromDocument(targetDocument: Document): HTMLElement {
+		if (targetDocument === this.mainContainer.ownerDocument) {
+			// main window
+			return this.mainContainer;
+		} else {
+			// auxiliary window
+			return targetDocument.body.getElementsByClassName('monaco-workbench')[0] as HTMLElement;
+		}
+	}
 
 	private _mainContainerDimension!: IDimension;
 	get mainContainerDimension(): IDimension { return this._mainContainerDimension; }
@@ -87,15 +139,16 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 	private editorPartView!: ISerializableView;
 	private statusBarPartView!: ISerializableView;
 
+	private environmentService!: IBrowserWorkbenchEnvironmentService;
 	private paneCompositeService!: IPaneCompositePartService;
 	private storageService!: IStorageService;
+	private hostService!: IHostService;
 	private configurationService!: IConfigurationService;
 	private contextService!: IWorkspaceContextService;
 	private statusBarService!: IStatusbarService;
 	private viewDescriptorService!: IViewDescriptorService;
 	private logService!: ILogService;
-
-	
+	private themeService!: IThemeService;
 
 	private state!: ILayoutState;
 	private stateModel!: LayoutStateModel;
@@ -111,9 +164,12 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
   protected initLayout(accessor: ServicesAccessor): void {
 
     // Services
+		this.environmentService = accessor.get(IBrowserWorkbenchEnvironmentService);
 		this.storageService = accessor.get(IStorageService);
+		this.hostService = accessor.get(IHostService);
 		this.configurationService = accessor.get(IConfigurationService);
 		this.contextService! = accessor.get(IWorkspaceContextService);
+		this.themeService = accessor.get(IThemeService);
 		this.logService = accessor.get(ILogService);
 		this.logService.setLevel(1)
 
@@ -169,7 +225,7 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 		}
 
 		if (isActiveDocument(container)) {
-			this._onDidLayoutActiveContainer.fire(dimension);
+		this._onDidLayoutActiveContainer.fire(dimension);
 		}
 
 		this._onDidLayoutContainer.fire({container, dimension}); */
@@ -213,10 +269,125 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 		return part;
 	}
 
+	private updateWindowsBorder(skipLayout = false) {
+		if (
+			isWeb ||
+			isWindows || // not working well with zooming and window control overlays
+			getTitleBarStyle(this.configurationService) !== 'custom'
+		) {
+			return;
+		}
+
+		const theme = this.themeService.getColorTheme();
+
+		const activeBorder = theme.getColor(WINDOW_ACTIVE_BORDER);
+		const inactiveBorder = theme.getColor(WINDOW_INACTIVE_BORDER);
+
+		const didHaveMainWindowBorder = this.hasMainWindowBorder();
+
+		for (const container of this.containers) {
+			const isMainContainer = container === this.mainContainer;
+			const isActiveContainer = this.activeContainer === container;
+			const containerWindowId = getWindowId(getWindow(container));
+
+			let windowBorder = false;
+			if (!this.state.runtime.mainWindowFullscreen && !this.state.runtime.maximized.has(containerWindowId) && (activeBorder || inactiveBorder)) {
+				windowBorder = true;
+
+				// If the inactive color is missing, fallback to the active one
+				const borderColor = isActiveContainer && this.state.runtime.hasFocus ? activeBorder : inactiveBorder ?? activeBorder;
+				container.style.setProperty('--window-border-color', borderColor?.toString() ?? 'transparent');
+			}
+
+			if (isMainContainer) {
+				this.state.runtime.mainWindowBorder = windowBorder;
+			}
+
+			container.classList.toggle(LayoutClasses.WINDOW_BORDER, windowBorder);
+		}
+
+		if (!skipLayout && didHaveMainWindowBorder !== this.hasMainWindowBorder()) {
+			this.layout();
+		}
+	}
+
 	private initLayoutState(lifecycleService: ILifecycleService, fileService: IFileService): void {
+		console.log(lifecycleService, fileService)
 		this.stateModel = new LayoutStateModel(this.storageService, this.configurationService, this.contextService, this.parent);
 		this.stateModel.load();
+
+		// Layout Initialization State
+		const initialEditorsState = this.getInitialEditorsState();
+		if (initialEditorsState) {
+			this.logService.info('Initial editor state', initialEditorsState);
+		}
+		const initialLayoutState: ILayoutInitializationState = {
+			layout: {
+				editors: initialEditorsState?.layout
+			},
+			editor: {
+				restoreEditors: this.shouldRestoreEditors(this.contextService, initialEditorsState),
+				editorsToOpen: this.resolveEditorsToOpen(fileService, initialEditorsState),
+			},
+			views: {
+				defaults: this.getDefaultLayoutViews(this.environmentService, this.storageService),
+				containerToRestore: {}
+			}
+		};
+
+		// Layout Runtime State
+		const layoutRuntimeState: ILayoutRuntimeState = {
+			activeContainerId: this.getActiveContainerId(),
+			mainWindowFullscreen: isFullscreen(mainWindow),
+			hasFocus: this.hostService.hasFocus,
+			maximized: new Set<number>(),
+			mainWindowBorder: false,
+			menuBar: {
+				toggled: false,
+			},
+			zenMode: {
+				transitionDisposables: new DisposableMap(),
+			}
+		};
+
+		this.state = {
+			initialization: initialLayoutState,
+			runtime: layoutRuntimeState,
+		};
+
+		// Sidebar View Container To Restore
+		if (/* this.isVisible(Parts.SIDEBAR_PART) */true) {
+
+			// Only restore last viewlet if window was reloaded or we are in development mode
+			let viewContainerToRestore: string | undefined;
+			if (!this.environmentService.isBuilt || lifecycleService.startupKind === StartupKind.ReloadedWindow || isWeb) {
+				viewContainerToRestore = this.storageService.get(SidebarPart.activeViewletSettingsKey, StorageScope.WORKSPACE, this.viewDescriptorService.getDefaultViewContainer(ViewContainerLocation.Sidebar)?.id);
+			} else {
+				viewContainerToRestore = this.viewDescriptorService.getDefaultViewContainer(ViewContainerLocation.Sidebar)?.id;
+			}
+
+			if (viewContainerToRestore) {
+				this.state.initialization.views.containerToRestore.sideBar = viewContainerToRestore;
+			} else {
+				this.stateModel.setRuntimeValue(LayoutStateKeys.SIDEBAR_HIDDEN, true);
+			}
+		}
+
+		// Activity bar cannot be hidden
+		// This check must be called after state is set
+		// because canActivityBarBeHidden calls isVisible
+		if (this.stateModel.getRuntimeValue(LayoutStateKeys.ACTIVITYBAR_HIDDEN) && !false) {
+			this.stateModel.setRuntimeValue(LayoutStateKeys.ACTIVITYBAR_HIDDEN, false);
+		}
+
+		// Window border
+		this.updateWindowsBorder(true);
 	}
+
+	
+	/* private canActivityBarBeHidden(): boolean {
+		return !(this.configurationService.getValue(LayoutSettings.ACTIVITY_BAR_LOCATION) === ActivityBarPosition.TOP && !this.isVisible(Parts.TITLEBAR_PART, mainWindow));
+	} */
 
 	private createGridDescriptor(): ISerializedGrid {
 		const {width, height} = this.stateModel.getInitializationValue(LayoutStateKeys.GRID_SIZE);
@@ -316,6 +487,88 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 
 	getSideBarPosition(): Position {
 		return this.stateModel.getRuntimeValue(LayoutStateKeys.SIDEBAR_POSITON);
+	}
+
+	private getActiveContainerId(): number {
+		const activeContainer = this.activeContainer;
+
+		return getWindow(activeContainer).tddevWindowId;
+	}
+
+	private getDefaultLayoutViews(environmentService: IBrowserWorkbenchEnvironmentService, storageService: IStorageService): string[] | undefined {
+		const defaultLayout = environmentService.options?.defaultLayout;
+		if (!defaultLayout) {
+			return undefined;
+		}
+
+		if (!defaultLayout.force && !storageService.isNew(StorageScope.WORKSPACE)) {
+			return undefined;
+		}
+
+		const {views} = defaultLayout;
+		if (views?.length) {
+			return views.map(view => view.id);
+		}
+
+		return undefined;
+	}
+
+	private shouldRestoreEditors(contextService: IWorkspaceContextService, initialEditorsState: IInitialEditorsState | undefined): boolean {
+
+		// Restore editors based on a set of rules:
+		// - never when running on temporary workspace
+		// - not when we have files to open, unless:
+		// - always when `window.restoreWindows: preserve`
+
+		if (isTemporaryWorkspace(contextService.getWorkspace())) {
+			return false;
+		}
+
+		const forceRestoreEditors = this.configurationService.getValue<string>('window.restoreWindows') === 'preserve';
+		return !!forceRestoreEditors || initialEditorsState === undefined;
+	}
+
+	private async resolveEditorsToOpen(fileService: IFileService, initialEditorsState: IInitialEditorsState | undefined): Promise<IEditorToOpen[]> {
+		// Empty workbench configured to open untitled file if empty
+		if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && this.configurationService.getValue('workbench.startupEditor') === 'newUntitledFile') {
+			return [{
+				editor: {resource: undefined} // open empty untitled file
+			}];
+		}
+
+		return [];
+	}
+
+	private _openedDefaultEditors: boolean = false;
+	get openedDefaultEditors() { return this._openedDefaultEditors; }
+
+	private getInitialEditorsState(): IInitialEditorsState | undefined {
+
+		// Check for editors / editor layout from `defaultLayout` options first
+		const defaultLayout = this.environmentService.options?.defaultLayout;
+		if ((defaultLayout?.editors?.length || defaultLayout?.layout?.editors) && (defaultLayout.force || this.storageService.isNew(StorageScope.WORKSPACE))) {
+			this._openedDefaultEditors = true;
+
+			return {
+				layout: defaultLayout.layout?.editors,
+				filesToOpenOrCreate: defaultLayout?.editors?.map(editor => {
+					return {
+						viewColumn: editor.viewColumn,
+						fileUri: URI.revive(editor.uri),
+						openOnlyIfExists: editor.openOnlyIfExists,
+						options: editor.options
+					};
+				})
+			};
+		}
+
+		// Then check for files to open, create or diff/merge from main side
+		const {filesToOpenOrCreate, filesToDiff, filesToMerge} = this.environmentService;
+		if (filesToOpenOrCreate || filesToDiff || filesToMerge) {
+			return {filesToOpenOrCreate, filesToDiff, filesToMerge};
+		}
+
+		return undefined;
 	}
 
 	private arrangeEditorNodes(nodes: { editor: ISerializedNode; sideBar?: ISerializedNode; auxiliaryBar?: ISerializedNode }, availableHeight: number, availableWidth: number): ISerializedNode {
@@ -422,6 +675,10 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 
 		return result;
 	}
+
+	hasMainWindowBorder(): boolean {
+		return this.state.runtime.mainWindowBorder;
+	}
 }
 
 //#region Layout State Model
@@ -505,6 +762,11 @@ interface ILayoutStateChangeEvent<T extends StorageKeyType> {
 	readonly value: T;
 }
 
+enum LegacyWorkbenchLayoutSettings {
+	STATUSBAR_VISIBLE = 'workbench.statusBar.visible', // Deprecated to UI State
+	SIDEBAR_POSITION = 'workbench.sideBar.location', // Deprecated to UI State
+}
+
 class LayoutStateModel extends Disposable {
 
 	static readonly STORAGE_PREFIX = 'workbench.';
@@ -526,7 +788,34 @@ class LayoutStateModel extends Disposable {
 	}
 
 	private updateStateFromLegacySettings(configurationChangeEvent: IConfigurationChangeEvent): void {
-		
+		const isZenMode = this.getRuntimeValue(LayoutStateKeys.ZEN_MODE_ACTIVE);
+
+		if (configurationChangeEvent.affectsConfiguration(LayoutSettings.ACTIVITY_BAR_LOCATION) && !isZenMode) {
+			// this.setRuntimeValueAndFire(LayoutStateKeys.ACTIVITYBAR_HIDDEN, this.isActivityBarHidden());
+		}
+
+		if (configurationChangeEvent.affectsConfiguration(LegacyWorkbenchLayoutSettings.STATUSBAR_VISIBLE) && !isZenMode) {
+			// this.setRuntimeValueAndFire(LayoutStateKeys.STATUSBAR_HIDDEN, !this.configurationService.getValue(LegacyWorkbenchLayoutSettings.STATUSBAR_VISIBLE));
+		}
+
+		if (configurationChangeEvent.affectsConfiguration(LegacyWorkbenchLayoutSettings.SIDEBAR_POSITION)) {
+			this.setRuntimeValueAndFire(LayoutStateKeys.SIDEBAR_POSITON, positionFromString(this.configurationService.getValue(LegacyWorkbenchLayoutSettings.SIDEBAR_POSITION) ?? 'left'));
+		}
+	}
+
+	private updateLegacySettingsFromState<T extends StorageKeyType>(key: RuntimeStateKey<T>, value: T): void {
+		const isZenMode = this.getRuntimeValue(LayoutStateKeys.ZEN_MODE_ACTIVE);
+		if (key.zenModeIgnore && isZenMode) {
+			return;
+		}
+
+		if (key === LayoutStateKeys.ACTIVITYBAR_HIDDEN) {
+			this.configurationService.updateValue(LayoutSettings.ACTIVITY_BAR_LOCATION, value ? ActivityBarPosition.HIDDEN : undefined);
+		} else if (key === LayoutStateKeys.STATUSBAR_HIDDEN) {
+			this.configurationService.updateValue(LegacyWorkbenchLayoutSettings.STATUSBAR_VISIBLE, !value);
+		} else if (key === LayoutStateKeys.SIDEBAR_POSITON) {
+			this.configurationService.updateValue(LegacyWorkbenchLayoutSettings.SIDEBAR_POSITION, positionToString(value as Position));
+		}
 	}
 
 	load(): void {
@@ -541,25 +830,96 @@ class LayoutStateModel extends Disposable {
 		}
 	}
 
+	save(workspace: boolean, global: boolean): void {
+		let key: keyof typeof LayoutStateKeys;
+
+		const isZenMode = this.getRuntimeValue(LayoutStateKeys.ZEN_MODE_ACTIVE);
+
+		for (key in LayoutStateKeys) {
+			const stateKey = LayoutStateKeys[key] as WorkbenchLayoutStateKey<StorageKeyType>;
+			if ((workspace && stateKey.scope === StorageScope.WORKSPACE) ||
+				(global && stateKey.scope === StorageScope.PROFILE)) {
+				if (isZenMode && stateKey instanceof RuntimeStateKey && stateKey.zenModeIgnore) {
+					continue; // Don't write out specific keys while in zen mode
+				}
+
+				this.saveKeyToStorage(stateKey);
+			}
+		}
+	}
+
 	getInitializationValue<T extends StorageKeyType>(key: InitializationStateKey<T>): T {
 		return this.stateCache.get(key.name) as T;
+	}
+
+	setInitializationValue<T extends StorageKeyType>(key: InitializationStateKey<T>, value: T): void {
+		this.stateCache.set(key.name, value);
 	}
 
 	getRuntimeValue<T extends StorageKeyType>(key: RuntimeStateKey<T>, fallbackToSetting?: boolean): T {
 		if (fallbackToSetting) {
 			switch (key) {
 				case LayoutStateKeys.ACTIVITYBAR_HIDDEN:
-				this.stateCache.set(key.name, false);
+					this.stateCache.set(key.name, this.isActivityBarHidden());
 					break;
 				case LayoutStateKeys.STATUSBAR_HIDDEN:
-					this.stateCache.set(key.name, !this.configurationService.getValue('workbench.statusBar.visible'));
+					this.stateCache.set(key.name, !this.configurationService.getValue(LegacyWorkbenchLayoutSettings.STATUSBAR_VISIBLE));
 					break;
 				case LayoutStateKeys.SIDEBAR_POSITON:
-					this.stateCache.set(key.name, this.configurationService.getValue('left'));
+					this.stateCache.set(key.name, this.configurationService.getValue(LegacyWorkbenchLayoutSettings.SIDEBAR_POSITION) ?? 'left');
 					break;
 			}
 		}
 
 		return this.stateCache.get(key.name) as T;
+	}
+
+	setRuntimeValue<T extends StorageKeyType>(key: RuntimeStateKey<T>, value: T): void {
+		this.stateCache.set(key.name, value);
+		const isZenMode = this.getRuntimeValue(LayoutStateKeys.ZEN_MODE_ACTIVE);
+
+		if (key.scope === StorageScope.PROFILE) {
+			if (!isZenMode || !key.zenModeIgnore) {
+				this.saveKeyToStorage<T>(key);
+				this.updateLegacySettingsFromState(key, value);
+			}
+		}
+	}
+
+	private isActivityBarHidden(): boolean {
+		const oldValue = this.configurationService.getValue<boolean | undefined>('workbench.activityBar.visible');
+		if (oldValue !== undefined) {
+			return !oldValue;
+		}
+		return this.configurationService.getValue(LayoutSettings.ACTIVITY_BAR_LOCATION) !== ActivityBarPosition.SIDE;
+	}
+
+	private setRuntimeValueAndFire<T extends StorageKeyType>(key: RuntimeStateKey<T>, value: T): void {
+		const previousValue = this.stateCache.get(key.name);
+		if (previousValue === value) {
+			return;
+		}
+
+		this.setRuntimeValue(key, value);
+		this._onDidChangeState.fire({key, value});
+	}
+
+	private saveKeyToStorage<T extends StorageKeyType>(key: WorkbenchLayoutStateKey<T>): void {
+		const value = this.stateCache.get(key.name) as T;
+		this.storageService.store(`${LayoutStateModel.STORAGE_PREFIX}${key.name}`, typeof value === 'object' ? JSON.stringify(value) : value, key.scope, key.target);
+	}
+
+	private loadKeyFromStorage<T extends StorageKeyType>(key: WorkbenchLayoutStateKey<T>): T | undefined {
+		let value: any = this.storageService.get(`${LayoutStateModel.STORAGE_PREFIX}${key.name}`, key.scope);
+
+		if (value !== undefined) {
+			switch (typeof key.defaultValue) {
+				case 'boolean': value = value === 'true'; break;
+				case 'number': value = parseInt(value); break;
+				case 'object': value = JSON.parse(value); break;
+			}
+		}
+
+		return value as T | undefined;
 	}
 }
