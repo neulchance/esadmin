@@ -97,6 +97,46 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 
   declare readonly _serviceBrand: undefined;
 
+	//#region Events
+
+	private readonly _onDidChangeZenMode = this._register(new Emitter<boolean>());
+	readonly onDidChangeZenMode = this._onDidChangeZenMode.event;
+
+	private readonly _onDidChangeCenteredLayout = this._register(new Emitter<boolean>());
+	readonly onDidChangeCenteredLayout = this._onDidChangeCenteredLayout.event;
+
+	private readonly _onDidChangePanelAlignment = this._register(new Emitter<PanelAlignment>());
+	readonly onDidChangePanelAlignment = this._onDidChangePanelAlignment.event;
+
+	private readonly _onDidChangeWindowMaximized = this._register(new Emitter<{ windowId: number; maximized: boolean }>());
+	readonly onDidChangeWindowMaximized = this._onDidChangeWindowMaximized.event;
+
+	private readonly _onDidChangePanelPosition = this._register(new Emitter<string>());
+	readonly onDidChangePanelPosition = this._onDidChangePanelPosition.event;
+
+	private readonly _onDidChangePartVisibility = this._register(new Emitter<void>());
+	readonly onDidChangePartVisibility = this._onDidChangePartVisibility.event;
+
+	private readonly _onDidChangeNotificationsVisibility = this._register(new Emitter<boolean>());
+	readonly onDidChangeNotificationsVisibility = this._onDidChangeNotificationsVisibility.event;
+
+	private readonly _onDidLayoutMainContainer = this._register(new Emitter<IDimension>());
+	readonly onDidLayoutMainContainer = this._onDidLayoutMainContainer.event;
+
+	private readonly _onDidLayoutActiveContainer = this._register(new Emitter<IDimension>());
+	readonly onDidLayoutActiveContainer = this._onDidLayoutActiveContainer.event;
+
+	private readonly _onDidLayoutContainer = this._register(new Emitter<{ container: HTMLElement; dimension: IDimension }>());
+	readonly onDidLayoutContainer = this._onDidLayoutContainer.event;
+
+	private readonly _onDidAddContainer = this._register(new Emitter<{ container: HTMLElement; disposables: DisposableStore }>());
+	readonly onDidAddContainer = this._onDidAddContainer.event;
+
+	private readonly _onDidChangeActiveContainer = this._register(new Emitter<void>());
+	readonly onDidChangeActiveContainer = this._onDidChangeActiveContainer.event;
+
+	//#endregion
+
   //#region Properties
 
   readonly mainContainer = document.createElement('div');
