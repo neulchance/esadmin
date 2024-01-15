@@ -1,4 +1,4 @@
-import {Disposable, DisposableMap, IDisposable} from 'td/base/common/lifecycle';
+import {Disposable, DisposableMap, DisposableStore, IDisposable} from 'td/base/common/lifecycle';
 import {Position, Parts, PanelOpensMaximizedOptions, IWorkbenchLayoutService, positionFromString, positionToString, panelOpensMaximizedFromString, PanelAlignment, ActivityBarPosition, LayoutSettings, MULTI_WINDOW_PARTS, SINGLE_WINDOW_PARTS, ZenModeSettings, EditorTabsMode} from 'td/workbench/services/layout/browser/layoutService';
 import {ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
 import {Part} from 'td/workbench/browser/part';
@@ -14,19 +14,27 @@ import {IWorkspaceContextService, WorkbenchState, isTemporaryWorkspace} from 'td
 import {Emitter} from 'td/base/common/event';
 import {IDimension, getActiveDocument, getClientArea, getWindow, getWindowId, getWindows, position, size} from 'td/base/browser/dom';
 import {ILogService} from 'td/platform/log/common/log';
-import {IPaneCompositePartService} from '../services/panecomposite/browser/panecomposite';
+import {IPaneCompositePartService} from 'td/workbench/services/panecomposite/browser/panecomposite';
 import {IViewDescriptorService, ViewContainerLocation} from 'td/workbench/common/views';
-import {IBrowserWorkbenchEnvironmentService} from '../services/environment/browser/environmentService';
+import {IBrowserWorkbenchEnvironmentService} from 'td/workbench/services/environment/browser/environmentService';
 import {IPath, getMenuBarVisibility, getTitleBarStyle} from 'td/platform/window/common/window';
 import {EditorGroupLayout, GroupsOrder, IEditorGroupsService} from 'td/workbench/services/editor/common/editorGroupsService';
 import {URI} from 'td/base/common/uri';
 import {IHostService} from 'td/workbench/services/host/browser/host';
-import {mainWindow} from 'td/base/browser/window';
 import {isFullscreen, isWCOEnabled} from 'td/base/browser/browser';
 import {isMacintosh, isNative, isWeb, isWindows} from 'td/base/common/platform';
 import {SidebarPart} from 'td/workbench/browser/parts/sidebar/sidebarPart';
 import {WINDOW_ACTIVE_BORDER, WINDOW_INACTIVE_BORDER} from 'td/workbench/common/theme';
 import {IThemeService} from 'td/platform/theme/common/themeService';
+import {IEditorService} from 'td/workbench/services/editor/common/editorService';
+import {IExtensionService} from 'td/workbench/services/extensions/common/extensions';
+import {ITitleService} from 'td/workbench/services/title/browser/titleService';
+import {INotificationService} from 'td/platform/notification/common/notification';
+import {IBannerService} from 'td/workbench/services/banner/browser/bannerService';
+import {IWorkingCopyBackupService} from 'td/workbench/services/workingCopy/common/workingCopyBackup';
+import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
+import {IAuxiliaryWindowService} from 'td/workbench/services/auxiliaryWindow/browser/auxiliaryWindowService';
+import {mainWindow} from 'td/base/browser/window';
 
 interface ILayoutRuntimeState {
 	activeContainerId: number;
@@ -180,15 +188,24 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 	private statusBarPartView!: ISerializableView;
 
 	private environmentService!: IBrowserWorkbenchEnvironmentService;
-	private paneCompositeService!: IPaneCompositePartService;
+	private extensionService!: IExtensionService;
+	private configurationService!: IConfigurationService;
 	private storageService!: IStorageService;
 	private hostService!: IHostService;
-	private configurationService!: IConfigurationService;
-	private contextService!: IWorkspaceContextService;
-	private statusBarService!: IStatusbarService;
+	private editorService!: IEditorService;
+	private mainPartEditorService!: IEditorService;
+	private editorGroupService!: IEditorGroupsService;
+	private paneCompositeService!: IPaneCompositePartService;
+	private titleService!: ITitleService;
 	private viewDescriptorService!: IViewDescriptorService;
-	private logService!: ILogService;
+	private contextService!: IWorkspaceContextService;
+	private workingCopyBackupService!: IWorkingCopyBackupService;
+	private notificationService!: INotificationService;
 	private themeService!: IThemeService;
+	private statusBarService!: IStatusbarService;
+	private logService!: ILogService;
+	private telemetryService!: ITelemetryService;
+	private auxiliaryWindowService!: IAuxiliaryWindowService;
 
 	private state!: ILayoutState;
 	private stateModel!: LayoutStateModel;
@@ -203,21 +220,31 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 
   protected initLayout(accessor: ServicesAccessor): void {
 
-    // Services
+    // Services (accessor.get responsibles to instantiation)
 		this.environmentService = accessor.get(IBrowserWorkbenchEnvironmentService);
-		this.storageService = accessor.get(IStorageService);
-		this.hostService = accessor.get(IHostService);
 		this.configurationService = accessor.get(IConfigurationService);
-		this.contextService! = accessor.get(IWorkspaceContextService);
+		this.hostService = accessor.get(IHostService);
+		this.contextService = accessor.get(IWorkspaceContextService);
+		this.storageService = accessor.get(IStorageService);
+		// this.workingCopyBackupService = accessor.get(IWorkingCopyBackupService);
 		this.themeService = accessor.get(IThemeService);
+		this.extensionService = accessor.get(IExtensionService);
 		this.logService = accessor.get(ILogService);
+		// this.telemetryService = accessor.get(ITelemetryService);
+		this.auxiliaryWindowService = accessor.get(IAuxiliaryWindowService);
 		this.logService.setLevel(1)
 
 
-    // Parts
+    // Parts (accessor.get responsibles to instantiation)
+		this.editorService = accessor.get(IEditorService);
+		this.mainPartEditorService = this.editorService.createScoped('main', this._store);
+		this.editorGroupService = accessor.get(IEditorGroupsService);
 		this.paneCompositeService = accessor.get(IPaneCompositePartService);
 		this.viewDescriptorService = accessor.get(IViewDescriptorService);
+		this.titleService = accessor.get(ITitleService);
+		this.notificationService = accessor.get(INotificationService);
 		this.statusBarService = accessor.get(IStatusbarService);
+		accessor.get(IBannerService);
 
 		// State
 		this.initLayoutState(accessor.get(ILifecycleService), accessor.get(IFileService));
@@ -225,34 +252,34 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 
   protected createWorkbenchLayout(): void {
 		console.log('createWorkbenchLayout this.getPart')
-		// const titleBar = this.getPart(Parts.TITLEBAR_PART);
-		// const bannerPart = this.getPart(Parts.BANNER_PART);
-		// const editorPart = this.getPart(Parts.EDITOR_PART);
-		// const activityBar = this.getPart(Parts.ACTIVITYBAR_PART);
-		// const panelPart = this.getPart(Parts.PANEL_PART);
-		// const auxiliaryBarPart = this.getPart(Parts.AUXILIARYBAR_PART);
-		// const sideBar = this.getPart(Parts.SIDEBAR_PART);
+		const titleBar = this.getPart(Parts.TITLEBAR_PART);
+		const bannerPart = this.getPart(Parts.BANNER_PART);
+		const editorPart = this.getPart(Parts.EDITOR_PART);
+		const activityBar = this.getPart(Parts.ACTIVITYBAR_PART);
+		const panelPart = this.getPart(Parts.PANEL_PART);
+		const auxiliaryBarPart = this.getPart(Parts.AUXILIARYBAR_PART);
+		const sideBar = this.getPart(Parts.SIDEBAR_PART);
 		const statusBar = this.getPart(Parts.STATUSBAR_PART);
 
 		// View references for all parts
-		// this.titleBarPartView = titleBar;
-		// this.bannerPartView = bannerPart;
-		// this.sideBarPartView = sideBar;
-		// this.activityBarPartView = activityBar;
-		// this.editorPartView = editorPart;
-		// this.panelPartView = panelPart;
-		// this.auxiliaryBarPartView = auxiliaryBarPart;
+		this.titleBarPartView = titleBar;
+		this.bannerPartView = bannerPart;
+		this.sideBarPartView = sideBar;
+		this.activityBarPartView = activityBar;
+		this.editorPartView = editorPart;
+		this.panelPartView = panelPart;
+		this.auxiliaryBarPartView = auxiliaryBarPart;
 		this.statusBarPartView = statusBar;
 
 		const viewMap = {
-			// [Parts.ACTIVITYBAR_PART]: this.activityBarPartView,
-			// [Parts.BANNER_PART]: this.bannerPartView,
-			// [Parts.TITLEBAR_PART]: this.titleBarPartView,
-			// [Parts.EDITOR_PART]: this.editorPartView,
-			// [Parts.PANEL_PART]: this.panelPartView,
-			// [Parts.SIDEBAR_PART]: this.sideBarPartView,
+			[Parts.ACTIVITYBAR_PART]: this.activityBarPartView,
+			[Parts.BANNER_PART]: this.bannerPartView,
+			[Parts.TITLEBAR_PART]: this.titleBarPartView,
+			[Parts.EDITOR_PART]: this.editorPartView,
+			[Parts.PANEL_PART]: this.panelPartView,
+			[Parts.SIDEBAR_PART]: this.sideBarPartView,
 			[Parts.STATUSBAR_PART]: this.statusBarPartView,
-			// [Parts.AUXILIARYBAR_PART]: this.auxiliaryBarPartView
+			[Parts.AUXILIARYBAR_PART]: this.auxiliaryBarPartView
 		};
 
 		const fromJSON = ({type}: { type: Parts }) => viewMap[type];
@@ -302,6 +329,7 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 	}
 
 	registerPart(part: Part): void {
+		console.log('registerPart', part)
 		this.parts.set(part.getId(), part);
 	}
 
@@ -310,6 +338,7 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const done = "\x1b[0m";
 		console.log(`${blue}getPart: ${key} ${done}`)
 		const part = this.parts.get(key);
+		console.log(part)
 		if (!part) {
 			throw new Error(`Unknown part ${key}`);
 		}

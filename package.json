@@ -50,6 +50,7 @@
     "native-is-elevated": "^0.7.0",
     "native-keymap": "^3.3.4",
     "surrealdb.wasm": "^0.7.0",
+    "tas-client-umd": "^0.1.8",
     "v8-inspect-profiler": "^0.1.0"
   }
 }

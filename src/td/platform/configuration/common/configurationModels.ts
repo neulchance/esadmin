@@ -383,7 +383,7 @@ export class ConfigurationModelParser {
 		return {contents, keys, overrides, restricted: filtered.restricted, hasExcludedProperties: filtered.hasExcludedProperties};
 	}
 
-	private filter(properties: any, configurationProperties: { [qualifiedKey: string]: IConfigurationPropertySchema | undefined }, filterOverriddenProperties: boolean, options?: ConfigurationParseOptions): { raw: object; restricted: string[]; hasExcludedProperties: boolean } {
+	private filter(properties: any, configurationProperties: { [qualifiedKey: string]: IConfigurationPropertySchema | undefined }, filterOverriddenProperties: boolean, options?: ConfigurationParseOptions): { raw: {}; restricted: string[]; hasExcludedProperties: boolean } {
 		let hasExcludedProperties = false;
 		if (!options?.scopes && !options?.skipRestricted && !options?.exclude?.length) {
 			return {raw: properties, restricted: [], hasExcludedProperties};
@@ -449,7 +449,7 @@ export class UserSettings extends Disposable {
 	) {
 		super();
 		this.parser = new ConfigurationModelParser(this.userSettingsResource.toString());
-		this._register(this.fileService.watch(extUri.dirname(this.userSettingsResource)));
+		// this._register(this.fileService.watch(extUri.dirname(this.userSettingsResource)));
 		// Also listen to the resource incase the resource is a symlink - https://github.com/microsoft/vscode/issues/118134
 		this._register(this.fileService.watch(this.userSettingsResource));
 		this._register(Event.any(

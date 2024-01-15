@@ -9,9 +9,9 @@ import {IMatch} from 'td/base/common/filters';
 import {IJSONSchema, IJSONSchemaMap} from 'td/base/common/jsonSchema';
 import {ResolvedKeybinding} from 'td/base/common/keybindings';
 import {URI} from 'td/base/common/uri';
-// import {/* IRange */any} from 'td/editor/common/core/range';
-// import {IEditorContribution} from 'td/editor/common/editorCommon';
-// import {ITextModel} from 'td/editor/common/model';
+import {IRange} from 'td/editor/common/core/range';
+import {IEditorContribution} from 'td/editor/common/editorCommon';
+import {ITextModel} from 'td/editor/common/model';
 import {ConfigurationTarget} from 'td/platform/configuration/common/configuration';
 import {ConfigurationScope, EditPresentationTypes, IExtensionInfo} from 'td/platform/configuration/common/configurationRegistry';
 import {IEditorOptions} from 'td/platform/editor/common/editor';
@@ -20,7 +20,7 @@ import {createDecorator} from 'td/platform/instantiation/common/instantiation';
 import {ResolvedKeybindingItem} from 'td/platform/keybinding/common/resolvedKeybindingItem';
 import {DEFAULT_EDITOR_ASSOCIATION, IEditorPane} from 'td/workbench/common/editor';
 import {EditorInput} from 'td/workbench/common/editor/editorInput';
-// import {Settings2EditorModel} from 'td/workbench/services/preferences/common/preferencesModels';
+import {Settings2EditorModel} from 'td/workbench/services/preferences/common/preferencesModels';
 
 export enum SettingValueType {
 	Null = 'null',
@@ -44,29 +44,29 @@ export enum SettingValueType {
 
 export interface ISettingsGroup {
 	id: string;
-	range: /* IRange */any;
+	range: IRange;
 	title: string;
-	titleRange: /* IRange */any;
+	titleRange: IRange;
 	sections: ISettingsSection[];
 	order?: number;
 	extensionInfo?: IExtensionInfo;
 }
 
 export interface ISettingsSection {
-	titleRange?: /* IRange */any;
+	titleRange?: IRange;
 	title?: string;
 	settings: ISetting[];
 }
 
 export interface ISetting {
-	range: /* IRange */any;
+	range: IRange;
 	key: string;
-	keyRange: /* IRange */any;
+	keyRange: IRange;
 	value: any;
-	valueRange: /* IRange */any;
+	valueRange: IRange;
 	description: string[];
 	descriptionIsMarkdown?: boolean;
-	descriptionRanges: /* IRange */any[];
+	descriptionRanges: IRange[];
 	overrides?: ISetting[];
 	overrideOf?: ISetting;
 	deprecationMessage?: string;
@@ -126,7 +126,7 @@ export interface IFilterResult {
 	query?: string;
 	filteredGroups: ISettingsGroup[];
 	allGroups: ISettingsGroup[];
-	matches: /* IRange */any[];
+	matches: IRange[];
 	metadata?: IStringDictionary<IFilterMetadata>;
 	exactMatch?: boolean;
 }
@@ -145,7 +145,7 @@ export enum SettingMatchType {
 
 export interface ISettingMatch {
 	setting: ISetting;
-	matches: /* IRange */any[] | null;
+	matches: IRange[] | null;
 	matchType: SettingMatchType;
 	score: number;
 }
@@ -186,13 +186,13 @@ export interface IPreferencesEditorModel<T> {
 }
 
 export type IGroupFilter = (group: ISettingsGroup) => boolean | null;
-export type ISettingMatcher = (setting: ISetting, group: ISettingsGroup) => { matches: /* IRange */any[]; matchType: SettingMatchType; score: number } | null;
+export type ISettingMatcher = (setting: ISetting, group: ISettingsGroup) => { matches: IRange[]; matchType: SettingMatchType; score: number } | null;
 
 export interface ISettingsEditorModel extends IPreferencesEditorModel<ISetting> {
 	readonly onDidChangeGroups: Event<void>;
 	settingsGroups: ISettingsGroup[];
 	filterSettings(filter: string, groupFilter: IGroupFilter, settingMatcher: ISettingMatcher): ISettingMatch[];
-	findValueMatches(filter: string, setting: ISetting): /* IRange */any[];
+	findValueMatches(filter: string, setting: ISetting): IRange[];
 	updateResultGroup(id: string, resultGroup: ISearchResultGroup | undefined): IFilterResult | undefined;
 }
 
@@ -243,8 +243,8 @@ export interface IPreferencesService {
 	getFolderSettingsResource(resource: URI): URI | null;
 
 	createPreferencesEditorModel(uri: URI): Promise<IPreferencesEditorModel<ISetting> | null>;
-	resolveModel(uri: URI): /* ITextModel */ | null;
-	createSettings2EditorModel(): /* Settings2EditorModel */ any; // TODO
+	resolveModel(uri: URI): ITextModel | null;
+	createSettings2EditorModel(): Settings2EditorModel; // TODO
 
 	openRawDefaultSettings(): Promise<IEditorPane | undefined>;
 	openSettings(options?: IOpenSettingsOptions): Promise<IEditorPane | undefined>;
@@ -322,7 +322,7 @@ export interface IKeybindingsEditorPane extends IEditorPane {
 }
 
 export const DEFINE_KEYBINDING_EDITOR_CONTRIB_ID = 'editor.contrib.defineKeybinding';
-export interface IDefineKeybindingEditorContribution /* extends IEditorContribution */ {
+export interface IDefineKeybindingEditorContribution extends IEditorContribution {
 	showDefineKeybindingWidget(): void;
 }
 

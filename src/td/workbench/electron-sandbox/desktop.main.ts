@@ -57,7 +57,7 @@ export class DesktopMain extends Disposable {
     // Init services and wait for DOM to be ready in parallel
 		const [services] = await Promise.all([this.initServices(), domContentLoaded(mainWindow)]);
 
-    // Create Workplane
+    // Create Workbench
     const workbench = new Workbench(mainWindow.document.body, {extraClasses: this.getExtraClasses()}, services.serviceCollection, services.logService);
 
     // Listeners

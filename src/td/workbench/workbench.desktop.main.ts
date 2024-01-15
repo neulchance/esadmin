@@ -19,14 +19,19 @@ import 'td/workbench/electron-sandbox/desktop.main';
 
 //#region --- workbench services
 
+import 'td/workbench/services/textfile/electron-sandbox/nativeTextFileService';
+import 'td/workbench/services/dialogs/electron-sandbox/fileDialogService';
+import 'td/workbench/services/workspaces/electron-sandbox/workspacesService';
 import 'td/workbench/services/lifecycle/electron-sandbox/lifecycleService';
 import 'td/workbench/services/host/electron-sandbox/nativeHostService';
+import 'td/workbench/services/update/electron-sandbox/updateService';
 import 'td/workbench/services/themes/electron-sandbox/nativeHostColorSchemeService';
 import 'td/platform/extensionResourceLoader/common/extensionResourceLoaderService';
 import 'td/workbench/services/telemetry/electron-sandbox/telemetryService';
-// 
+import 'td/workbench/services/title/electron-sandbox/titleService';
 import 'td/workbench/services/extensions/electron-sandbox/nativeExtensionService';
 import 'td/workbench/services/contextmenu/electron-sandbox/contextmenuService';
+import 'td/workbench/services/history/browser/historyService';
 import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementService';
 import 'td/workbench/services/path/electron-sandbox/pathService';
 import 'td/platform/remote/electron-sandbox/sharedProcessTunnelService';
@@ -35,6 +40,7 @@ import 'td/workbench/services/request/electron-sandbox/requestService';
 import 'td/workbench/services/extensions/electron-sandbox/extensionsScannerService';
 import 'td/workbench/services/accessibility/electron-sandbox/accessibilityService';
 import 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayout';
+import 'td/workbench/services/files/electron-sandbox/elevatedFileService';
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {IUserDataInitializationService, UserDataInitializationService} from 'td/workbench/services/userData/browser/userDataInit';

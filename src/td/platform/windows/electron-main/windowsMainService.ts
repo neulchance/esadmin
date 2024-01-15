@@ -4,6 +4,7 @@
  *---------------------------------------------------------------------------------------------------*/
 
 import {BrowserWindow, WebContents} from 'electron';
+import {hostname, release, arch} from 'os';
 import {distinct} from 'td/base/common/arrays';
 import {IPath, IPathsToWaitFor, IWindowSettings} from 'td/platform/window/common/window';
 import {IProcessEnvironment} from 'td/base/common/platform';
@@ -150,6 +151,8 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
 				window: [],
 				global: this.loggerService.getRegisteredLoggers()
 			},
+
+      os: {release: release(), hostname: hostname(), arch: arch()},
     }
     
     if (!window) {

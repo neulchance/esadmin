@@ -24,7 +24,7 @@ import {ConfigurationEditing, EditableConfigurationTarget} from 'td/workbench/se
 import {WorkspaceConfiguration, FolderConfiguration, RemoteUserConfiguration, UserConfiguration, DefaultConfiguration, ApplicationConfiguration} from 'td/workbench/services/configuration/browser/configuration';
 import {IJSONSchema, IJSONSchemaMap} from 'td/base/common/jsonSchema';
 import {mark} from 'td/base/common/performance';
-// import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
+import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
 import {IFileService} from 'td/platform/files/common/files';
 import {IWorkbenchEnvironmentService} from 'td/workbench/services/environment/common/environmentService';
 import {IWorkbenchContribution, IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from 'td/workbench/common/contributions';
@@ -32,7 +32,7 @@ import {ILifecycleService, LifecyclePhase} from 'td/workbench/services/lifecycle
 import {ILogService} from 'td/platform/log/common/log';
 import {toErrorMessage} from 'td/base/common/errorMessage';
 import {IUriIdentityService} from 'td/platform/uriIdentity/common/uriIdentity';
-// import {IWorkspaceTrustManagementService} from 'td/platform/workspace/common/workspaceTrust';
+import {IWorkspaceTrustManagementService} from 'td/platform/workspace/common/workspaceTrust';
 import {delta, distinct, equals as arrayEquals} from 'td/base/common/arrays';
 import {IStringDictionary} from 'td/base/common/collections';
 import {IExtensionService} from 'td/workbench/services/extensions/common/extensions';
@@ -111,7 +111,7 @@ export class WorkspaceService extends Disposable implements IWorkbenchConfigurat
 		private readonly userDataProfileService: IUserDataProfileService,
 		private readonly userDataProfilesService: IUserDataProfilesService,
 		private readonly fileService: IFileService,
-		// private readonly remoteAgentService: IRemoteAgentService,
+		private readonly remoteAgentService: IRemoteAgentService,
 		private readonly uriIdentityService: IUriIdentityService,
 		private readonly logService: ILogService,
 		policyService: IPolicyService
@@ -1029,7 +1029,7 @@ export class WorkspaceService extends Disposable implements IWorkbenchConfigurat
 		}
 
 		// Use same instance of ConfigurationEditing to make sure all writes go through the same queue
-		this.configurationEditing = this.configurationEditing ?? this.instantiationService.createInstance(ConfigurationEditing, /* (await this.remoteAgentService.getEnvironment())?.settingsPath ??  */null);
+		this.configurationEditing = this.configurationEditing ?? this.instantiationService.createInstance(ConfigurationEditing, (await this.remoteAgentService.getEnvironment())?.settingsPath ?? null);
 		await this.configurationEditing.writeConfiguration(editableConfigurationTarget, {key, value}, {scopes: overrides, ...options});
 		switch (editableConfigurationTarget) {
 			case EditableConfigurationTarget.USER_LOCAL:
@@ -1145,20 +1145,20 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 	constructor(
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
-		// @IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
-		// @IExtensionService extensionService: IExtensionService,
+		@IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
+		@IExtensionService extensionService: IExtensionService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 	) {
 		super();
 
-		// extensionService.whenInstalledExtensionsRegistered().then(() => {
-		// 	this.registerConfigurationSchemas();
+		extensionService.whenInstalledExtensionsRegistered().then(() => {
+			this.registerConfigurationSchemas();
 
-		// 	const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
-		// 	const delayer = this._register(new Delayer<void>(50));
-		// 	this._register(Event.any(configurationRegistry.onDidUpdateConfiguration, configurationRegistry.onDidSchemaChange)(() =>
-		// 		delayer.trigger(() => this.registerConfigurationSchemas(), lifecycleService.phase === LifecyclePhase.Eventually ? undefined : 2500 /* delay longer in early phases */)));
-		// });
+			const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
+			const delayer = this._register(new Delayer<void>(50));
+			this._register(Event.any(configurationRegistry.onDidUpdateConfiguration, configurationRegistry.onDidSchemaChange, workspaceTrustManagementService.onDidChangeTrust)(() =>
+				delayer.trigger(() => this.registerConfigurationSchemas(), lifecycleService.phase === LifecyclePhase.Eventually ? undefined : 2500 /* delay longer in early phases */)));
+		});
 	}
 
 	private registerConfigurationSchemas(): void {
@@ -1296,6 +1296,9 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 	}
 
 	private checkAndFilterPropertiesRequiringTrust(properties: IStringDictionary<IConfigurationPropertySchema>): IStringDictionary<IConfigurationPropertySchema> {
+		if (this.workspaceTrustManagementService.isWorkspaceTrusted()) {
+			return properties;
+		}
 
 		const result: IStringDictionary<IConfigurationPropertySchema> = {};
 		Object.entries(properties).forEach(([key, value]) => {
@@ -1310,20 +1313,57 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 class ResetConfigurationDefaultsOverridesCache extends Disposable implements IWorkbenchContribution {
 	constructor(
 		@IConfigurationService configurationService: WorkspaceService,
-		// @IExtensionService extensionService: IExtensionService,
+		@IExtensionService extensionService: IExtensionService,
 	) {
 		super();
 		if (configurationService.hasCachedConfigurationDefaultsOverrides()) {
-			// extensionService.whenInstalledExtensionsRegistered().then(() => configurationService.reloadConfiguration(ConfigurationTarget.DEFAULT));
+			extensionService.whenInstalledExtensionsRegistered().then(() => configurationService.reloadConfiguration(ConfigurationTarget.DEFAULT));
 		}
 	}
 }
 
+class UpdateExperimentalSettingsDefaults extends Disposable implements IWorkbenchContribution {
+
+	private readonly processedExperimentalSettings = new Set<string>();
+	private readonly configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
+
+	constructor(
+		// @IWorkbenchAssignmentService private readonly workbenchAssignmentService: IWorkbenchAssignmentService
+	) {
+		super();
+		this.processExperimentalSettings(Object.keys(this.configurationRegistry.getConfigurationProperties()));
+		this._register(this.configurationRegistry.onDidUpdateConfiguration(({properties}) => this.processExperimentalSettings(properties)));
+	}
+
+	private async processExperimentalSettings(properties: Iterable<string>): Promise<void> {
+		const overrides: IStringDictionary<any> = {};
+		const allProperties = this.configurationRegistry.getConfigurationProperties();
+		for (const property of properties) {
+			const schema = allProperties[property];
+			if (!schema?.tags?.includes('experimental')) {
+				continue;
+			}
+			if (this.processedExperimentalSettings.has(property)) {
+				continue;
+			}
+			this.processedExperimentalSettings.add(property);
+			// try {
+			// 	const value = await this.workbenchAssignmentService.getTreatment(`config.${property}`);
+			// 	if (!isUndefined(value) && !equals(value, schema.default)) {
+			// 		overrides[property] = value;
+			// 	}
+			// } catch (error) {/*ignore */ }
+		}
+		if (Object.keys(overrides).length) {
+			this.configurationRegistry.registerDefaultConfigurations([{overrides, source: localize('experimental', "Experiments")}]);
+		}
+	}
+}
 
 const workbenchContributionsRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchContributionsRegistry.registerWorkbenchContribution(RegisterConfigurationSchemasContribution, LifecyclePhase.Restored);
 workbenchContributionsRegistry.registerWorkbenchContribution(ResetConfigurationDefaultsOverridesCache, LifecyclePhase.Eventually);
-// workbenchContributionsRegistry.registerWorkbenchContribution(UpdateExperimentalSettingsDefaults, LifecyclePhase.Ready);
+workbenchContributionsRegistry.registerWorkbenchContribution(UpdateExperimentalSettingsDefaults, LifecyclePhase.Ready);
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 configurationRegistry.registerConfiguration({
