@@ -106,7 +106,6 @@ export class SidebarPart extends AbstractPaneCompositePart {
 		);
 
 		this.acitivityBarPart = this._register(instantiationService.createInstance(ActivitybarPart, this));
-		console.log('this.acitivityBarPart', this.acitivityBarPart)
 		this.rememberActivityBarVisiblePosition();
 		this._register(configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(LayoutSettings.ACTIVITY_BAR_LOCATION)) {
