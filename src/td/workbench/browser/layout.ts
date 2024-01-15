@@ -15,6 +15,8 @@ import {Emitter} from 'td/base/common/event';
 import {IDimension, getClientArea, position, size} from 'td/base/browser/dom';
 import {ILogService} from 'td/platform/log/common/log';
 import {mainWindow} from 'td/base/browser/window';
+import {IPaneCompositePartService} from '../services/panecomposite/browser/panecomposite';
+import {IViewDescriptorService} from '../common/views';
 
 interface ILayoutRuntimeState {
 	activeContainerId: number;
@@ -85,11 +87,15 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 	private editorPartView!: ISerializableView;
 	private statusBarPartView!: ISerializableView;
 
+	private paneCompositeService!: IPaneCompositePartService;
 	private storageService!: IStorageService;
 	private configurationService!: IConfigurationService;
 	private contextService!: IWorkspaceContextService;
 	private statusBarService!: IStatusbarService;
+	private viewDescriptorService!: IViewDescriptorService;
 	private logService!: ILogService;
+
+	
 
 	private state!: ILayoutState;
 	private stateModel!: LayoutStateModel;
@@ -113,6 +119,8 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 
 
     // Parts
+		this.paneCompositeService = accessor.get(IPaneCompositePartService);
+		this.viewDescriptorService = accessor.get(IViewDescriptorService);
 		this.statusBarService = accessor.get(IStatusbarService);
 
 		// State
@@ -120,17 +128,24 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
   }
 
   protected createWorkbenchLayout(): void {
+		const editorPart = this.getPart(Parts.EDITOR_PART);
 		const statusBar = this.getPart(Parts.STATUSBAR_PART);
-		const activityBar = this.getPart(Parts.ACTIVITYBAR_PART);
 		const sideBar = this.getPart(Parts.SIDEBAR_PART);
+		const activityBar = this.getPart(Parts.ACTIVITYBAR_PART);
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const done = "\x1b[0m";
+		console.log(`${green} Welcome to the app! ${done}`);
+		console.log(`${blue}activityBar${done}`)
+		console.log(activityBar)
 
 		this.statusBarPartView = statusBar;
 		this.activityBarPartView = activityBar;
+		this.editorPartView = editorPart;
 		this.sideBarPartView = sideBar;
 
 		const viewMap = {
-			[Parts.ACTIVITYBAR_PART]: this.activityBarPartView,
+			[Parts.EDITOR_PART]: this.editorPartView,
 			[Parts.SIDEBAR_PART]: this.sideBarPartView,
+			[Parts.ACTIVITYBAR_PART]: this.activityBarPartView,
 			[Parts.STATUSBAR_PART]: this.statusBarPartView,
 		}
 
@@ -186,6 +201,10 @@ export abstract class Layout extends Disposable /* implements IWorkbenchLayoutSe
 
 	/*  */
 	protected getPart(key: Parts): Part {
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const done = "\x1b[0m";
+		console.log(`${blue} getPart ${done}`)
+		console.log(`${blue} ${key} ${done}`)
+		console.log(key)
 		const part = this.parts.get(key);
 		if (!part) {
 			throw new Error(`Unknown part ${key}`);
