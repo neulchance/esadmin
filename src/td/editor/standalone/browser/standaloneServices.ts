@@ -14,86 +14,86 @@ import 'td/editor/browser/services/hoverService';
 
 import * as strings from 'td/base/common/strings';
 import * as dom from 'td/base/browser/dom';
-import { StandardKeyboardEvent } from 'td/base/browser/keyboardEvent';
-import { Emitter, Event } from 'td/base/common/event';
-import { ResolvedKeybinding, KeyCodeChord, Keybinding, decodeKeybinding } from 'td/base/common/keybindings';
-import { IDisposable, IReference, ImmortalReference, toDisposable, DisposableStore, Disposable, combinedDisposable } from 'td/base/common/lifecycle';
-import { OS, isLinux, isMacintosh } from 'td/base/common/platform';
+import {StandardKeyboardEvent} from 'td/base/browser/keyboardEvent';
+import {Emitter, Event} from 'td/base/common/event';
+import {ResolvedKeybinding, KeyCodeChord, Keybinding, decodeKeybinding} from 'td/base/common/keybindings';
+import {IDisposable, IReference, ImmortalReference, toDisposable, DisposableStore, Disposable, combinedDisposable} from 'td/base/common/lifecycle';
+import {OS, isLinux, isMacintosh} from 'td/base/common/platform';
 import Severity from 'td/base/common/severity';
-import { URI } from 'td/base/common/uri';
-import { IBulkEditOptions, IBulkEditResult, IBulkEditService, ResourceEdit, ResourceTextEdit } from 'td/editor/browser/services/bulkEditService';
-import { isDiffEditorConfigurationKey, isEditorConfigurationKey } from 'td/editor/common/config/editorConfigurationSchema';
-import { EditOperation, ISingleEditOperation } from 'td/editor/common/core/editOperation';
-import { IPosition, Position as Pos } from 'td/editor/common/core/position';
-import { Range } from 'td/editor/common/core/range';
-import { ITextModel, ITextSnapshot } from 'td/editor/common/model';
-import { IModelService } from 'td/editor/common/services/model';
-import { IResolvedTextEditorModel, ITextModelContentProvider, ITextModelService } from 'td/editor/common/services/resolverService';
-import { ITextResourceConfigurationService, ITextResourcePropertiesService, ITextResourceConfigurationChangeEvent } from 'td/editor/common/services/textResourceConfiguration';
-import { CommandsRegistry, ICommandEvent, ICommandHandler, ICommandService } from 'td/platform/commands/common/commands';
-import { IConfigurationChangeEvent, IConfigurationData, IConfigurationOverrides, IConfigurationService, IConfigurationModel, IConfigurationValue, ConfigurationTarget } from 'td/platform/configuration/common/configuration';
-import { Configuration, ConfigurationModel, ConfigurationChangeEvent } from 'td/platform/configuration/common/configurationModels';
-import { IContextKeyService, ContextKeyExpression } from 'td/platform/contextkey/common/contextkey';
-import { IConfirmation, IConfirmationResult, IDialogService, IInputResult, IPrompt, IPromptResult, IPromptWithCustomCancel, IPromptResultWithCancel, IPromptWithDefaultCancel, IPromptBaseButton } from 'td/platform/dialogs/common/dialogs';
-import { createDecorator, IInstantiationService, ServiceIdentifier } from 'td/platform/instantiation/common/instantiation';
-import { AbstractKeybindingService } from 'td/platform/keybinding/common/abstractKeybindingService';
-import { IKeybindingService, IKeyboardEvent, KeybindingsSchemaContribution } from 'td/platform/keybinding/common/keybinding';
-import { KeybindingResolver } from 'td/platform/keybinding/common/keybindingResolver';
-import { IKeybindingItem, KeybindingsRegistry } from 'td/platform/keybinding/common/keybindingsRegistry';
-import { ResolvedKeybindingItem } from 'td/platform/keybinding/common/resolvedKeybindingItem';
-import { USLayoutResolvedKeybinding } from 'td/platform/keybinding/common/usLayoutResolvedKeybinding';
-import { ILabelService, ResourceLabelFormatter, IFormatterChangeEvent, Verbosity } from 'td/platform/label/common/label';
-import { INotification, INotificationHandle, INotificationService, IPromptChoice, IPromptOptions, NoOpNotification, IStatusMessageOptions, INotificationSource, INotificationSourceFilter, NotificationsFilter } from 'td/platform/notification/common/notification';
-import { IProgressRunner, IEditorProgressService, IProgressService, IProgress, IProgressCompositeOptions, IProgressDialogOptions, IProgressNotificationOptions, IProgressOptions, IProgressStep, IProgressWindowOptions } from 'td/platform/progress/common/progress';
-import { ITelemetryService, TelemetryLevel } from 'td/platform/telemetry/common/telemetry';
-import { ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier, IWorkspace, IWorkspaceContextService, IWorkspaceFolder, IWorkspaceFoldersChangeEvent, IWorkspaceFoldersWillChangeEvent, WorkbenchState, WorkspaceFolder, STANDALONE_EDITOR_WORKSPACE_ID } from 'td/platform/workspace/common/workspace';
-import { ILayoutService } from 'td/platform/layout/browser/layoutService';
-import { StandaloneServicesNLS } from 'td/editor/common/standaloneStrings';
-import { basename } from 'td/base/common/resources';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { ConsoleLogger, ILogService } from 'td/platform/log/common/log';
-import { IWorkspaceTrustManagementService, IWorkspaceTrustTransitionParticipant, IWorkspaceTrustUriInfo } from 'td/platform/workspace/common/workspaceTrust';
-import { EditorOption } from 'td/editor/common/config/editorOptions';
-import { ICodeEditor, IDiffEditor } from 'td/editor/browser/editorBrowser';
-import { IContextMenuService, IContextViewDelegate, IContextViewService } from 'td/platform/contextview/browser/contextView';
-import { ContextViewService } from 'td/platform/contextview/browser/contextViewService';
-import { LanguageService } from 'td/editor/common/services/languageService';
-import { ContextMenuService } from 'td/platform/contextview/browser/contextMenuService';
-import { getSingletonServiceDescriptors, InstantiationType, registerSingleton } from 'td/platform/instantiation/common/extensions';
-import { OpenerService } from 'td/editor/browser/services/openerService';
-import { IEditorWorkerService } from 'td/editor/common/services/editorWorker';
-import { EditorWorkerService } from 'td/editor/browser/services/editorWorkerService';
-import { ILanguageService } from 'td/editor/common/languages/language';
-import { MarkerDecorationsService } from 'td/editor/common/services/markerDecorationsService';
-import { IMarkerDecorationsService } from 'td/editor/common/services/markerDecorations';
-import { ModelService } from 'td/editor/common/services/modelService';
-import { StandaloneQuickInputService } from 'td/editor/standalone/browser/quickInput/standaloneQuickInputService';
-import { StandaloneThemeService } from 'td/editor/standalone/browser/standaloneThemeService';
-import { IStandaloneThemeService } from 'td/editor/standalone/common/standaloneTheme';
-import { AccessibilityService } from 'td/platform/accessibility/browser/accessibilityService';
-import { IAccessibilityService } from 'td/platform/accessibility/common/accessibility';
-import { IMenuService } from 'td/platform/actions/common/actions';
-import { MenuService } from 'td/platform/actions/common/menuService';
-import { BrowserClipboardService } from 'td/platform/clipboard/browser/clipboardService';
-import { IClipboardService } from 'td/platform/clipboard/common/clipboardService';
-import { ContextKeyService } from 'td/platform/contextkey/browser/contextKeyService';
-import { SyncDescriptor } from 'td/platform/instantiation/common/descriptors';
-import { InstantiationService } from 'td/platform/instantiation/common/instantiationService';
-import { ServiceCollection } from 'td/platform/instantiation/common/serviceCollection';
-import { IListService, ListService } from 'td/platform/list/browser/listService';
-import { IMarkerService } from 'td/platform/markers/common/markers';
-import { MarkerService } from 'td/platform/markers/common/markerService';
-import { IOpenerService } from 'td/platform/opener/common/opener';
-import { IQuickInputService } from 'td/platform/quickinput/common/quickInput';
-import { IStorageService, InMemoryStorageService } from 'td/platform/storage/common/storage';
-import { DefaultConfiguration } from 'td/platform/configuration/common/configurations';
-import { WorkspaceEdit } from 'td/editor/common/languages';
-import { AudioCue, IAudioCueService, Sound } from 'td/platform/audioCues/browser/audioCueService';
-import { LogService } from 'td/platform/log/common/logService';
-import { getEditorFeatures } from 'td/editor/common/editorFeatures';
-import { onUnexpectedError } from 'td/base/common/errors';
-import { ExtensionKind, IEnvironmentService, IExtensionHostDebugParams } from 'td/platform/environment/common/environment';
-import { mainWindow } from 'td/base/browser/window';
+import {URI} from 'td/base/common/uri';
+import {IBulkEditOptions, IBulkEditResult, IBulkEditService, ResourceEdit, ResourceTextEdit} from 'td/editor/browser/services/bulkEditService';
+import {isDiffEditorConfigurationKey, isEditorConfigurationKey} from 'td/editor/common/config/editorConfigurationSchema';
+import {EditOperation, ISingleEditOperation} from 'td/editor/common/core/editOperation';
+import {IPosition, Position as Pos} from 'td/editor/common/core/position';
+import {Range} from 'td/editor/common/core/range';
+import {ITextModel, ITextSnapshot} from 'td/editor/common/model';
+import {IModelService} from 'td/editor/common/services/model';
+import {IResolvedTextEditorModel, ITextModelContentProvider, ITextModelService} from 'td/editor/common/services/resolverService';
+import {ITextResourceConfigurationService, ITextResourcePropertiesService, ITextResourceConfigurationChangeEvent} from 'td/editor/common/services/textResourceConfiguration';
+import {CommandsRegistry, ICommandEvent, ICommandHandler, ICommandService} from 'td/platform/commands/common/commands';
+import {IConfigurationChangeEvent, IConfigurationData, IConfigurationOverrides, IConfigurationService, IConfigurationModel, IConfigurationValue, ConfigurationTarget} from 'td/platform/configuration/common/configuration';
+import {Configuration, ConfigurationModel, ConfigurationChangeEvent} from 'td/platform/configuration/common/configurationModels';
+import {IContextKeyService, ContextKeyExpression} from 'td/platform/contextkey/common/contextkey';
+import {IConfirmation, IConfirmationResult, IDialogService, IInputResult, IPrompt, IPromptResult, IPromptWithCustomCancel, IPromptResultWithCancel, IPromptWithDefaultCancel, IPromptBaseButton} from 'td/platform/dialogs/common/dialogs';
+import {createDecorator, IInstantiationService, ServiceIdentifier} from 'td/platform/instantiation/common/instantiation';
+import {AbstractKeybindingService} from 'td/platform/keybinding/common/abstractKeybindingService';
+import {IKeybindingService, IKeyboardEvent, KeybindingsSchemaContribution} from 'td/platform/keybinding/common/keybinding';
+import {KeybindingResolver} from 'td/platform/keybinding/common/keybindingResolver';
+import {IKeybindingItem, KeybindingsRegistry} from 'td/platform/keybinding/common/keybindingsRegistry';
+import {ResolvedKeybindingItem} from 'td/platform/keybinding/common/resolvedKeybindingItem';
+import {USLayoutResolvedKeybinding} from 'td/platform/keybinding/common/usLayoutResolvedKeybinding';
+import {ILabelService, ResourceLabelFormatter, IFormatterChangeEvent, Verbosity} from 'td/platform/label/common/label';
+import {INotification, INotificationHandle, INotificationService, IPromptChoice, IPromptOptions, NoOpNotification, IStatusMessageOptions, INotificationSource, INotificationSourceFilter, NotificationsFilter} from 'td/platform/notification/common/notification';
+import {IProgressRunner, IEditorProgressService, IProgressService, IProgress, IProgressCompositeOptions, IProgressDialogOptions, IProgressNotificationOptions, IProgressOptions, IProgressStep, IProgressWindowOptions} from 'td/platform/progress/common/progress';
+import {ITelemetryService, TelemetryLevel} from 'td/platform/telemetry/common/telemetry';
+import {ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier, IWorkspace, IWorkspaceContextService, IWorkspaceFolder, IWorkspaceFoldersChangeEvent, IWorkspaceFoldersWillChangeEvent, WorkbenchState, WorkspaceFolder, STANDALONE_EDITOR_WORKSPACE_ID} from 'td/platform/workspace/common/workspace';
+import {ILayoutService} from 'td/platform/layout/browser/layoutService';
+import {StandaloneServicesNLS} from 'td/editor/common/standaloneStrings';
+import {basename} from 'td/base/common/resources';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {ConsoleLogger, ILogService} from 'td/platform/log/common/log';
+import {IWorkspaceTrustManagementService, IWorkspaceTrustTransitionParticipant, IWorkspaceTrustUriInfo} from 'td/platform/workspace/common/workspaceTrust';
+import {EditorOption} from 'td/editor/common/config/editorOptions';
+import {ICodeEditor, IDiffEditor} from 'td/editor/browser/editorBrowser';
+import {IContextMenuService, IContextViewDelegate, IContextViewService} from 'td/platform/contextview/browser/contextView';
+import {ContextViewService} from 'td/platform/contextview/browser/contextViewService';
+import {LanguageService} from 'td/editor/common/services/languageService';
+import {ContextMenuService} from 'td/platform/contextview/browser/contextMenuService';
+import {getSingletonServiceDescriptors, InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
+import {OpenerService} from 'td/editor/browser/services/openerService';
+import {IEditorWorkerService} from 'td/editor/common/services/editorWorker';
+import {EditorWorkerService} from 'td/editor/browser/services/editorWorkerService';
+import {ILanguageService} from 'td/editor/common/languages/language';
+import {MarkerDecorationsService} from 'td/editor/common/services/markerDecorationsService';
+import {IMarkerDecorationsService} from 'td/editor/common/services/markerDecorations';
+import {ModelService} from 'td/editor/common/services/modelService';
+import {StandaloneQuickInputService} from 'td/editor/standalone/browser/quickInput/standaloneQuickInputService';
+import {StandaloneThemeService} from 'td/editor/standalone/browser/standaloneThemeService';
+import {IStandaloneThemeService} from 'td/editor/standalone/common/standaloneTheme';
+import {AccessibilityService} from 'td/platform/accessibility/browser/accessibilityService';
+import {IAccessibilityService} from 'td/platform/accessibility/common/accessibility';
+import {IMenuService} from 'td/platform/actions/common/actions';
+import {MenuService} from 'td/platform/actions/common/menuService';
+import {BrowserClipboardService} from 'td/platform/clipboard/browser/clipboardService';
+import {IClipboardService} from 'td/platform/clipboard/common/clipboardService';
+import {ContextKeyService} from 'td/platform/contextkey/browser/contextKeyService';
+import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors';
+import {InstantiationService} from 'td/platform/instantiation/common/instantiationService';
+import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
+import {IListService, ListService} from 'td/platform/list/browser/listService';
+import {IMarkerService} from 'td/platform/markers/common/markers';
+import {MarkerService} from 'td/platform/markers/common/markerService';
+import {IOpenerService} from 'td/platform/opener/common/opener';
+import {IQuickInputService} from 'td/platform/quickinput/common/quickInput';
+import {IStorageService, InMemoryStorageService} from 'td/platform/storage/common/storage';
+import {DefaultConfiguration} from 'td/platform/configuration/common/configurations';
+import {WorkspaceEdit} from 'td/editor/common/languages';
+import {AudioCue, IAudioCueService, Sound} from 'td/platform/audioCues/browser/audioCueService';
+import {LogService} from 'td/platform/log/common/logService';
+import {getEditorFeatures} from 'td/editor/common/editorFeatures';
+import {onUnexpectedError} from 'td/base/common/errors';
+import {ExtensionKind, IEnvironmentService, IExtensionHostDebugParams} from 'td/platform/environment/common/environment';
+import {mainWindow} from 'td/base/browser/window';
 
 class SimpleModel implements IResolvedTextEditorModel {
 
@@ -208,32 +208,32 @@ class StandaloneEnvironmentService implements IEnvironmentService {
 
 	declare readonly _serviceBrand: undefined;
 
-	readonly stateResource: URI = URI.from({ scheme: 'monaco', authority: 'stateResource' });
-	readonly userRoamingDataHome: URI = URI.from({ scheme: 'monaco', authority: 'userRoamingDataHome' });
-	readonly keyboardLayoutResource: URI = URI.from({ scheme: 'monaco', authority: 'keyboardLayoutResource' });
-	readonly argvResource: URI = URI.from({ scheme: 'monaco', authority: 'argvResource' });
-	readonly untitledWorkspacesHome: URI = URI.from({ scheme: 'monaco', authority: 'untitledWorkspacesHome' });
-	readonly workspaceStorageHome: URI = URI.from({ scheme: 'monaco', authority: 'workspaceStorageHome' });
-	readonly localHistoryHome: URI = URI.from({ scheme: 'monaco', authority: 'localHistoryHome' });
-	readonly cacheHome: URI = URI.from({ scheme: 'monaco', authority: 'cacheHome' });
-	readonly userDataSyncHome: URI = URI.from({ scheme: 'monaco', authority: 'userDataSyncHome' });
+	readonly stateResource: URI = URI.from({scheme: 'monaco', authority: 'stateResource'});
+	readonly userRoamingDataHome: URI = URI.from({scheme: 'monaco', authority: 'userRoamingDataHome'});
+	readonly keyboardLayoutResource: URI = URI.from({scheme: 'monaco', authority: 'keyboardLayoutResource'});
+	readonly argvResource: URI = URI.from({scheme: 'monaco', authority: 'argvResource'});
+	readonly untitledWorkspacesHome: URI = URI.from({scheme: 'monaco', authority: 'untitledWorkspacesHome'});
+	readonly workspaceStorageHome: URI = URI.from({scheme: 'monaco', authority: 'workspaceStorageHome'});
+	readonly localHistoryHome: URI = URI.from({scheme: 'monaco', authority: 'localHistoryHome'});
+	readonly cacheHome: URI = URI.from({scheme: 'monaco', authority: 'cacheHome'});
+	readonly userDataSyncHome: URI = URI.from({scheme: 'monaco', authority: 'userDataSyncHome'});
 	readonly sync: 'on' | 'off' | undefined = undefined;
 	readonly continueOn?: string | undefined = undefined;
 	readonly editSessionId?: string | undefined = undefined;
-	readonly debugExtensionHost: IExtensionHostDebugParams = { port: null, break: false };
+	readonly debugExtensionHost: IExtensionHostDebugParams = {port: null, break: false};
 	readonly isExtensionDevelopment: boolean = false;
 	readonly disableExtensions: boolean | string[] = false;
 	readonly enableExtensions?: readonly string[] | undefined = undefined;
 	readonly extensionDevelopmentLocationURI?: URI[] | undefined = undefined;
 	readonly extensionDevelopmentKind?: ExtensionKind[] | undefined = undefined;
 	readonly extensionTestsLocationURI?: URI | undefined = undefined;
-	readonly logsHome: URI = URI.from({ scheme: 'monaco', authority: 'logsHome' });
+	readonly logsHome: URI = URI.from({scheme: 'monaco', authority: 'logsHome'});
 	readonly logLevel?: string | undefined = undefined;
 	readonly extensionLogLevel?: [string, string][] | undefined = undefined;
 	readonly verbose: boolean = false;
 	readonly isBuilt: boolean = false;
 	readonly disableTelemetry: boolean = false;
-	readonly serviceMachineIdResource: URI = URI.from({ scheme: 'monaco', authority: 'serviceMachineIdResource' });
+	readonly serviceMachineIdResource: URI = URI.from({scheme: 'monaco', authority: 'serviceMachineIdResource'});
 	readonly policyFile?: URI | undefined = undefined;
 }
 
@@ -274,26 +274,26 @@ class StandaloneDialogService implements IDialogService {
 				promptButtons.push(prompt.cancelButton);
 			}
 
-			result = await promptButtons[0]?.run({ checkboxChecked: false });
+			result = await promptButtons[0]?.run({checkboxChecked: false});
 		}
 
-		return { result };
+		return {result};
 	}
 
 	async info(message: string, detail?: string): Promise<void> {
-		await this.prompt({ type: Severity.Info, message, detail });
+		await this.prompt({type: Severity.Info, message, detail});
 	}
 
 	async warn(message: string, detail?: string): Promise<void> {
-		await this.prompt({ type: Severity.Warning, message, detail });
+		await this.prompt({type: Severity.Warning, message, detail});
 	}
 
 	async error(message: string, detail?: string): Promise<void> {
-		await this.prompt({ type: Severity.Error, message, detail });
+		await this.prompt({type: Severity.Error, message, detail});
 	}
 
 	input(): Promise<IInputResult> {
-		return Promise.resolve({ confirmed: false }); // unsupported
+		return Promise.resolve({confirmed: false}); // unsupported
 	}
 
 	about(): Promise<void> {
@@ -314,15 +314,15 @@ export class StandaloneNotificationService implements INotificationService {
 	private static readonly NO_OP: INotificationHandle = new NoOpNotification();
 
 	public info(message: string): INotificationHandle {
-		return this.notify({ severity: Severity.Info, message });
+		return this.notify({severity: Severity.Info, message});
 	}
 
 	public warn(message: string): INotificationHandle {
-		return this.notify({ severity: Severity.Warning, message });
+		return this.notify({severity: Severity.Warning, message});
 	}
 
 	public error(error: string | Error): INotificationHandle {
-		return this.notify({ severity: Severity.Error, message: error });
+		return this.notify({severity: Severity.Error, message: error});
 	}
 
 	public notify(notification: INotification): INotificationHandle {
@@ -386,10 +386,10 @@ export class StandaloneCommandService implements ICommandService {
 		}
 
 		try {
-			this._onWillExecuteCommand.fire({ commandId: id, args });
+			this._onWillExecuteCommand.fire({commandId: id, args});
 			const result = this._instantiationService.invokeFunction.apply(this._instantiationService, [command.handler, ...args]) as T;
 
-			this._onDidExecuteCommand.fire({ commandId: id, args });
+			this._onDidExecuteCommand.fire({commandId: id, args});
 			return Promise.resolve(result);
 		} catch (err) {
 			return Promise.reject(err);
@@ -639,7 +639,7 @@ export class StandaloneConfigurationService implements IConfigurationService {
 	}
 
 	public updateValues(values: [string, any][]): Promise<void> {
-		const previous = { data: this._configuration.toData() };
+		const previous = {data: this._configuration.toData()};
 
 		const changedKeys: string[] = [];
 
@@ -653,7 +653,7 @@ export class StandaloneConfigurationService implements IConfigurationService {
 		}
 
 		if (changedKeys.length > 0) {
-			const configurationChangeEvent = new ConfigurationChangeEvent({ keys: changedKeys, overrides: [] }, previous, this._configuration);
+			const configurationChangeEvent = new ConfigurationChangeEvent({keys: changedKeys, overrides: []}, previous, this._configuration);
 			configurationChangeEvent.source = ConfigurationTarget.MEMORY;
 			configurationChangeEvent.sourceConfig = null;
 			this._onDidChangeConfiguration.fire(configurationChangeEvent);
@@ -708,7 +708,7 @@ class StandaloneResourceConfigurationService implements ITextResourceConfigurati
 		@ILanguageService private readonly languageService: ILanguageService
 	) {
 		this.configurationService.onDidChangeConfiguration((e) => {
-			this._onDidChangeConfiguration.fire({ affectedKeys: e.affectedKeys, affectsConfiguration: (resource: URI, configuration: string) => e.affectsConfiguration(configuration) });
+			this._onDidChangeConfiguration.fire({affectedKeys: e.affectedKeys, affectsConfiguration: (resource: URI, configuration: string) => e.affectsConfiguration(configuration)});
 		});
 	}
 
@@ -732,7 +732,7 @@ class StandaloneResourceConfigurationService implements ITextResourceConfigurati
 
 	inspect<T>(resource: URI | undefined, position: IPosition | null, section: string): IConfigurationValue<Readonly<T>> {
 		const language = resource ? this.getLanguage(resource, position) : undefined;
-		return this.configurationService.inspect<T>(section, { resource, overrideIdentifier: language });
+		return this.configurationService.inspect<T>(section, {resource, overrideIdentifier: language});
 	}
 
 	private getLanguage(resource: URI, position: IPosition | null): string | null {
@@ -744,7 +744,7 @@ class StandaloneResourceConfigurationService implements ITextResourceConfigurati
 	}
 
 	updateValue(resource: URI, key: string, value: any, configurationTarget?: ConfigurationTarget): Promise<void> {
-		return this.configurationService.updateValue(key, value, { resource }, configurationTarget);
+		return this.configurationService.updateValue(key, value, {resource}, configurationTarget);
 	}
 }
 
@@ -758,7 +758,7 @@ class StandaloneResourcePropertiesService implements ITextResourcePropertiesServ
 	}
 
 	getEOL(resource: URI, language?: string): string {
-		const eol = this.configurationService.getValue('files.eol', { overrideIdentifier: language, resource });
+		const eol = this.configurationService.getValue('files.eol', {overrideIdentifier: language, resource});
 		if (eol && typeof eol === 'string' && eol !== 'auto') {
 			return eol;
 		}
@@ -803,8 +803,8 @@ class StandaloneWorkspaceContextService implements IWorkspaceContextService {
 	private readonly workspace: IWorkspace;
 
 	constructor() {
-		const resource = URI.from({ scheme: StandaloneWorkspaceContextService.SCHEME, authority: 'model', path: '/' });
-		this.workspace = { id: STANDALONE_EDITOR_WORKSPACE_ID, folders: [new WorkspaceFolder({ uri: resource, name: '', index: 0 })] };
+		const resource = URI.from({scheme: StandaloneWorkspaceContextService.SCHEME, authority: 'model', path: '/'});
+		this.workspace = {id: STANDALONE_EDITOR_WORKSPACE_ID, folders: [new WorkspaceFolder({uri: resource, name: '', index: 0})]};
 	}
 
 	getCompleteWorkspace(): Promise<IWorkspace> {
@@ -1047,7 +1047,7 @@ class StandaloneContextMenuService extends ContextMenuService {
 		@IContextKeyService contextKeyService: IContextKeyService,
 	) {
 		super(telemetryService, notificationService, contextViewService, keybindingService, menuService, contextKeyService);
-		this.configure({ blockMouse: false }); // we do not want that in the standalone editor
+		this.configure({blockMouse: false}); // we do not want that in the standalone editor
 	}
 }
 

@@ -3,23 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { InstantiationType, registerSingleton } from 'td/platform/instantiation/common/extensions';
-import { registerThemingParticipant } from 'td/platform/theme/common/themeService';
-import { editorHoverBorder } from 'td/platform/theme/common/colorRegistry';
-import { IHoverService, IHoverOptions } from 'td/platform/hover/browser/hover';
-import { IContextMenuService, IContextViewService } from 'td/platform/contextview/browser/contextView';
-import { IInstantiationService } from 'td/platform/instantiation/common/instantiation';
-import { HoverWidget } from 'td/editor/browser/widget/hoverWidget/hoverWidget';
-import { IContextViewProvider, IDelegate } from 'td/base/browser/ui/contextview/contextview';
-import { DisposableStore, IDisposable, toDisposable } from 'td/base/common/lifecycle';
-import { addDisposableListener, EventType, getActiveElement, isAncestorOfActiveElement, isAncestor, getWindow } from 'td/base/browser/dom';
-import { IKeybindingService } from 'td/platform/keybinding/common/keybinding';
-import { StandardKeyboardEvent } from 'td/base/browser/keyboardEvent';
-import { ResultKind } from 'td/platform/keybinding/common/keybindingResolver';
-import { IAccessibilityService } from 'td/platform/accessibility/common/accessibility';
-import { ILayoutService } from 'td/platform/layout/browser/layoutService';
-import { mainWindow } from 'td/base/browser/window';
-import { IHoverWidget } from 'td/base/browser/ui/iconLabel/iconHoverDelegate';
+import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
+import {registerThemingParticipant} from 'td/platform/theme/common/themeService';
+import {editorHoverBorder} from 'td/platform/theme/common/colorRegistry';
+import {IHoverService, IHoverOptions} from 'td/platform/hover/browser/hover';
+import {IContextMenuService, IContextViewService} from 'td/platform/contextview/browser/contextView';
+import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
+import {HoverWidget} from 'td/editor/browser/widget/hoverWidget/hoverWidget';
+import {IContextViewProvider, IDelegate} from 'td/base/browser/ui/contextview/contextview';
+import {DisposableStore, IDisposable, toDisposable} from 'td/base/common/lifecycle';
+import {addDisposableListener, EventType, getActiveElement, isAncestorOfActiveElement, isAncestor, getWindow} from 'td/base/browser/dom';
+import {IKeybindingService} from 'td/platform/keybinding/common/keybinding';
+import {StandardKeyboardEvent} from 'td/base/browser/keyboardEvent';
+import {ResultKind} from 'td/platform/keybinding/common/keybindingResolver';
+import {IAccessibilityService} from 'td/platform/accessibility/common/accessibility';
+import {ILayoutService} from 'td/platform/layout/browser/layoutService';
+import {mainWindow} from 'td/base/browser/window';
+import {IHoverWidget} from 'td/base/browser/ui/iconLabel/iconHoverDelegate';
 
 export class HoverService implements IHoverService {
 	declare readonly _serviceBrand: undefined;
@@ -117,7 +117,7 @@ export class HoverService implements IHoverService {
 		}
 
 		if ('IntersectionObserver' in mainWindow) {
-			const observer = new IntersectionObserver(e => this._intersectionChange(e, hover), { threshold: 0 });
+			const observer = new IntersectionObserver(e => this._intersectionChange(e, hover), {threshold: 0});
 			const firstTargetElement = 'targetElements' in options.target ? options.target.targetElements[0] : options.target;
 			observer.observe(firstTargetElement);
 			hoverDisposables.add(toDisposable(() => observer.disconnect()));

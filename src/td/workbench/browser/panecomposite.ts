@@ -34,7 +34,7 @@ export abstract class PaneComposite extends Composite implements IPaneComposite 
 		@IInstantiationService protected instantiationService: IInstantiationService,
 		@IThemeService themeService: IThemeService,
 		@IContextMenuService protected contextMenuService: IContextMenuService,
-		// @IExtensionService protected extensionService: IExtensionService,
+		@IExtensionService protected extensionService: IExtensionService,
 		@IWorkspaceContextService protected contextService: IWorkspaceContextService
 	) {
 		super(id, telemetryService, themeService, storageService);

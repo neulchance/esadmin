@@ -43,6 +43,7 @@ import {RemoteAgentService} from 'td/workbench/services/remote/electron-sandbox/
 import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
 import {ISharedProcessService} from 'td/platform/ipc/electron-sandbox/services';
 import {SharedProcessService} from 'td/workbench/services/sharedProcess/electron-sandbox/sharedProcessService';
+import {INativeKeyboardLayoutService, NativeKeyboardLayoutService} from 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayoutService';
 
 export class DesktopMain extends Disposable {
   
@@ -171,13 +172,13 @@ export class DesktopMain extends Disposable {
 				return service;
 			}),
 
-			// this.createKeyboardLayoutService(mainProcessService).then(service => {
+			this.createKeyboardLayoutService(mainProcessService).then(service => {
 
-			// 	// KeyboardLayout
-			// 	serviceCollection.set(INativeKeyboardLayoutService, service);
+				// KeyboardLayout
+				serviceCollection.set(INativeKeyboardLayoutService, service);
 
-			// 	return service;
-			// })
+				return service;
+			})
 		]);
 
     return {serviceCollection, logService, storageService, configurationService};
@@ -249,6 +250,20 @@ export class DesktopMain extends Disposable {
 			onUnexpectedError(error);
 
 			return storageService;
+		}
+	}
+
+	private async createKeyboardLayoutService(mainProcessService: IMainProcessService): Promise<NativeKeyboardLayoutService> {
+		const keyboardLayoutService = new NativeKeyboardLayoutService(mainProcessService);
+
+		try {
+			await keyboardLayoutService.initialize();
+
+			return keyboardLayoutService;
+		} catch (error) {
+			onUnexpectedError(error);
+
+			return keyboardLayoutService;
 		}
 	}
 }

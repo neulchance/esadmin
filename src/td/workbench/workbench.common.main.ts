@@ -6,7 +6,7 @@
 //#region --- workbench parts
 
 // import 'td/workbench/browser/parts/editor/editor.contribution';
-// import 'td/workbench/browser/parts/editor/editorParts';
+import 'td/workbench/browser/parts/editor/editorParts';
 import 'td/workbench/browser/parts/paneCompositePartService';
 // import 'td/workbench/browser/parts/banner/bannerPart';
 import 'td/workbench/browser/parts/statusbar/statusbarPart';
@@ -26,6 +26,13 @@ import 'td/workbench/services/extensionManagement/browser/extensionEnablementSer
 import 'td/workbench/services/label/common/labelService';
 import 'td/workbench/services/commands/common/commandService';
 import 'td/workbench/services/views/browser/viewDescriptorService';
+import 'td/workbench/services/views/browser/viewsService';
+import 'td/editor/browser/services/hoverService';
+import 'td/workbench/services/keybinding/browser/keybindingService';
+import 'td/workbench/services/editor/browser/editorService';
+import 'td/workbench/services/editor/browser/editorResolverService';
+import 'td/workbench/services/quickinput/browser/quickInputService';
+import 'td/workbench/services/activity/browser/activityService';
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {ContextViewService} from 'td/platform/contextview/browser/contextViewService';

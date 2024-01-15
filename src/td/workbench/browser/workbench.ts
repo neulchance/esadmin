@@ -5,7 +5,7 @@ import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollect
 import {ILogService} from 'td/platform/log/common/log';
 import {Layout} from 'td/workbench/browser/layout';
 import {ILifecycleService, WillShutdownEvent} from 'td/workbench/services/lifecycle/common/lifecycle';
-import {IWorkbenchLayoutService, Parts} from '../services/layout/browser/layoutService';
+import {Position, Parts, IWorkbenchLayoutService, positionToString} from 'td/workbench/services/layout/browser/layoutService';
 import {onUnexpectedError} from 'td/base/common/errors';
 import {InstantiationService} from 'td/platform/instantiation/common/instantiationService';
 import {IStorageService} from 'td/platform/storage/common/storage';
@@ -19,6 +19,7 @@ import {mainWindow} from 'td/base/browser/window';
 import {Part} from 'td/workbench/browser/part';
 import {Registry} from 'td/platform/registry/common/platform';
 import {IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from 'td/workbench/common/contributions';
+
 
 export interface IWorkbenchOptions {
 
@@ -151,6 +152,9 @@ export class Workbench extends Layout {
 
 		// Create Parts
 		for (const {id, role, classes, options} of [
+			// {id: Parts.TITLEBAR_PART, role: 'none', classes: ['titlebar']},
+			{id: Parts.ACTIVITYBAR_PART, role: 'none', classes: ['activitybar', this.getSideBarPosition() === Position.LEFT ? 'left' : 'right']}, // Use role 'none' for some parts to make screen readers less chatty #114892
+			{id: Parts.SIDEBAR_PART, role: 'none', classes: ['sidebar', this.getSideBarPosition() === Position.LEFT ? 'left' : 'right']},
 			{id: Parts.STATUSBAR_PART, role: 'status', classes: ['statusbar'], options: {}}
 		]) {
 			const partContainer = this.createPart(id, role, classes);

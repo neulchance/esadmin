@@ -33,6 +33,8 @@ import 'td/platform/remote/electron-sandbox/sharedProcessTunnelService';
 import 'td/workbench/services/tunnel/electron-sandbox/tunnelService';
 import 'td/workbench/services/request/electron-sandbox/requestService';
 import 'td/workbench/services/extensions/electron-sandbox/extensionsScannerService';
+import 'td/workbench/services/accessibility/electron-sandbox/accessibilityService';
+import 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayout';
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {IUserDataInitializationService, UserDataInitializationService} from 'td/workbench/services/userData/browser/userDataInit';

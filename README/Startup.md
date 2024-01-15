@@ -13,7 +13,7 @@ src/td/workbench/browser/workbench.ts
 fn:renderWorkbench
 
 
-
+base/browser/ui/centered/centeredViewLayout
 
 
 ┏
@@ -41,3 +41,5 @@ ViewContainersRegistryImpl
 viewContainersRegistry
 registerCustomViewContainer
 defaultViewContainers
+
+

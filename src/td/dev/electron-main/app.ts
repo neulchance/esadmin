@@ -37,6 +37,7 @@ import {IWorkspacesManagementMainService, WorkspacesManagementMainService} from 
 import {DialogMainService, IDialogMainService} from 'td/platform/dialogs/electron-main/dialogMainService';
 import {IProductService} from 'td/platform/product/common/productService';
 import {Promises, RunOnceScheduler, runWhenGlobalIdle} from 'td/base/common/async';
+import {IKeyboardLayoutMainService, KeyboardLayoutMainService} from 'td/platform/keyboardLayout/electron-main/keyboardLayoutMainService';
 import {IExtensionsScannerService} from 'td/platform/extensionManagement/common/extensionsScannerService';
 import {ExtensionsScannerService} from 'td/platform/extensionManagement/node/extensionsScannerService';
 
@@ -180,6 +181,9 @@ export class DevApplication extends Disposable {
     // Windows
     services.set(IWindowsMainService, new SyncDescriptor(WindowsMainService, [machineId, sqmId, this.userEnv], false));
 
+		// Keyboard Layout
+		services.set(IKeyboardLayoutMainService, new SyncDescriptor(KeyboardLayoutMainService));
+
 		// Native Host
 		services.set(INativeHostMainService, new SyncDescriptor(NativeHostMainService, undefined, false /* proxied to other processes */));
 
@@ -211,6 +215,10 @@ export class DevApplication extends Disposable {
 		// across apps until `requestSingleInstance` APIs are adopted.
 		
 		const disposables = this._register(new DisposableStore());
+
+		// Keyboard Layout
+		const keyboardLayoutChannel = ProxyChannel.fromService(accessor.get(IKeyboardLayoutMainService), disposables);
+		mainProcessElectronServer.registerChannel('keyboardLayout', keyboardLayoutChannel);
 
 		// Native host (main & shared process)
 		this.nativeHostMainService = accessor.get(INativeHostMainService);

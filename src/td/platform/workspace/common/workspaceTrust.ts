@@ -86,7 +86,7 @@ export interface IWorkspaceTrustRequestService {
 	readonly onDidInitiateWorkspaceTrustRequestOnStartup: Event<void>;
 
 	completeOpenFilesTrustRequest(result: WorkspaceTrustUriResponse, saveResponse?: boolean): Promise<void>;
-	// requestOpenFilesTrust(openFiles: URI[]): Promise<WorkspaceTrustUriResponse>;
+	requestOpenFilesTrust(openFiles: URI[]): Promise<WorkspaceTrustUriResponse>;
 
 	cancelWorkspaceTrustRequest(): void;
 	completeWorkspaceTrustRequest(trusted?: boolean): Promise<void>;

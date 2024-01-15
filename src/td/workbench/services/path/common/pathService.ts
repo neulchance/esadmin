@@ -96,17 +96,19 @@ export abstract class AbstractPathService implements IPathService {
 
 		// OS
 		this.resolveOS = (async () => {
-			const env = await this.remoteAgentService.getEnvironment();
+			// const env = await this.remoteAgentService.getEnvironment();
 
-			return env?.os || OS;
+			// return env?.os || OS;
+			return OS;
 		})();
 
 		// User Home
 		this.resolveUserHome = (async () => {
-			const env = await this.remoteAgentService.getEnvironment();
-			const userHome = this.maybeUnresolvedUserHome = env?.userHome ?? localUserHome;
+			// const env = await this.remoteAgentService.getEnvironment();
+			// const userHome = this.maybeUnresolvedUserHome = env?.userHome ?? localUserHome;
 
-			return userHome;
+			// return userHome;
+			return localUserHome;
 		})();
 	}
 
