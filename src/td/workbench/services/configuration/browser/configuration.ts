@@ -16,7 +16,7 @@ import {IStoredWorkspaceFolder} from 'td/platform/workspaces/common/workspaces';
 import {WorkbenchState, IWorkspaceFolder, IWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
 import {ConfigurationScope, Extensions, IConfigurationRegistry, OVERRIDE_PROPERTY_REGEX} from 'td/platform/configuration/common/configurationRegistry';
 import {equals} from 'td/base/common/objects';
-// import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
+import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
 import {hash} from 'td/base/common/hash';
 import {IUriIdentityService} from 'td/platform/uriIdentity/common/uriIdentity';
 import {ILogService} from 'td/platform/log/common/log';
@@ -374,12 +374,12 @@ export class RemoteUserConfiguration extends Disposable {
 		configurationCache: IConfigurationCache,
 		fileService: IFileService,
 		uriIdentityService: IUriIdentityService,
-		// remoteAgentService: IRemoteAgentService
+		remoteAgentService: IRemoteAgentService
 	) {
 		super();
 		this._fileService = fileService;
 		this._userConfiguration = this._cachedConfiguration = new CachedRemoteUserConfiguration(remoteAuthority, configurationCache, {scopes: REMOTE_MACHINE_SCOPES});
-		/* remoteAgentService.getEnvironment().then(async environment => {
+		remoteAgentService.getEnvironment().then(async environment => {
 			if (environment) {
 				const userConfiguration = this._register(new FileServiceBasedRemoteUserConfiguration(environment.settingsPath, {scopes: REMOTE_MACHINE_SCOPES}, this._fileService, uriIdentityService));
 				this._register(userConfiguration.onDidChangeConfiguration(configurationModel => this.onDidUserConfigurationChange(configurationModel)));
@@ -390,7 +390,7 @@ export class RemoteUserConfiguration extends Disposable {
 				this.onDidUserConfigurationChange(configurationModel);
 				this._onDidInitialize.fire(configurationModel);
 			}
-		}); */
+		});
 	}
 
 	async initialize(): Promise<ConfigurationModel> {

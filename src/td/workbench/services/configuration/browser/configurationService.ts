@@ -36,7 +36,7 @@ import {IWorkspaceTrustManagementService} from 'td/platform/workspace/common/wor
 import {delta, distinct, equals as arrayEquals} from 'td/base/common/arrays';
 import {IStringDictionary} from 'td/base/common/collections';
 import {IExtensionService} from 'td/workbench/services/extensions/common/extensions';
-// import {IWorkbenchAssignmentService} from 'td/workbench/services/assignment/common/assignmentService';
+import {IWorkbenchAssignmentService} from 'td/workbench/services/assignment/common/assignmentService';
 import {isUndefined} from 'td/base/common/types';
 import {localize} from 'td/nls';
 import {DidChangeUserDataProfileEvent, IUserDataProfileService} from 'td/workbench/services/userDataProfile/common/userDataProfile';
@@ -132,7 +132,7 @@ export class WorkspaceService extends Disposable implements IWorkbenchConfigurat
 		this.cachedFolderConfigs = new ResourceMap<FolderConfiguration>();
 		this._register(this.localUserConfiguration.onDidChangeConfiguration(userConfiguration => this.onLocalUserConfigurationChanged(userConfiguration)));
 		if (remoteAuthority) {
-			const remoteUserConfiguration = this.remoteUserConfiguration = this._register(new RemoteUserConfiguration(remoteAuthority, configurationCache, fileService, uriIdentityService/* , remoteAgentService */));
+			const remoteUserConfiguration = this.remoteUserConfiguration = this._register(new RemoteUserConfiguration(remoteAuthority, configurationCache, fileService, uriIdentityService, remoteAgentService));
 			this._register(remoteUserConfiguration.onDidInitialize(remoteUserConfigurationModel => {
 				this._register(remoteUserConfiguration.onDidChangeConfiguration(remoteUserConfigurationModel => this.onRemoteUserConfigurationChanged(remoteUserConfigurationModel)));
 				this.onRemoteUserConfigurationChanged(remoteUserConfigurationModel);
@@ -1328,7 +1328,7 @@ class UpdateExperimentalSettingsDefaults extends Disposable implements IWorkbenc
 	private readonly configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 
 	constructor(
-		// @IWorkbenchAssignmentService private readonly workbenchAssignmentService: IWorkbenchAssignmentService
+		@IWorkbenchAssignmentService private readonly workbenchAssignmentService: IWorkbenchAssignmentService
 	) {
 		super();
 		this.processExperimentalSettings(Object.keys(this.configurationRegistry.getConfigurationProperties()));
@@ -1347,12 +1347,12 @@ class UpdateExperimentalSettingsDefaults extends Disposable implements IWorkbenc
 				continue;
 			}
 			this.processedExperimentalSettings.add(property);
-			// try {
-			// 	const value = await this.workbenchAssignmentService.getTreatment(`config.${property}`);
-			// 	if (!isUndefined(value) && !equals(value, schema.default)) {
-			// 		overrides[property] = value;
-			// 	}
-			// } catch (error) {/*ignore */ }
+			try {
+				const value = await this.workbenchAssignmentService.getTreatment(`config.${property}`);
+				if (!isUndefined(value) && !equals(value, schema.default)) {
+					overrides[property] = value;
+				}
+			} catch (error) {/*ignore */ }
 		}
 		if (Object.keys(overrides).length) {
 			this.configurationRegistry.registerDefaultConfigurations([{overrides, source: localize('experimental', "Experiments")}]);

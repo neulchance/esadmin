@@ -72,7 +72,7 @@ registerSingleton(IOpenerService, OpenerService, InstantiationType.Delayed);
 
 // Explorer
 import 'td/workbench/contrib/files/browser/explorerViewlet';
-// import 'td/workbench/contrib/files/browser/fileActions.contribution';
+import 'td/workbench/contrib/files/browser/fileActions.contribution';
 import 'td/workbench/contrib/files/browser/files.contribution';/* this help to working the EditorFactoryRegistry.getFileEditorFactory */
 
 //#endregion

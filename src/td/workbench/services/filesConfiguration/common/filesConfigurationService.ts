@@ -326,7 +326,7 @@ export class FilesConfigurationService extends Disposable implements IFilesConfi
 		let isOutOfWorkspace: boolean | undefined;
 		let isShortAutoSaveDelay: boolean | undefined;
 
-		switch (filesConfiguration.autoSave ?? FilesConfigurationService.DEFAULT_AUTO_SAVE_MODE) {
+		switch (/* filesConfiguration.autoSave ??  */FilesConfigurationService.DEFAULT_AUTO_SAVE_MODE) {
 			case AutoSaveConfiguration.AFTER_DELAY: {
 				autoSave = 'afterDelay';
 				autoSaveDelay = typeof filesConfiguration.autoSaveDelay === 'number' && filesConfiguration.autoSaveDelay >= 0 ? filesConfiguration.autoSaveDelay : FilesConfigurationService.DEFAULT_AUTO_SAVE_DELAY;
@@ -343,25 +343,25 @@ export class FilesConfigurationService extends Disposable implements IFilesConfi
 				break;
 		}
 
-		if (filesConfiguration.autoSaveWorkspaceFilesOnly === true) {
-			autoSaveWorkspaceFilesOnly = true;
+		// if (filesConfiguration.autoSaveWorkspaceFilesOnly === true) {
+		// 	autoSaveWorkspaceFilesOnly = true;
 
-			if (resource && !this.contextService.isInsideWorkspace(resource)) {
-				isOutOfWorkspace = true;
-				isShortAutoSaveDelay = undefined; // out of workspace file are not auto saved with this configuration
-			}
-		}
+		// 	if (resource && !this.contextService.isInsideWorkspace(resource)) {
+		// 		isOutOfWorkspace = true;
+		// 		isShortAutoSaveDelay = undefined; // out of workspace file are not auto saved with this configuration
+		// 	}
+		// }
 
-		if (filesConfiguration.autoSaveWhenNoErrors === true) {
-			autoSaveWhenNoErrors = true;
-			isShortAutoSaveDelay = undefined; // this configuration disables short auto save delay
-		}
+		// if (filesConfiguration.autoSaveWhenNoErrors === true) {
+		// 	autoSaveWhenNoErrors = true;
+		// 	isShortAutoSaveDelay = undefined; // this configuration disables short auto save delay
+		// }
 
 		return {
 			autoSave,
 			autoSaveDelay,
 			autoSaveWorkspaceFilesOnly,
-			autoSaveWhenNoErrors,
+			// autoSaveWhenNoErrors,
 			isOutOfWorkspace,
 			isShortAutoSaveDelay
 		};
@@ -396,7 +396,7 @@ export class FilesConfigurationService extends Disposable implements IFilesConfi
 		}
 
 		if (resource) {
-			if (autoSaveConfiguration.autoSaveWorkspaceFilesOnly && autoSaveConfiguration.isOutOfWorkspace) {
+			if (/* autoSaveConfiguration.autoSaveWorkspaceFilesOnly &&  */autoSaveConfiguration.isOutOfWorkspace) {
 				return {mode: AutoSaveMode.OFF, reason: AutoSaveDisabledReason.OUT_OF_WORKSPACE};
 			}
 

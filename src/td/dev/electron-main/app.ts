@@ -31,6 +31,8 @@ import {SharedProcess} from 'td/platform/sharedProcess/electron-main/sharedProce
 import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
 import {LoggerChannel} from 'td/platform/log/electron-main/logIpc';
 import {ProxyChannel} from 'td/base/parts/ipc/common/ipc';
+import {IPolicyService} from 'td/platform/policy/common/policy';
+import {PolicyChannel} from 'td/platform/policy/common/policyIpc';
 import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
 import {INativeHostMainService, NativeHostMainService} from 'td/platform/native/electron-main/nativeHostMainService';
 import {IWorkspacesManagementMainService, WorkspacesManagementMainService} from 'td/platform/workspaces/electron-main/workspacesManagementMainService';
@@ -215,6 +217,11 @@ export class DevApplication extends Disposable {
 		// across apps until `requestSingleInstance` APIs are adopted.
 		
 		const disposables = this._register(new DisposableStore());
+
+		// Policies (main & shared process)
+		const policyChannel = new PolicyChannel(accessor.get(IPolicyService));
+		mainProcessElectronServer.registerChannel('policy', policyChannel);
+		sharedProcessClient.then(client => client.registerChannel('policy', policyChannel));
 
 		// Keyboard Layout
 		const keyboardLayoutChannel = ProxyChannel.fromService(accessor.get(IKeyboardLayoutMainService), disposables);

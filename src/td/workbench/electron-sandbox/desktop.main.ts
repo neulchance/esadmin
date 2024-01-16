@@ -44,6 +44,7 @@ import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAge
 import {ISharedProcessService} from 'td/platform/ipc/electron-sandbox/services';
 import {SharedProcessService} from 'td/workbench/services/sharedProcess/electron-sandbox/sharedProcessService';
 import {INativeKeyboardLayoutService, NativeKeyboardLayoutService} from 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayoutService';
+import {PolicyChannelClient} from 'td/platform/policy/common/policyIpc';
 
 export class DesktopMain extends Disposable {
   
@@ -87,7 +88,7 @@ export class DesktopMain extends Disposable {
 		serviceCollection.set(IMainProcessService, mainProcessService);
 
 		// Policies
-		const policyService = new NullPolicyService();
+		const policyService = this.configuration.policiesData ? new PolicyChannelClient(this.configuration.policiesData, mainProcessService.getChannel('policy')) : new NullPolicyService();
 		serviceCollection.set(IPolicyService, policyService);
 
     // Product
@@ -153,7 +154,7 @@ export class DesktopMain extends Disposable {
     // Create services that require resolving in parallel
 		const workspace = this.resolveWorkspaceIdentifier(environmentService);
 		const [configurationService, storageService] = await Promise.all([
-			this.createWorkspaceService(workspace, environmentService, userDataProfileService, userDataProfilesService, fileService, uriIdentityService, logService, policyService).then(service => {
+			this.createWorkspaceService(workspace, environmentService, userDataProfileService, userDataProfilesService, fileService, remoteAgentService, uriIdentityService, logService, policyService).then(service => {
 
 				// Workspace
 				serviceCollection.set(IWorkspaceContextService, service);
@@ -216,16 +217,13 @@ export class DesktopMain extends Disposable {
 		userDataProfileService: IUserDataProfileService,
 		userDataProfilesService: IUserDataProfilesService,
 		fileService: FileService,
+		remoteAgentService: IRemoteAgentService,
 		uriIdentityService: IUriIdentityService,
 		logService: ILogService,
 		policyService: IPolicyService
 	): Promise<WorkspaceService> {
 		const configurationCache = new ConfigurationCache([Schemas.file, Schemas.vscodeUserData] /* Cache all non native resources */, environmentService, fileService);
-		const workspaceService = new WorkspaceService({remoteAuthority: environmentService.remoteAuthority, configurationCache}, 
-			environmentService, 
-			userDataProfileService, 
-			userDataProfilesService, 
-			fileService, uriIdentityService, logService, policyService);
+		const workspaceService = new WorkspaceService({remoteAuthority: environmentService.remoteAuthority, configurationCache}, environmentService, userDataProfileService, userDataProfilesService, fileService, remoteAgentService, uriIdentityService, logService, policyService);
 
 		try {
 			await workspaceService.initialize(workspace);

@@ -96,19 +96,17 @@ export abstract class AbstractPathService implements IPathService {
 
 		// OS
 		this.resolveOS = (async () => {
-			// const env = await this.remoteAgentService.getEnvironment();
+			const env = await this.remoteAgentService.getEnvironment();
 
-			// return env?.os || OS;
-			return OS;
+			return env?.os || OS;
 		})();
 
 		// User Home
 		this.resolveUserHome = (async () => {
-			// const env = await this.remoteAgentService.getEnvironment();
-			// const userHome = this.maybeUnresolvedUserHome = env?.userHome ?? localUserHome;
+			const env = await this.remoteAgentService.getEnvironment();
+			const userHome = this.maybeUnresolvedUserHome = env?.userHome ?? localUserHome;
 
-			// return userHome;
-			return localUserHome;
+			return userHome;
 		})();
 	}
 
@@ -146,20 +144,20 @@ export abstract class AbstractPathService implements IPathService {
 			return Schemas.vscodeRemote;
 		}
 
-		const virtualWorkspace = getVirtualWorkspaceScheme(contextService.getWorkspace());
-		if (virtualWorkspace) {
-			return virtualWorkspace;
-		}
+		// const virtualWorkspace = getVirtualWorkspaceScheme(contextService.getWorkspace());
+		// if (virtualWorkspace) {
+		// 	return virtualWorkspace;
+		// }
 
-		const firstFolder = contextService.getWorkspace().folders[0];
-		if (firstFolder) {
-			return firstFolder.uri.scheme;
-		}
+		// const firstFolder = contextService.getWorkspace().folders[0];
+		// if (firstFolder) {
+		// 	return firstFolder.uri.scheme;
+		// }
 
-		const configuration = contextService.getWorkspace().configuration;
-		if (configuration) {
-			return configuration.scheme;
-		}
+		// const configuration = contextService.getWorkspace().configuration;
+		// if (configuration) {
+		// 	return configuration.scheme;
+		// }
 
 		return Schemas.file;
 	}

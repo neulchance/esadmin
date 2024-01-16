@@ -4,41 +4,41 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as aria from 'td/base/browser/ui/aria/aria';
-import { Disposable, IDisposable, toDisposable, DisposableStore } from 'td/base/common/lifecycle';
-import { ICodeEditor, IDiffEditor, IDiffEditorConstructionOptions } from 'td/editor/browser/editorBrowser';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { CodeEditorWidget } from 'td/editor/browser/widget/codeEditorWidget';
-import { IDiffEditorOptions, IEditorOptions } from 'td/editor/common/config/editorOptions';
-import { InternalEditorAction } from 'td/editor/common/editorAction';
-import { IModelChangedEvent } from 'td/editor/common/editorCommon';
-import { ITextModel } from 'td/editor/common/model';
-import { StandaloneKeybindingService, updateConfigurationService } from 'td/editor/standalone/browser/standaloneServices';
-import { IStandaloneThemeService } from 'td/editor/standalone/common/standaloneTheme';
-import { IMenuItem, MenuId, MenuRegistry } from 'td/platform/actions/common/actions';
-import { CommandsRegistry, ICommandHandler, ICommandService } from 'td/platform/commands/common/commands';
-import { IConfigurationService } from 'td/platform/configuration/common/configuration';
-import { ContextKeyExpr, ContextKeyValue, IContextKey, IContextKeyService } from 'td/platform/contextkey/common/contextkey';
-import { IContextMenuService } from 'td/platform/contextview/browser/contextView';
-import { IInstantiationService, ServicesAccessor } from 'td/platform/instantiation/common/instantiation';
-import { IKeybindingService } from 'td/platform/keybinding/common/keybinding';
-import { INotificationService } from 'td/platform/notification/common/notification';
-import { IThemeService } from 'td/platform/theme/common/themeService';
-import { IAccessibilityService } from 'td/platform/accessibility/common/accessibility';
-import { StandaloneCodeEditorNLS } from 'td/editor/common/standaloneStrings';
-import { IClipboardService } from 'td/platform/clipboard/common/clipboardService';
-import { IEditorProgressService } from 'td/platform/progress/common/progress';
-import { StandaloneThemeService } from 'td/editor/standalone/browser/standaloneThemeService';
-import { IModelService } from 'td/editor/common/services/model';
-import { ILanguageSelection, ILanguageService } from 'td/editor/common/languages/language';
-import { URI } from 'td/base/common/uri';
-import { StandaloneCodeEditorService } from 'td/editor/standalone/browser/standaloneCodeEditorService';
-import { PLAINTEXT_LANGUAGE_ID } from 'td/editor/common/languages/modesRegistry';
-import { ILanguageConfigurationService } from 'td/editor/common/languages/languageConfigurationRegistry';
-import { IEditorConstructionOptions } from 'td/editor/browser/config/editorConfiguration';
-import { ILanguageFeaturesService } from 'td/editor/common/services/languageFeatures';
-import { DiffEditorWidget } from 'td/editor/browser/widget/diffEditor/diffEditorWidget';
-import { IAudioCueService } from 'td/platform/audioCues/browser/audioCueService';
-import { mainWindow } from 'td/base/browser/window';
+import {Disposable, IDisposable, toDisposable, DisposableStore} from 'td/base/common/lifecycle';
+import {ICodeEditor, IDiffEditor, IDiffEditorConstructionOptions} from 'td/editor/browser/editorBrowser';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {CodeEditorWidget} from 'td/editor/browser/widget/codeEditorWidget';
+import {IDiffEditorOptions, IEditorOptions} from 'td/editor/common/config/editorOptions';
+import {InternalEditorAction} from 'td/editor/common/editorAction';
+import {IModelChangedEvent} from 'td/editor/common/editorCommon';
+import {ITextModel} from 'td/editor/common/model';
+import {StandaloneKeybindingService, updateConfigurationService} from 'td/editor/standalone/browser/standaloneServices';
+import {IStandaloneThemeService} from 'td/editor/standalone/common/standaloneTheme';
+import {IMenuItem, MenuId, MenuRegistry} from 'td/platform/actions/common/actions';
+import {CommandsRegistry, ICommandHandler, ICommandService} from 'td/platform/commands/common/commands';
+import {IConfigurationService} from 'td/platform/configuration/common/configuration';
+import {ContextKeyExpr, ContextKeyValue, IContextKey, IContextKeyService} from 'td/platform/contextkey/common/contextkey';
+import {IContextMenuService} from 'td/platform/contextview/browser/contextView';
+import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
+import {IKeybindingService} from 'td/platform/keybinding/common/keybinding';
+import {INotificationService} from 'td/platform/notification/common/notification';
+import {IThemeService} from 'td/platform/theme/common/themeService';
+import {IAccessibilityService} from 'td/platform/accessibility/common/accessibility';
+import {StandaloneCodeEditorNLS} from 'td/editor/common/standaloneStrings';
+import {IClipboardService} from 'td/platform/clipboard/common/clipboardService';
+import {IEditorProgressService} from 'td/platform/progress/common/progress';
+import {StandaloneThemeService} from 'td/editor/standalone/browser/standaloneThemeService';
+import {IModelService} from 'td/editor/common/services/model';
+import {ILanguageSelection, ILanguageService} from 'td/editor/common/languages/language';
+import {URI} from 'td/base/common/uri';
+import {StandaloneCodeEditorService} from 'td/editor/standalone/browser/standaloneCodeEditorService';
+import {PLAINTEXT_LANGUAGE_ID} from 'td/editor/common/languages/modesRegistry';
+import {ILanguageConfigurationService} from 'td/editor/common/languages/languageConfigurationRegistry';
+import {IEditorConstructionOptions} from 'td/editor/browser/config/editorConfiguration';
+import {ILanguageFeaturesService} from 'td/editor/common/services/languageFeatures';
+import {DiffEditorWidget} from 'td/editor/browser/widget/diffEditor/diffEditorWidget';
+import {IAudioCueService} from 'td/platform/audioCues/browser/audioCueService';
+import {mainWindow} from 'td/base/browser/window';
 
 /**
  * Description of an action contribution
@@ -277,7 +277,7 @@ export class StandaloneCodeEditor extends CodeEditorWidget implements IStandalon
 		@ILanguageConfigurationService languageConfigurationService: ILanguageConfigurationService,
 		@ILanguageFeaturesService languageFeaturesService: ILanguageFeaturesService,
 	) {
-		const options = { ..._options };
+		const options = {..._options};
 		options.ariaLabel = options.ariaLabel || StandaloneCodeEditorNLS.editorViewAccessibleLabel;
 		options.ariaLabel = options.ariaLabel + ';' + (StandaloneCodeEditorNLS.accessibilityHelpMessage);
 		super(domElement, options, {}, instantiationService, codeEditorService, commandService, contextKeyService, themeService, notificationService, accessibilityService, languageConfigurationService, languageFeaturesService);
@@ -421,7 +421,7 @@ export class StandaloneEditor extends StandaloneCodeEditor implements IStandalon
 		@ILanguageConfigurationService languageConfigurationService: ILanguageConfigurationService,
 		@ILanguageFeaturesService languageFeaturesService: ILanguageFeaturesService,
 	) {
-		const options = { ..._options };
+		const options = {..._options};
 		updateConfigurationService(configurationService, options, false);
 		const themeDomRegistration = (<StandaloneThemeService>themeService).registerEditorContainer(domElement);
 		if (typeof options.theme === 'string') {
@@ -501,7 +501,7 @@ export class StandaloneDiffEditor2 extends DiffEditorWidget implements IStandalo
 		@IClipboardService clipboardService: IClipboardService,
 		@IAudioCueService audioCueService: IAudioCueService,
 	) {
-		const options = { ..._options };
+		const options = {..._options};
 		updateConfigurationService(configurationService, options, true);
 		const themeDomRegistration = (<StandaloneThemeService>themeService).registerEditorContainer(domElement);
 		if (typeof options.theme === 'string') {

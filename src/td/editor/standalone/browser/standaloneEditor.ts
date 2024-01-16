@@ -3,43 +3,43 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { mainWindow } from 'td/base/browser/window';
-import { Disposable, DisposableStore, IDisposable } from 'td/base/common/lifecycle';
-import { splitLines } from 'td/base/common/strings';
-import { URI } from 'td/base/common/uri';
+import {mainWindow} from 'td/base/browser/window';
+import {Disposable, DisposableStore, IDisposable} from 'td/base/common/lifecycle';
+import {splitLines} from 'td/base/common/strings';
+import {URI} from 'td/base/common/uri';
 import 'td/css!./standalone-tokens';
-import { FontMeasurements } from 'td/editor/browser/config/fontMeasurements';
-import { ICodeEditor } from 'td/editor/browser/editorBrowser';
-import { EditorCommand, ServicesAccessor } from 'td/editor/browser/editorExtensions';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { IWebWorkerOptions, MonacoWebWorker, createWebWorker as actualCreateWebWorker } from 'td/editor/browser/services/webWorker';
-import { ApplyUpdateResult, ConfigurationChangedEvent, EditorOptions } from 'td/editor/common/config/editorOptions';
-import { EditorZoom } from 'td/editor/common/config/editorZoom';
-import { BareFontInfo, FontInfo } from 'td/editor/common/config/fontInfo';
-import { IPosition } from 'td/editor/common/core/position';
-import { IRange } from 'td/editor/common/core/range';
-import { EditorType, IDiffEditor } from 'td/editor/common/editorCommon';
+import {FontMeasurements} from 'td/editor/browser/config/fontMeasurements';
+import {ICodeEditor} from 'td/editor/browser/editorBrowser';
+import {EditorCommand, ServicesAccessor} from 'td/editor/browser/editorExtensions';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {IWebWorkerOptions, MonacoWebWorker, createWebWorker as actualCreateWebWorker} from 'td/editor/browser/services/webWorker';
+import {ApplyUpdateResult, ConfigurationChangedEvent, EditorOptions} from 'td/editor/common/config/editorOptions';
+import {EditorZoom} from 'td/editor/common/config/editorZoom';
+import {BareFontInfo, FontInfo} from 'td/editor/common/config/fontInfo';
+import {IPosition} from 'td/editor/common/core/position';
+import {IRange} from 'td/editor/common/core/range';
+import {EditorType, IDiffEditor} from 'td/editor/common/editorCommon';
 import * as languages from 'td/editor/common/languages';
-import { ILanguageService } from 'td/editor/common/languages/language';
-import { ILanguageConfigurationService } from 'td/editor/common/languages/languageConfigurationRegistry';
-import { PLAINTEXT_LANGUAGE_ID } from 'td/editor/common/languages/modesRegistry';
-import { NullState, nullTokenize } from 'td/editor/common/languages/nullTokenize';
-import { FindMatch, ITextModel, TextModelResolvedOptions } from 'td/editor/common/model';
-import { IModelService } from 'td/editor/common/services/model';
+import {ILanguageService} from 'td/editor/common/languages/language';
+import {ILanguageConfigurationService} from 'td/editor/common/languages/languageConfigurationRegistry';
+import {PLAINTEXT_LANGUAGE_ID} from 'td/editor/common/languages/modesRegistry';
+import {NullState, nullTokenize} from 'td/editor/common/languages/nullTokenize';
+import {FindMatch, ITextModel, TextModelResolvedOptions} from 'td/editor/common/model';
+import {IModelService} from 'td/editor/common/services/model';
 import * as standaloneEnums from 'td/editor/common/standalone/standaloneEnums';
-import { Colorizer, IColorizerElementOptions, IColorizerOptions } from 'td/editor/standalone/browser/colorizer';
-import { IActionDescriptor, IStandaloneCodeEditor, IStandaloneDiffEditor, IStandaloneDiffEditorConstructionOptions, IStandaloneEditorConstructionOptions, StandaloneDiffEditor2, StandaloneEditor, createTextModel } from 'td/editor/standalone/browser/standaloneCodeEditor';
-import { IEditorOverrideServices, StandaloneKeybindingService, StandaloneServices } from 'td/editor/standalone/browser/standaloneServices';
-import { StandaloneThemeService } from 'td/editor/standalone/browser/standaloneThemeService';
-import { IStandaloneThemeData, IStandaloneThemeService } from 'td/editor/standalone/common/standaloneTheme';
-import { IMenuItem, MenuId, MenuRegistry } from 'td/platform/actions/common/actions';
-import { CommandsRegistry, ICommandHandler } from 'td/platform/commands/common/commands';
-import { ContextKeyExpr } from 'td/platform/contextkey/common/contextkey';
-import { ITextResourceEditorInput } from 'td/platform/editor/common/editor';
-import { IKeybindingService } from 'td/platform/keybinding/common/keybinding';
-import { IMarker, IMarkerData, IMarkerService } from 'td/platform/markers/common/markers';
-import { IOpenerService } from 'td/platform/opener/common/opener';
-import { MultiDiffEditorWidget } from 'td/editor/browser/widget/multiDiffEditorWidget/multiDiffEditorWidget';
+import {Colorizer, IColorizerElementOptions, IColorizerOptions} from 'td/editor/standalone/browser/colorizer';
+import {IActionDescriptor, IStandaloneCodeEditor, IStandaloneDiffEditor, IStandaloneDiffEditorConstructionOptions, IStandaloneEditorConstructionOptions, StandaloneDiffEditor2, StandaloneEditor, createTextModel} from 'td/editor/standalone/browser/standaloneCodeEditor';
+import {IEditorOverrideServices, StandaloneKeybindingService, StandaloneServices} from 'td/editor/standalone/browser/standaloneServices';
+import {StandaloneThemeService} from 'td/editor/standalone/browser/standaloneThemeService';
+import {IStandaloneThemeData, IStandaloneThemeService} from 'td/editor/standalone/common/standaloneTheme';
+import {IMenuItem, MenuId, MenuRegistry} from 'td/platform/actions/common/actions';
+import {CommandsRegistry, ICommandHandler} from 'td/platform/commands/common/commands';
+import {ContextKeyExpr} from 'td/platform/contextkey/common/contextkey';
+import {ITextResourceEditorInput} from 'td/platform/editor/common/editor';
+import {IKeybindingService} from 'td/platform/keybinding/common/keybinding';
+import {IMarker, IMarkerData, IMarkerService} from 'td/platform/markers/common/markers';
+import {IOpenerService} from 'td/platform/opener/common/opener';
+import {MultiDiffEditorWidget} from 'td/editor/browser/widget/multiDiffEditorWidget/multiDiffEditorWidget';
 
 /**
  * Create a new editor under `domElement`.
@@ -428,7 +428,7 @@ export function remeasureFonts(): void {
  * Register a command.
  */
 export function registerCommand(id: string, handler: (accessor: any, ...args: any[]) => void): IDisposable {
-	return CommandsRegistry.registerCommand({ id, handler });
+	return CommandsRegistry.registerCommand({id, handler});
 }
 
 export interface ILinkOpener {
@@ -487,7 +487,7 @@ export function registerEditorOpener(opener: ICodeEditorOpener): IDisposable {
 		if (selection && typeof selection.endLineNumber === 'number' && typeof selection.endColumn === 'number') {
 			selectionOrPosition = <IRange>selection;
 		} else if (selection) {
-			selectionOrPosition = { lineNumber: selection.startLineNumber, column: selection.startColumn };
+			selectionOrPosition = {lineNumber: selection.startLineNumber, column: selection.startColumn};
 		}
 		if (await opener.openCodeEditor(source, input.resource, selectionOrPosition)) {
 			return source; // return source editor to indicate that this handler has successfully handled the opening
