@@ -5,7 +5,7 @@
 
 //@ts-check
 'use strict';
-console.log('Hello Electron 👋')
+
 /**
  * @typedef {import('./td/base/common/product').IProductConfiguration} IProductConfiguration
  * @typedef {import('./td/platform/environment/common/argv').NativeParsedArgs} NativeParsedArgs
