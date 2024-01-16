@@ -45,6 +45,7 @@ import {ISharedProcessService} from 'td/platform/ipc/electron-sandbox/services';
 import {SharedProcessService} from 'td/workbench/services/sharedProcess/electron-sandbox/sharedProcessService';
 import {INativeKeyboardLayoutService, NativeKeyboardLayoutService} from 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayoutService';
 import {PolicyChannelClient} from 'td/platform/policy/common/policyIpc';
+import {IUtilityProcessWorkerWorkbenchService, UtilityProcessWorkerWorkbenchService} from 'td/workbench/services/utilityProcess/electron-sandbox/utilityProcessWorkerWorkbenchService';
 
 export class DesktopMain extends Disposable {
   
@@ -115,6 +116,10 @@ export class DesktopMain extends Disposable {
 		// Shared Process
 		const sharedProcessService = new SharedProcessService(this.configuration.windowId, logService);
 		serviceCollection.set(ISharedProcessService, sharedProcessService);
+
+		// Utility Process Worker
+		const utilityProcessWorkerWorkbenchService = new UtilityProcessWorkerWorkbenchService(this.configuration.windowId, logService, mainProcessService);
+		serviceCollection.set(IUtilityProcessWorkerWorkbenchService, utilityProcessWorkerWorkbenchService);
 
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		//

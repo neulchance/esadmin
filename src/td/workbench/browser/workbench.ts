@@ -173,7 +173,6 @@ export class Workbench extends Layout {
   private initServices(serviceCollection: ServiceCollection): IInstantiationService {
 
     // Layout Service
-		// @ts-expect-error
 		serviceCollection.set(IWorkbenchLayoutService, this);
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -332,6 +331,7 @@ export class Workbench extends Layout {
 		this.restoreFontInfo(storageService, configurationService);
 
     console.log('go ahead!')
+		// this.logService.
 
 		// Create Parts
 		for (const {id, role, classes, options} of [
@@ -346,8 +346,6 @@ export class Workbench extends Layout {
 		]) {
 			const partContainer = this.createPart(id, role, classes);
 
-			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b33m = "\x1b[33m"; const done = "\x1b[0m";
-			console.log(`${x1b33m}renderWorkbench this.getPart${done}`);
 			this.getPart(id).create(partContainer, options);
 		}
 

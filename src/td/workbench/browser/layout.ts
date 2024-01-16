@@ -1079,15 +1079,11 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 	}
 
 	registerPart(part: Part): void {
-		console.log('registerPart', part)
 		this.parts.set(part.getId(), part);
 	}
 
 	protected getPart(key: Parts): Part {
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const done = "\x1b[0m";
-		console.log(`${blue}getPart: ${key} ${done}`);
 		const part = this.parts.get(key);
-		console.log(part);
 		if (!part) {
 			throw new Error(`Unknown part ${key}`);
 		}
@@ -1583,7 +1579,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 	layout(): void {
 		if (!this.disposed) {
 			this._mainContainerDimension = getClientArea(this.parent);
-			this.logService.trace(`Layout#layout, height: ${this._mainContainerDimension.height}, width: ${this._mainContainerDimension.width}`);
+			// this.logService.trace(`Layout#layout, height: ${this._mainContainerDimension.height}, width: ${this._mainContainerDimension.width}`);
 
 			position(this.mainContainer, 0, 0, 0, 0, 'relative');
 			size(this.mainContainer, this._mainContainerDimension.width, this._mainContainerDimension.height);
