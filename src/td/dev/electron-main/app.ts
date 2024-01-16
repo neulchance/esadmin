@@ -12,7 +12,7 @@ import {WindowsMainService} from 'td/platform/windows/electron-main/windowsMainS
 import {SyncDescriptor} from 'td/platform/instantiation/common/descriptors';
 import {validatedIpcMain} from 'td/base/parts/ipc/electron-main/ipcMain';
 import {NativeParsedArgs} from 'td/platform/environment/common/argv';
-import {IProcessEnvironment} from 'td/base/common/platform';
+import {IProcessEnvironment, isLinuxSnap} from 'td/base/common/platform';
 import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
 import {getResolvedShellEnv} from 'td/platform/shell/node/shellEnv';
 import {ILogService} from 'td/platform/log/common/log';
@@ -48,6 +48,11 @@ import {IBackupMainService} from 'td/platform/backup/electron-main/backup';
 import {BackupMainService} from 'td/platform/backup/electron-main/backupMainService';
 import {IWorkspacesHistoryMainService, WorkspacesHistoryMainService} from 'td/platform/workspaces/electron-main/workspacesHistoryMainService';
 import {IMenubarMainService, MenubarMainService} from 'td/platform/menubar/electron-main/menubarMainService';
+import {UpdateChannel} from 'td/platform/update/common/updateIpc';
+import {IUpdateService} from 'td/platform/update/common/update';
+import {DarwinUpdateService} from 'td/platform/update/electron-main/updateService.darwin';
+import {RequestChannel} from 'td/platform/request/common/requestIpc';
+import {IRequestService} from 'td/platform/request/common/request';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -182,6 +187,25 @@ export class DevApplication extends Disposable {
   private async initServices(machineId: string, sqmId: string, sharedProcessReady: Promise<MessagePortClient>): Promise<IInstantiationService> {
     const services = new ServiceCollection();
 
+		// Update
+		switch (process.platform) {
+			case 'win32':
+				// services.set(IUpdateService, new SyncDescriptor(Win32UpdateService));
+				break;
+
+			case 'linux':
+				if (isLinuxSnap) {
+					// services.set(IUpdateService, new SyncDescriptor(SnapUpdateService, [process.env['SNAP'], process.env['SNAP_REVISION']]));
+				} else {
+					// services.set(IUpdateService, new SyncDescriptor(LinuxUpdateService));
+				}
+				break;
+
+			case 'darwin':
+				services.set(IUpdateService, new SyncDescriptor(DarwinUpdateService));
+				break;
+		}
+
 		// Dialogs
 		const dialogMainService = new DialogMainService(this.logService, this.productService);
 		services.set(IDialogMainService, dialogMainService);
@@ -237,6 +261,14 @@ export class DevApplication extends Disposable {
 		const policyChannel = new PolicyChannel(accessor.get(IPolicyService));
 		mainProcessElectronServer.registerChannel('policy', policyChannel);
 		sharedProcessClient.then(client => client.registerChannel('policy', policyChannel));
+
+		// Request
+		const requestService = new RequestChannel(accessor.get(IRequestService));
+		sharedProcessClient.then(client => client.registerChannel('request', requestService));
+
+		// Update
+		const updateChannel = new UpdateChannel(accessor.get(IUpdateService));
+		mainProcessElectronServer.registerChannel('update', updateChannel);
 
 		// Keyboard Layout
 		const keyboardLayoutChannel = ProxyChannel.fromService(accessor.get(IKeyboardLayoutMainService), disposables);

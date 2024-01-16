@@ -52,8 +52,8 @@ import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol'
 import {ProtocolMainService} from 'td/platform/protocol/electron-main/protocolMainService';
 // import {ITunnelService} from 'td/platform/tunnel/common/tunnel';
 // import {TunnelService} from 'td/platform/tunnel/node/tunnelService';
-// import {IRequestService} from 'td/platform/request/common/request';
-// import {RequestMainService} from 'td/platform/request/electron-main/requestMainService';
+import {IRequestService} from 'td/platform/request/common/request';
+import {RequestMainService} from 'td/platform/request/electron-main/requestMainService';
 // import {ISignService} from 'td/platform/sign/common/sign';
 // import {SignService} from 'td/platform/sign/node/signService';
 import {IStateReadService, IStateService} from 'td/platform/state/node/state';
@@ -213,7 +213,7 @@ class DevMain {
 		services.set(ILifecycleMainService, new SyncDescriptor(LifecycleMainService, undefined, false));
 
 		// Request
-		// services.set(IRequestService, new SyncDescriptor(RequestMainService, undefined, true));
+		services.set(IRequestService, new SyncDescriptor(RequestMainService, undefined, true));
 
 		// Themes
 		services.set(IThemeMainService, new SyncDescriptor(ThemeMainService));
