@@ -47,6 +47,7 @@ import {WorkspacesMainService} from 'td/platform/workspaces/electron-main/worksp
 import {IBackupMainService} from 'td/platform/backup/electron-main/backup';
 import {BackupMainService} from 'td/platform/backup/electron-main/backupMainService';
 import {IWorkspacesHistoryMainService, WorkspacesHistoryMainService} from 'td/platform/workspaces/electron-main/workspacesHistoryMainService';
+import {IMenubarMainService, MenubarMainService} from 'td/platform/menubar/electron-main/menubarMainService';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -194,6 +195,9 @@ export class DevApplication extends Disposable {
 		// Native Host
 		services.set(INativeHostMainService, new SyncDescriptor(NativeHostMainService, undefined, false /* proxied to other processes */));
 
+		// Menubar
+		services.set(IMenubarMainService, new SyncDescriptor(MenubarMainService));
+
 		// Storage
 		services.set(IStorageMainService, new SyncDescriptor(StorageMainService));
 		services.set(IApplicationStorageMainService, new SyncDescriptor(ApplicationStorageMainService));
@@ -247,6 +251,10 @@ export class DevApplication extends Disposable {
 		// Workspaces
 		const workspacesChannel = ProxyChannel.fromService(accessor.get(IWorkspacesService), disposables);
 		mainProcessElectronServer.registerChannel('workspaces', workspacesChannel);
+
+		// Menubar
+		const menubarChannel = ProxyChannel.fromService(accessor.get(IMenubarMainService), disposables);
+		mainProcessElectronServer.registerChannel('menubar', menubarChannel);
 		
 		// User Data Profiles
 		const userDataProfilesService = ProxyChannel.fromService(accessor.get(IUserDataProfilesMainService), disposables);
