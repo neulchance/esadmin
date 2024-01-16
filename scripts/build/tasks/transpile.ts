@@ -35,7 +35,7 @@ export async function transpileTask(src: string, out: string, swc: boolean) {
    * AsyncGenerator to be source of stream
    */
   async function* sourcePath() {
-    const srcFiles = await glob('src/**/*.{ts,js,css}', {ignore: 'node_modules/**', withFileTypes: true})
+    const srcFiles = await glob('src/**/*.{ts,js,css,svg}', {ignore: 'node_modules/**', withFileTypes: true})
     for (const srcFile of srcFiles) {
       yield srcFile.fullpath()
     }
