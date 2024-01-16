@@ -1053,13 +1053,13 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		})());
 
 		// Restore Zen Mode
-		const zenModeWasActive = this.stateModel.getRuntimeValue(LayoutStateKeys.ZEN_MODE_ACTIVE);
-		const restoreZenMode = getZenModeConfiguration(this.configurationService).restore;
+		// const zenModeWasActive = this.stateModel.getRuntimeValue(LayoutStateKeys.ZEN_MODE_ACTIVE);
+		// const restoreZenMode = getZenModeConfiguration(this.configurationService).restore;
 
-		if (zenModeWasActive) {
-			this.stateModel.setRuntimeValue(LayoutStateKeys.ZEN_MODE_ACTIVE, !restoreZenMode);
-			this.toggleZenMode(false, true);
-		}
+		// if (zenModeWasActive) {
+		// 	this.stateModel.setRuntimeValue(LayoutStateKeys.ZEN_MODE_ACTIVE, !restoreZenMode);
+		// 	this.toggleZenMode(false, true);
+		// }
 
 		// Restore Main Editor Center Mode
 		if (this.stateModel.getRuntimeValue(LayoutStateKeys.EDITOR_CENTERED)) {
