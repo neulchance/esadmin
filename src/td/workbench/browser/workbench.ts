@@ -22,12 +22,14 @@ import {IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from
 import {IHostService} from '../services/host/browser/host';
 import {IDialogService} from 'td/platform/dialogs/common/dialogs';
 import {FontMeasurements} from 'td/editor/browser/config/fontMeasurements';
-import {addDisposableListener} from 'td/base/browser/dom';
+import {addDisposableListener, runWhenWindowIdle} from 'td/base/browser/dom';
 import {toErrorMessage} from 'td/base/common/errorMessage';
 import {localize} from 'td/nls';
 import {EditorExtensions, IEditorFactoryRegistry} from '../common/editor';
 import {BareFontInfo} from 'td/editor/common/config/fontInfo';
 import {PixelRatio} from 'td/base/browser/browser';
+import {RunOnceScheduler, timeout} from 'td/base/common/async';
+import {mark} from 'td/base/common/performance';
 
 
 export interface IWorkbenchOptions {
@@ -366,5 +368,53 @@ export class Workbench extends Layout {
 	}
 
 	private restore(lifecycleService: ILifecycleService): void {
+
+		// Ask each part to restore
+		try {
+			this.restoreParts();
+		} catch (error) {
+			onUnexpectedError(error);
+		}
+
+		// Transition into restored phase after layout has restored
+		// but do not wait indefinitely on this to account for slow
+		// editors restoring. Since the workbench is fully functional
+		// even when the visible editors have not resolved, we still
+		// want contributions on the `Restored` phase to work before
+		// slow editors have resolved. But we also do not want fast
+		// editors to resolve slow when too many contributions get
+		// instantiated, so we find a middle ground solution via
+		// `Promise.race`
+		this.whenReady.finally(() =>
+			Promise.race([
+				this.whenRestored,
+				timeout(2000)
+			]).finally(() => {
+
+				// Update perf marks only when the layout is fully
+				// restored. We want the time it takes to restore
+				// editors to be included in these numbers
+
+				function markDidStartWorkbench() {
+					mark('code/didStartWorkbench');
+					performance.measure('perf: workbench create & restore', 'code/didLoadWorkbenchMain', 'code/didStartWorkbench');
+				}
+
+				if (this.isRestored()) {
+					markDidStartWorkbench();
+				} else {
+					this.whenRestored.finally(() => markDidStartWorkbench());
+				}
+
+				// Set lifecycle phase to `Restored`
+				lifecycleService.phase = LifecyclePhase.Restored;
+
+				// Set lifecycle phase to `Eventually` after a short delay and when idle (min 2.5sec, max 5sec)
+				const eventuallyPhaseScheduler = this._register(new RunOnceScheduler(() => {
+					this._register(runWhenWindowIdle(mainWindow, () => lifecycleService.phase = LifecyclePhase.Eventually, 2500));
+				}, 2500));
+				eventuallyPhaseScheduler.schedule();
+			})
+		);
 	}
 }
