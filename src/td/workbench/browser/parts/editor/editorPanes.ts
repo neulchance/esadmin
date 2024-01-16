@@ -19,7 +19,7 @@ import {IInstantiationService} from 'td/platform/instantiation/common/instantiat
 import {IEditorProgressService, LongRunningOperation} from 'td/platform/progress/common/progress';
 import {IEditorGroupView, DEFAULT_EDITOR_MIN_DIMENSIONS, DEFAULT_EDITOR_MAX_DIMENSIONS, IInternalEditorOpenOptions} from 'td/workbench/browser/parts/editor/editor';
 import {assertIsDefined} from 'td/base/common/types';
-import {IWorkspaceTrustManagementService} from 'td/platform/workspace/common/workspaceTrust';
+// import {IWorkspaceTrustManagementService} from 'td/platform/workspace/common/workspaceTrust';
 import {ErrorPlaceholderEditor, IErrorEditorPlaceholderOptions, WorkspaceTrustRequiredPlaceholderEditor} from 'td/workbench/browser/parts/editor/editorPlaceholder';
 import {EditorOpenSource, IEditorOptions} from 'td/platform/editor/common/editor';
 import {isCancellationError} from 'td/base/common/errors';
@@ -99,7 +99,7 @@ export class EditorPanes extends Disposable {
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IEditorProgressService private readonly editorProgressService: IEditorProgressService,
-		@IWorkspaceTrustManagementService private readonly workspaceTrustService: IWorkspaceTrustManagementService,
+		// @IWorkspaceTrustManagementService private readonly workspaceTrustService: IWorkspaceTrustManagementService,
 		@ILogService private readonly logService: ILogService,
 		@IDialogService private readonly dialogService: IDialogService,
 		@IHostService private readonly hostService: IHostService
@@ -110,7 +110,7 @@ export class EditorPanes extends Disposable {
 	}
 
 	private registerListeners(): void {
-		this._register(this.workspaceTrustService.onDidChangeTrust(() => this.onDidChangeWorkspaceTrust()));
+		// this._register(this.workspaceTrustService.onDidChangeTrust(() => this.onDidChangeWorkspaceTrust()));
 	}
 
 	private onDidChangeWorkspaceTrust() {
@@ -320,13 +320,13 @@ export class EditorPanes extends Disposable {
 	}
 
 	private getEditorPaneDescriptor(editor: EditorInput): IEditorPaneDescriptor {
-		if (editor.hasCapability(EditorInputCapabilities.RequiresTrust) && !this.workspaceTrustService.isWorkspaceTrusted()) {
-			// Workspace trust: if an editor signals it needs workspace trust
-			// but the current workspace is untrusted, we fallback to a generic
-			// editor descriptor to indicate this an do NOT load the registered
-			// editor.
-			return WorkspaceTrustRequiredPlaceholderEditor.DESCRIPTOR;
-		}
+		// if (editor.hasCapability(EditorInputCapabilities.RequiresTrust) && !this.workspaceTrustService.isWorkspaceTrusted()) {
+		// 	// Workspace trust: if an editor signals it needs workspace trust
+		// 	// but the current workspace is untrusted, we fallback to a generic
+		// 	// editor descriptor to indicate this an do NOT load the registered
+		// 	// editor.
+		// 	return WorkspaceTrustRequiredPlaceholderEditor.DESCRIPTOR;
+		// }
 
 		return assertIsDefined(this.editorPanesRegistry.getEditorPane(editor));
 	}
