@@ -42,6 +42,11 @@ import {Promises, RunOnceScheduler, runWhenGlobalIdle} from 'td/base/common/asyn
 import {IKeyboardLayoutMainService, KeyboardLayoutMainService} from 'td/platform/keyboardLayout/electron-main/keyboardLayoutMainService';
 import {IExtensionsScannerService} from 'td/platform/extensionManagement/common/extensionsScannerService';
 import {ExtensionsScannerService} from 'td/platform/extensionManagement/node/extensionsScannerService';
+import {IWorkspacesService} from 'td/platform/workspaces/common/workspaces';
+import {WorkspacesMainService} from 'td/platform/workspaces/electron-main/workspacesMainService';
+import {IBackupMainService} from 'td/platform/backup/electron-main/backup';
+import {BackupMainService} from 'td/platform/backup/electron-main/backupMainService';
+import {IWorkspacesHistoryMainService, WorkspacesHistoryMainService} from 'td/platform/workspaces/electron-main/workspacesHistoryMainService';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -193,9 +198,15 @@ export class DevApplication extends Disposable {
 		services.set(IStorageMainService, new SyncDescriptor(StorageMainService));
 		services.set(IApplicationStorageMainService, new SyncDescriptor(ApplicationStorageMainService));
 
+		// Backups
+		const backupMainService = new BackupMainService(this.environmentMainService, this.configurationService, this.logService, this.stateService);
+		services.set(IBackupMainService, backupMainService);
+
 		// Workspaces
-		const workspacesManagementMainService = new WorkspacesManagementMainService(this.environmentMainService, this.logService, this.userDataProfilesMainService/* , backupMainService, dialogMainService */);
+		const workspacesManagementMainService = new WorkspacesManagementMainService(this.environmentMainService, this.logService, this.userDataProfilesMainService, backupMainService, dialogMainService);
 		services.set(IWorkspacesManagementMainService, workspacesManagementMainService);
+		services.set(IWorkspacesService, new SyncDescriptor(WorkspacesMainService, undefined, false /* proxied to other processes */));
+		services.set(IWorkspacesHistoryMainService, new SyncDescriptor(WorkspacesHistoryMainService, undefined, false));
 
 		// Default Extensions Profile Init
 		// services.set(IExtensionsScannerService, new SyncDescriptor(ExtensionsScannerService, undefined, true));
@@ -232,6 +243,10 @@ export class DevApplication extends Disposable {
 		const nativeHostChannel = ProxyChannel.fromService(this.nativeHostMainService, disposables);
 		mainProcessElectronServer.registerChannel('nativeHost', nativeHostChannel);
 		sharedProcessClient.then(client => client.registerChannel('nativeHost', nativeHostChannel));
+
+		// Workspaces
+		const workspacesChannel = ProxyChannel.fromService(accessor.get(IWorkspacesService), disposables);
+		mainProcessElectronServer.registerChannel('workspaces', workspacesChannel);
 		
 		// User Data Profiles
 		const userDataProfilesService = ProxyChannel.fromService(accessor.get(IUserDataProfilesMainService), disposables);
