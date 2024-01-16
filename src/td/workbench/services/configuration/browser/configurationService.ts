@@ -1145,7 +1145,7 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 	constructor(
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
-		@IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
+		// @IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IExtensionService extensionService: IExtensionService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 	) {
@@ -1156,7 +1156,7 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 
 			const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 			const delayer = this._register(new Delayer<void>(50));
-			this._register(Event.any(configurationRegistry.onDidUpdateConfiguration, configurationRegistry.onDidSchemaChange, workspaceTrustManagementService.onDidChangeTrust)(() =>
+			this._register(Event.any(configurationRegistry.onDidUpdateConfiguration, configurationRegistry.onDidSchemaChange/* , workspaceTrustManagementService.onDidChangeTrust */)(() =>
 				delayer.trigger(() => this.registerConfigurationSchemas(), lifecycleService.phase === LifecyclePhase.Eventually ? undefined : 2500 /* delay longer in early phases */)));
 		});
 	}
@@ -1296,9 +1296,9 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 	}
 
 	private checkAndFilterPropertiesRequiringTrust(properties: IStringDictionary<IConfigurationPropertySchema>): IStringDictionary<IConfigurationPropertySchema> {
-		if (this.workspaceTrustManagementService.isWorkspaceTrusted()) {
-			return properties;
-		}
+		// if (this.workspaceTrustManagementService.isWorkspaceTrusted()) {
+		// 	return properties;
+		// }
 
 		const result: IStringDictionary<IConfigurationPropertySchema> = {};
 		Object.entries(properties).forEach(([key, value]) => {
