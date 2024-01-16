@@ -12,11 +12,11 @@ import {IWorkspaceContextService} from 'td/platform/workspace/common/workspace';
 export class NativePathService extends AbstractPathService {
 
 	constructor(
-		// @IRemoteAgentService remoteAgentService: IRemoteAgentService,
+		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
 		@INativeWorkbenchEnvironmentService environmentService: INativeWorkbenchEnvironmentService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService
 	) {
-		super(environmentService.userHome, /* remoteAgentService, */ environmentService, contextService);
+		super(environmentService.userHome, remoteAgentService, environmentService, contextService);
 	}
 }
 
