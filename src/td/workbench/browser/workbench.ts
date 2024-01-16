@@ -338,16 +338,17 @@ export class Workbench extends Layout {
 			{id: Parts.TITLEBAR_PART, role: 'none', classes: ['titlebar']},
 			{id: Parts.BANNER_PART, role: 'banner', classes: ['banner']},
 			{id: Parts.ACTIVITYBAR_PART, role: 'none', classes: ['activitybar', this.getSideBarPosition() === Position.LEFT ? 'left' : 'right']}, // Use role 'none' for some parts to make screen readers less chatty #114892
-			{id: Parts.STATUSBAR_PART, role: 'status', classes: ['statusbar'], options: {}},
 			{id: Parts.SIDEBAR_PART, role: 'none', classes: ['sidebar', this.getSideBarPosition() === Position.LEFT ? 'left' : 'right']},
+			{id: Parts.EDITOR_PART, role: 'main', classes: ['editor'], options: {restorePreviousState: this.willRestoreEditors()}},
+			{id: Parts.PANEL_PART, role: 'none', classes: ['panel', 'basepanel', positionToString(this.getPanelPosition())]},
+			{id: Parts.AUXILIARYBAR_PART, role: 'none', classes: ['auxiliarybar', 'basepanel', this.getSideBarPosition() === Position.LEFT ? 'right' : 'left']},
+			{id: Parts.STATUSBAR_PART, role: 'status', classes: ['statusbar']}
 		]) {
 			const partContainer = this.createPart(id, role, classes);
 
-			// mark(`code/willCreatePart/${id}`);
 			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b33m = "\x1b[33m"; const done = "\x1b[0m";
 			console.log(`${x1b33m}renderWorkbench this.getPart${done}`);
 			this.getPart(id).create(partContainer, options);
-			// mark(`code/didCreatePart/${id}`);
 		}
 
 		// Add Workbench to DOM
