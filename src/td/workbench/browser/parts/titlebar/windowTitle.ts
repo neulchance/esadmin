@@ -172,8 +172,13 @@ export class WindowTitle extends Disposable {
 		}
 	}
 
+	/*
+	${activeEditorShort}${separator}${rootName}${separator}${profileName}
+	'vscode'에서는 'editor'의 상황에 따라 위 'template'을 시용하여 'title'을 표시한다.
+	일단은 'TinyDeskDev'라고만 표시하고 추후 조정하자.
+	*/
 	private getFullWindowTitle(): string {
-		const {prefix, suffix} = this.getTitleDecorations();
+		/* const {prefix, suffix} = this.getTitleDecorations();
 
 		let title = this.getWindowTitle() || this.productService.nameLong;
 		if (prefix) {
@@ -185,7 +190,8 @@ export class WindowTitle extends Disposable {
 		}
 
 		// Replace non-space whitespace
-		return title.replace(/[^\S ]/g, ' ');
+		return title.replace(/[^\S ]/g, ' '); */
+		return 'TinyDeskDev'
 	}
 
 	getTitleDecorations() {
