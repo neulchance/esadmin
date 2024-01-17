@@ -18,6 +18,7 @@ const bootstrap = require('./bootstrap')
 const bootstrapNode = require('./bootstrap-node');
 const { getUserDataPath } = require('./td/platform/environment/node/userDataPath')
 const { stripComments } = require('./td/base/common/stripComments')
+/** @type {Partial<IProductConfiguration>} */
 const product = require('../product.json')
 const { app, protocol, crashReporter, Menu, ipcMain } = require('electron')
 
@@ -30,10 +31,15 @@ const portable = bootstrapNode.configurePortable(product);
 bootstrap.enableASARSupport();
 
 const args = parseCLIArgs();
+// Configure static command line arguments
+const argvConfig = configureCommandlineSwitchesSync(args);
 
 // Set userData path before app 'ready' event
 const userDataPath = getUserDataPath(args, product.nameShort ?? 'dev-oss-dev');
 app.setPath('userData', userDataPath);
+
+// Disable default menu (https://github.com/electron/electron/issues/35512)
+// Menu.setApplicationMenu(null);
 
 // Register custom schemes with privileges
 protocol.registerSchemesAsPrivileged([
@@ -97,4 +103,91 @@ function parseCLIArgs() {
 			'no-sandbox': 'sandbox'
 		}
 	});
+}
+
+/**
+ * @param {NativeParsedArgs} cliArgs
+ */
+function configureCommandlineSwitchesSync(cliArgs) {
+
+	// Read argv config
+	const argvConfig = readArgvConfigSync();
+
+	// TODO: upstream 에서는 'app.commandLine.appendSwitch'와 관련된 작업을 하지만
+	// 일단은 패스.
+
+	return argvConfig;
+}
+
+function readArgvConfigSync() {
+
+	// Read or create the argv.json config file sync before app('ready')
+	const argvConfigPath = getArgvConfigPath();
+	let argvConfig;
+	try {
+		argvConfig = JSON.parse(stripComments(fs.readFileSync(argvConfigPath).toString()));
+	} catch (error) {
+		if (error && error.code === 'ENOENT') {
+			createDefaultArgvConfigSync(argvConfigPath);
+		} else {
+			console.warn(`Unable to read argv.json configuration file in ${argvConfigPath}, falling back to defaults (${error})`);
+		}
+	}
+
+	// Fallback to default
+	if (!argvConfig) {
+		argvConfig = {};
+	}
+
+	return argvConfig;
+}
+
+/**
+ * @param {string} argvConfigPath
+ */
+function createDefaultArgvConfigSync(argvConfigPath) {
+	try {
+
+		// Ensure argv config parent exists
+		const argvConfigPathDirname = path.dirname(argvConfigPath);
+		if (!fs.existsSync(argvConfigPathDirname)) {
+			fs.mkdirSync(argvConfigPathDirname);
+		}
+
+		// Default argv content
+		const defaultArgvConfigContent = [
+			'// This configuration file allows you to pass permanent command line arguments to VS Code.',
+			'// Only a subset of arguments is currently supported to reduce the likelihood of breaking',
+			'// the installation.',
+			'//',
+			'// PLEASE DO NOT CHANGE WITHOUT UNDERSTANDING THE IMPACT',
+			'//',
+			'// NOTE: Changing this file requires a restart of VS Code.',
+			'{',
+			'	// Use software rendering instead of hardware accelerated rendering.',
+			'	// This can help in cases where you see rendering issues in VS Code.',
+			'	// "disable-hardware-acceleration": true',
+			'}'
+		];
+
+		// Create initial argv.json with default content
+		fs.writeFileSync(argvConfigPath, defaultArgvConfigContent.join('\n'));
+	} catch (error) {
+		console.error(`Unable to create argv.json configuration file in ${argvConfigPath}, falling back to defaults (${error})`);
+	}
+}
+
+function getArgvConfigPath() {
+	const vscodePortable = process.env['VSCODE_PORTABLE'];
+	if (vscodePortable) {
+		return path.join(vscodePortable, 'argv.json');
+	}
+
+	let dataFolderName = product.dataFolderName;
+	if (process.env['VSCODE_DEV']) {
+		dataFolderName = `${dataFolderName}-dev`;
+	}
+
+	// @ts-ignore
+	return path.join(os.homedir(), dataFolderName, 'argv.json');
 }
