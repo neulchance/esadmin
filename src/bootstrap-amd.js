@@ -20,7 +20,6 @@ globalThis._VSCODE_PRODUCT_JSON = require('../product.json');
 if (process.env['VSCODE_DEV']) {
 	// Patch product overrides when running out of sources
 	try {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const overrides = require('../product.overrides.json');
 		globalThis._VSCODE_PRODUCT_JSON = Object.assign(globalThis._VSCODE_PRODUCT_JSON, overrides);
