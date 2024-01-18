@@ -11,7 +11,7 @@ import {IWorkspaceContextService, IWorkspaceFolder, WorkbenchState} from 'td/pla
 import {ConfigurationTarget, IConfigurationOverrides, IConfigurationService, IConfigurationValue} from 'td/platform/configuration/common/configuration';
 import {Disposable} from 'td/base/common/lifecycle';
 import {Emitter} from 'td/base/common/event';
-// import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
+import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
 import {OperatingSystem, isWindows} from 'td/base/common/platform';
 import {URI} from 'td/base/common/uri';
 import {equals} from 'td/base/common/objects';
@@ -36,6 +36,13 @@ export const securityConfigurationNodeBase = Object.freeze<IConfigurationNode>({
 	'title': localize('securityConfigurationTitle', "Security"),
 	'type': 'object',
 	'order': 7
+});
+
+export const problemsConfigurationNodeBase = Object.freeze<IConfigurationNode>({
+	'id': 'problems',
+	'title': localize('problemsConfigurationTitle', "Problems"),
+	'type': 'object',
+	'order': 101
 });
 
 export const Extensions = {
@@ -156,14 +163,14 @@ export class ConfigurationMigrationWorkbenchContribution extends Disposable impl
 export class DynamicWorkbenchConfigurationWorkbenchContribution extends Disposable implements IWorkbenchContribution {
 
 	constructor(
-		// @IRemoteAgentService remoteAgentService: IRemoteAgentService
+		@IRemoteAgentService remoteAgentService: IRemoteAgentService
 	) {
 		super();
 
 		(async () => {
 			if (!isWindows) {
-				// const remoteEnvironment = await remoteAgentService.getEnvironment();
-				if (/* remoteEnvironment?.os */1 !== OperatingSystem.Windows) {
+				const remoteEnvironment = await remoteAgentService.getEnvironment();
+				if (remoteEnvironment?.os !== OperatingSystem.Windows) {
 					return;
 				}
 			}

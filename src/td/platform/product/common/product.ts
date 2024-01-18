@@ -12,7 +12,7 @@ import {ISandboxConfiguration} from 'td/base/parts/sandbox/common/sandboxTypes';
  */
 let product: IProductConfiguration;
 
-// Native sandbox environment
+// Native sandbox environment (vscode object is assigned in preload.js)
 const vscodeGlobal = (globalThis as any).vscode;
 if (typeof vscodeGlobal !== 'undefined' && typeof vscodeGlobal.context !== 'undefined') {
 	const configuration: ISandboxConfiguration | undefined = vscodeGlobal.context.configuration();

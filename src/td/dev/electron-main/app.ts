@@ -53,6 +53,7 @@ import {IUpdateService} from 'td/platform/update/common/update';
 import {DarwinUpdateService} from 'td/platform/update/electron-main/updateService.darwin';
 import {RequestChannel} from 'td/platform/request/common/requestIpc';
 import {IRequestService} from 'td/platform/request/common/request';
+import {isLaunchedFromCli} from 'td/platform/environment/node/argvHelper';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -306,8 +307,14 @@ export class DevApplication extends Disposable {
 
   private async openFirstWindow(accessor: ServicesAccessor, /* initialProtocolUrls: IInitialProtocolUrls | undefined */): Promise<IDevWindow[]> {
     const windowsMainService = this.windowsMainService = accessor.get(IWindowsMainService);
+
+		const context = isLaunchedFromCli(process.env) ? OpenContext.CLI : OpenContext.DESKTOP;
+		const args = this.environmentMainService.args;
 		
-    return windowsMainService.open();
+    return windowsMainService.open({
+			context,
+			cli: args,
+		});
   }
 
 	private async resolveShellEnvironment(args: NativeParsedArgs, env: IProcessEnvironment, notifyOnError: boolean): Promise<typeof process.env> {

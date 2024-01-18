@@ -146,9 +146,6 @@ export abstract class AbstractNativeEnvironmentService implements INativeEnviron
 			return join(vscodePortable, 'extensions');
 		}
 
-		console.log('gogo ahead')
-		console.log('DEAL here', this.userHome, this.productService.dataFolderName)
-		console.log(joinPath(this.userHome, this.productService.dataFolderName, 'extensions'))
 		return joinPath(this.userHome, this.productService.dataFolderName, 'extensions').fsPath;
 	}
 

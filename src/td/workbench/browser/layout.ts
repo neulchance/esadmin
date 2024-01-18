@@ -843,7 +843,6 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 	}
 
 	protected restoreParts(): void {
-		console.log('restoreParts');
 
 		// distinguish long running restore operations that
 		// are required for the layout to be ready from those

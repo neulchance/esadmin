@@ -1,3 +1,4 @@
+import 'td/workbench/browser/style';
 import {Emitter, setGlobalLeakWarningThreshold} from 'td/base/common/event';
 import {getSingletonServiceDescriptors} from 'td/platform/instantiation/common/extensions';
 import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
@@ -332,9 +333,6 @@ export class Workbench extends Layout {
 		// Warm up font cache information before building up too many dom elements
 		this.restoreFontInfo(storageService, configurationService);
 
-    console.log('go ahead!')
-		// this.logService.
-
 		// Create Parts
 		for (const {id, role, classes, options} of [
 			{id: Parts.TITLEBAR_PART, role: 'none', classes: ['titlebar']},
@@ -348,7 +346,9 @@ export class Workbench extends Layout {
 		]) {
 			const partContainer = this.createPart(id, role, classes);
 
+			mark(`code/willCreatePart/${id}`);
 			this.getPart(id).create(partContainer, options);
+			mark(`code/didCreatePart/${id}`);
 		}
 
 		// Add Workbench to DOM

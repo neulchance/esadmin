@@ -24,6 +24,11 @@ import {IConfigurationService} from 'td/platform/configuration/common/configurat
 import {Disposable} from 'td/base/common/lifecycle';
 import {Emitter} from 'td/base/common/event';
 import {IWindowsCountChangedEvent} from 'td/platform/windows/electron-main/windows';
+import product from 'td/platform/product/common/product';
+import {IWindowState, WindowsStateHandler} from 'td/platform/windows/electron-main/windowsStateHandler';
+import {IStateService} from 'td/platform/state/node/state';
+import {ILifecycleMainService} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
+import {ILogService} from 'td/platform/log/common/log';
 
 interface IOpenBrowserWindowOptions {
 	readonly userEnv?: IProcessEnvironment;
@@ -86,12 +91,17 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
 
   private readonly windows = new Map<number, IDevWindow>();
 
+  // private readonly windowsStateHandler = this._register(new WindowsStateHandler(this, this.stateService, this.lifecycleMainService, this.logService, this.configurationService));
+
   constructor(
     private readonly machineId: string,
 		private readonly sqmId: string,
     private readonly initialUserEnv: IProcessEnvironment,
+    @ILogService private readonly logService: ILogService,
     @ILoggerMainService private readonly loggerService: ILoggerMainService,
+    @IStateService private readonly stateService: IStateService,
     @IInstantiationService private readonly instantiationService: IInstantiationService,
+    @ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
     @IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
     @IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService,
     @IConfigurationService private readonly configurationService: IConfigurationService,
@@ -99,12 +109,15 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
     super()
   }
 
+  /* Ivoked from td/dev/electron-main/app.ts */
   async open(/* openConfig: IOpenConfiguration */): Promise<IDevWindow[]> {
     const {windows: usedWindows} = await this.doOpen()
     return usedWindows
   }
 
-  private async doOpen(): Promise<{ windows: IDevWindow[];}> {
+  private async doOpen(
+
+  ): Promise<{ windows: IDevWindow[];}> {
     const usedWindows: IDevWindow[] = [];
 
     function addUsedWindow(window: IDevWindow, openedFiles?: boolean): void {
@@ -126,7 +139,12 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
     let window: IDevWindow | undefined;
 
     // Build up the window configuration from provided options, config and environment
-    const configuration/* : INativeWindowConfiguration */ = {
+    const configuration: INativeWindowConfiguration = {
+
+      // Inherit CLI arguments from environment and/or
+			// the specific properties from this launch if provided
+			...this.environmentMainService.args,
+			// ...options.cli,
 
       windowId: -1,	// Will be filled in by the window once loaded later
       appRoot: this.environmentMainService.appRoot,
@@ -152,11 +170,17 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
 				global: this.loggerService.getRegisteredLoggers()
 			},
 
+      product,
       os: {release: release(), hostname: hostname(), arch: arch()},
     }
     
     if (!window) {
-      const createdWindow = window = this.instantiationService.createInstance(DevWindow);
+      
+      // const state = this.windowsStateHandler.getNewWindowState(configuration);
+
+      const createdWindow = window = this.instantiationService.createInstance(DevWindow, {
+        state: {}
+      });
     }
 
     // Update window identifier and session now

@@ -72,11 +72,13 @@ export abstract class Part extends Component implements ISerializableView {
 	 * Called to create title and content area of the part.
 	 */
 	create(parent: HTMLElement, options?: object): void {
+		
 		this.parent = parent;
 		this.titleArea = this.createTitleArea(parent, options);
 		this.contentArea = this.createContentArea(parent, options);
 
 		this.partLayout = new PartLayout(this.options, this.contentArea);
+		console.log(this.partLayout)
 
 		this.updateStyles();
 	}

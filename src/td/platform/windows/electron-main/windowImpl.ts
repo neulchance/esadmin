@@ -18,6 +18,8 @@ import {IEnvironmentMainService} from 'td/platform/environment/electron-main/env
 import {DeferredPromise, timeout} from 'td/base/common/async';
 import {FileAccess} from 'td/base/common/network';
 import {NativeParsedArgs} from 'td/platform/environment/common/argv';
+import {getMarks, mark} from 'td/base/common/performance';
+import {ILogService} from 'td/platform/log/common/log';
 
 export interface IWindowCreationOptions {
 	readonly state: IWindowState;
@@ -397,6 +399,8 @@ export class DevWindow extends BaseWindow {
   private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
   
   constructor(
+		config: IWindowCreationOptions,
+		@ILogService private readonly logService: ILogService,
     @IConfigurationService configurationService: IConfigurationService,
     @IStateService stateService: IStateService,
     @IEnvironmentMainService environmentMainService: IEnvironmentMainService,
@@ -429,6 +433,7 @@ export class DevWindow extends BaseWindow {
 
 	/* Invoked in windowsMainService.ts #doOpenInBrowserWindow */
 	load(configuration: INativeWindowConfiguration, options: ILoadOptions = Object.create(null)): void {
+		this.logService.trace(`window#load: attempt to load window (id: ${this._id})`);
 		// this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench${this.environmentMainService.isBuilt ? '' : '-dev'}.html`).toString(true));
 
 		// Update configuration values based on our window context
@@ -439,6 +444,11 @@ export class DevWindow extends BaseWindow {
 	}
 
 	private updateConfiguration(configuration: INativeWindowConfiguration, options?: ILoadOptions): void {
+
+		// Update with latest perf marks
+		mark('code/willOpenNewWindow');
+		configuration.perfMarks = getMarks();
+
 		// Update in config object URL for usage in renderer
 		this.configObjectUrl.update(configuration);
 	}
