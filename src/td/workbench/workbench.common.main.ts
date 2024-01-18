@@ -3,6 +3,13 @@
  *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
  *---------------------------------------------------------------------------------------------------*/
 
+//#region --- editor/workbench core
+
+import 'td/workbench/browser/workbench.contribution';
+
+//#endregion
+
+
 //#region --- workbench parts
 
 import 'td/workbench/browser/parts/editor/editor.contribution';
