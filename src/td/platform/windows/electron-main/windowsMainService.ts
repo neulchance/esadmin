@@ -182,6 +182,9 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
       const createdWindow = window = this.instantiationService.createInstance(DevWindow, {
         state: {}
       });
+
+			// Lifecycle
+			// this.lifecycleMainService.registerWindow(createdWindow);
     }
 
     // Update window identifier and session now

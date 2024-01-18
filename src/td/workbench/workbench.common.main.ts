@@ -36,6 +36,7 @@ import 'td/workbench/services/preferences/browser/preferencesService';
 import 'td/workbench/services/configuration/common/jsonEditingService';
 import 'td/workbench/services/textmodelResolver/common/textModelResolverService';
 import 'td/workbench/services/extensionManagement/browser/extensionEnablementService';
+import 'td/workbench/services/extensionManagement/browser/builtinExtensionsScannerService';
 import 'td/workbench/services/label/common/labelService';
 import 'td/workbench/services/commands/common/commandService';
 import 'td/workbench/services/filesConfiguration/common/filesConfigurationService';
@@ -65,9 +66,11 @@ import {ITextResourceConfigurationService} from 'td/editor/common/services/textR
 import {TextResourceConfigurationService} from 'td/editor/common/services/textResourceConfigurationService';
 import {IOpenerService} from 'td/platform/opener/common/opener';
 import {OpenerService} from 'td/editor/browser/services/openerService';
+import {ExtensionStorageService, IExtensionStorageService} from 'td/platform/extensionManagement/common/extensionStorage';
 
 registerSingleton(IContextViewService, ContextViewService, InstantiationType.Delayed);
 registerSingleton(IMarkerService, MarkerService, InstantiationType.Delayed);
+registerSingleton(IExtensionStorageService, ExtensionStorageService, InstantiationType.Delayed);
 registerSingleton(IContextKeyService, ContextKeyService, InstantiationType.Delayed);
 registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService, InstantiationType.Delayed);
 registerSingleton(IOpenerService, OpenerService, InstantiationType.Delayed);

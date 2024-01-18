@@ -25,7 +25,7 @@ import {ApplicationStorageMainService, IApplicationStorageMainService, IStorageM
 import {StorageDatabaseChannel} from 'td/platform/storage/electron-main/storageIpc';
 import {Server as ElectronIPCServer} from 'td/base/parts/ipc/electron-main/ipc.electron';
 import {Client as MessagePortClient} from 'td/base/parts/ipc/electron-main/ipc.mp';
-import {ILifecycleMainService, ShutdownReason} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
+import {ILifecycleMainService, LifecycleMainPhase, ShutdownReason} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
 import {Disposable, DisposableStore} from 'td/base/common/lifecycle';
 import {SharedProcess} from 'td/platform/sharedProcess/electron-main/sharedProcess';
 import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
@@ -158,6 +158,9 @@ export class DevApplication extends Disposable {
 
 		// Init Channels
 		appInstantiationService.invokeFunction(accessor => this.initChannels(accessor, mainProcessElectronServer, sharedProcessClient));
+
+		// Signal phase: ready - before opening first window
+		this.lifecycleMainService.phase = LifecycleMainPhase.Ready;
     
     // Open Windows
 		await appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor/* , initialProtocolUrls */));

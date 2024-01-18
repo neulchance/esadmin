@@ -20,6 +20,7 @@
     "@types/trusted-types": "^1.0.6",
     "@types/which": "^3.0.3",
     "@types/wicg-file-system-access": "^2023.10.4",
+    "@types/yazl": "^2.4.5",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
     "@typescript-eslint/utils": "^6.15.0",
@@ -51,6 +52,7 @@
     "native-keymap": "^3.3.4",
     "surrealdb.wasm": "^0.7.0",
     "tas-client-umd": "^0.1.8",
-    "v8-inspect-profiler": "^0.1.0"
+    "v8-inspect-profiler": "^0.1.0",
+    "yazl": "^2.4.3"
   }
 }
