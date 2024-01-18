@@ -78,7 +78,6 @@ export abstract class Part extends Component implements ISerializableView {
 		this.contentArea = this.createContentArea(parent, options);
 
 		this.partLayout = new PartLayout(this.options, this.contentArea);
-		console.log(this.partLayout)
 
 		this.updateStyles();
 	}

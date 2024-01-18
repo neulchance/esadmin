@@ -13,7 +13,7 @@ import {getParseErrorMessage} from 'td/base/common/jsonErrorMessages';
 import {asCSSUrl} from 'td/base/browser/dom';
 import {IStorageService, StorageScope, StorageTarget} from 'td/platform/storage/common/storage';
 import {IExtensionResourceLoaderService} from 'td/platform/extensionResourceLoader/common/extensionResourceLoader';
-// import {ILanguageService} from 'td/editor/common/languages/language';
+import {ILanguageService} from 'td/editor/common/languages/language';
 import {mainWindow} from 'td/base/browser/window';
 
 export class FileIconThemeData implements IWorkbenchFileIconTheme {
@@ -195,7 +195,7 @@ export class FileIconThemeLoader {
 
 	constructor(
 		private readonly fileService: IExtensionResourceLoaderService,
-		// private readonly languageService: ILanguageService
+		private readonly languageService: ILanguageService
 	) {
 	}
 
@@ -436,16 +436,16 @@ export class FileIconThemeLoader {
 		}
 
 		if (showLanguageModeIcons) {
-			// for (const languageId of this.languageService.getRegisteredLanguageIds()) {
-			// 	if (!coveredLanguages[languageId]) {
-			// 		const icon = this.languageService.getIcon(languageId);
-			// 		if (icon) {
-			// 			const selector = `.show-file-icons .${escapeCSS(languageId)}-lang-file-icon.file-icon::before`;
-			// 			cssRules.push(`${selector} { content: ' '; background-image: ${asCSSUrl(icon.dark)}; }`);
-			// 			cssRules.push(`.vs ${selector} { content: ' '; background-image: ${asCSSUrl(icon.light)}; }`);
-			// 		}
-			// 	}
-			// }
+			for (const languageId of this.languageService.getRegisteredLanguageIds()) {
+				if (!coveredLanguages[languageId]) {
+					const icon = this.languageService.getIcon(languageId);
+					if (icon) {
+						const selector = `.show-file-icons .${escapeCSS(languageId)}-lang-file-icon.file-icon::before`;
+						cssRules.push(`${selector} { content: ' '; background-image: ${asCSSUrl(icon.dark)}; }`);
+						cssRules.push(`.vs ${selector} { content: ' '; background-image: ${asCSSUrl(icon.light)}; }`);
+					}
+				}
+			}
 		}
 
 		result.content = cssRules.join('\n');

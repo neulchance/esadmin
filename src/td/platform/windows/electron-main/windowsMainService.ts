@@ -23,12 +23,13 @@ import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {Disposable} from 'td/base/common/lifecycle';
 import {Emitter} from 'td/base/common/event';
-import {IWindowsCountChangedEvent} from 'td/platform/windows/electron-main/windows';
+import {IWindowsCountChangedEvent, getLastFocused} from 'td/platform/windows/electron-main/windows';
 import product from 'td/platform/product/common/product';
 import {IWindowState, WindowsStateHandler} from 'td/platform/windows/electron-main/windowsStateHandler';
 import {IStateService} from 'td/platform/state/node/state';
 import {ILifecycleMainService} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
 import {ILogService} from 'td/platform/log/common/log';
+import {isEqualAuthority} from 'td/base/common/resources';
 
 interface IOpenBrowserWindowOptions {
 	readonly userEnv?: IProcessEnvironment;
@@ -209,5 +210,30 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
 		}
 
 		return this.getWindowById(browserWindow.id);
+	}
+
+  getFocusedWindow(): IDevWindow | undefined {
+		const window = BrowserWindow.getFocusedWindow();
+		if (window) {
+			return this.getWindowById(window.id);
+		}
+
+		return undefined;
+	}
+
+  getLastActiveWindow(): IDevWindow | undefined {
+		return this.doGetLastActiveWindow(this.getWindows());
+	}
+
+  private getLastActiveWindowForAuthority(remoteAuthority: string | undefined): IDevWindow | undefined {
+		return this.doGetLastActiveWindow(this.getWindows().filter(window => isEqualAuthority(window.remoteAuthority, remoteAuthority)));
+	}
+
+	private doGetLastActiveWindow(windows: IDevWindow[]): IDevWindow | undefined {
+		return getLastFocused(windows);isEqualAuthority
+	}
+
+  getWindows(): IDevWindow[] {
+		return Array.from(this.windows.values());
 	}
 }

@@ -82,4 +82,7 @@ import 'td/workbench/contrib/files/browser/explorerViewlet';
 import 'td/workbench/contrib/files/browser/fileActions.contribution';
 import 'td/workbench/contrib/files/browser/files.contribution';/* this help to working the EditorFactoryRegistry.getFileEditorFactory */
 
+// Themes
+import 'td/workbench/contrib/themes/browser/themes.contribution';
+
 //#endregion

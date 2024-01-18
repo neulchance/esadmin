@@ -12,8 +12,8 @@ export interface IHostColorSchemeService {
 
 	readonly _serviceBrand: undefined;
 
-	// readonly dark: boolean;
-	// readonly highContrast: boolean;
+	readonly dark: boolean;
+	readonly highContrast: boolean;
 	readonly onDidChangeColorScheme: Event<void>;
 
 }
