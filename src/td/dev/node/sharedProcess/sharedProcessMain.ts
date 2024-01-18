@@ -14,11 +14,11 @@ import {firstOrDefault} from 'td/base/common/arrays';
 import {Emitter} from 'td/base/common/event';
 import {ProxyChannel, StaticRouter} from 'td/base/parts/ipc/common/ipc';
 import {IClientConnectionFilter, Server as UtilityProcessMessagePortServer, once} from 'td/base/parts/ipc/node/ipc.mp';
-import {CodeCacheCleaner} from 'td/code/node/sharedProcess/contrib/codeCacheCleaner';
-import {LanguagePackCachedDataCleaner} from 'td/code/node/sharedProcess/contrib/languagePackCachedDataCleaner';
-import {LocalizationsUpdater} from 'td/code/node/sharedProcess/contrib/localizationsUpdater';
-import {LogsDataCleaner} from 'td/code/node/sharedProcess/contrib/logsDataCleaner';
-import {UnusedWorkspaceStorageDataCleaner} from 'td/code/node/sharedProcess/contrib/storageDataCleaner';
+import {CodeCacheCleaner} from 'td/dev/node/sharedProcess/contrib/codeCacheCleaner';
+import {LanguagePackCachedDataCleaner} from 'td/dev/node/sharedProcess/contrib/languagePackCachedDataCleaner';
+import {LocalizationsUpdater} from 'td/dev/node/sharedProcess/contrib/localizationsUpdater';
+import {LogsDataCleaner} from 'td/dev/node/sharedProcess/contrib/logsDataCleaner';
+import {UnusedWorkspaceStorageDataCleaner} from 'td/dev/node/sharedProcess/contrib/storageDataCleaner';
 import {IChecksumService} from 'td/platform/checksum/common/checksumService';
 import {ChecksumService} from 'td/platform/checksum/node/checksumService';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
@@ -93,11 +93,11 @@ import {IExtensionsProfileScannerService} from 'td/platform/extensionManagement/
 import {PolicyChannelClient} from 'td/platform/policy/common/policyIpc';
 import {IPolicyService, NullPolicyService} from 'td/platform/policy/common/policy';
 import {UserDataProfilesService} from 'td/platform/userDataProfile/common/userDataProfileIpc';
-import {OneDataSystemAppender} from 'td/platform/telemetry/node/1dsAppender';
-import {UserDataProfilesCleaner} from 'td/code/node/sharedProcess/contrib/userDataProfilesCleaner';
+// import {OneDataSystemAppender} from 'td/platform/telemetry/node/1dsAppender';
+import {UserDataProfilesCleaner} from 'td/dev/node/sharedProcess/contrib/userDataProfilesCleaner';
 import {IRemoteTunnelService} from 'td/platform/remoteTunnel/common/remoteTunnel';
 import {UserDataSyncResourceProviderService} from 'td/platform/userDataSync/common/userDataSyncResourceProvider';
-import {ExtensionsContributions} from 'td/code/node/sharedProcess/contrib/extensions';
+import {ExtensionsContributions} from 'td/dev/node/sharedProcess/contrib/extensions';
 import {localize} from 'td/nls';
 import {LogService} from 'td/platform/log/common/logService';
 import {ISharedProcessLifecycleService, SharedProcessLifecycleService} from 'td/platform/lifecycle/node/sharedProcessLifecycleService';
@@ -294,9 +294,9 @@ class SharedProcessMain extends Disposable implements IClientConnectionFilter {
 			const logAppender = new TelemetryLogAppender(logService, loggerService, environmentService, productService);
 			appenders.push(logAppender);
 			if (!isLoggingOnly(productService, environmentService) && productService.aiConfig?.ariaKey) {
-				const collectorAppender = new OneDataSystemAppender(requestService, internalTelemetry, 'monacoworkbench', null, productService.aiConfig.ariaKey);
-				this._register(toDisposable(() => collectorAppender.flush())); // Ensure the 1DS appender is disposed so that it flushes remaining data
-				appenders.push(collectorAppender);
+				// const collectorAppender = new OneDataSystemAppender(requestService, internalTelemetry, 'monacoworkbench', null, productService.aiConfig.ariaKey);
+				// this._register(toDisposable(() => collectorAppender.flush())); // Ensure the 1DS appender is disposed so that it flushes remaining data
+				// appenders.push(collectorAppender);
 			}
 
 			telemetryService = new TelemetryService({

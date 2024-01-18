@@ -239,4 +239,8 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
   getWindows(): IDevWindow[] {
 		return Array.from(this.windows.values());
 	}
+
+	getWindowCount(): number {
+		return this.windows.size;
+	}
 }

@@ -94,7 +94,7 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 				}
 			},
 			remoteSocketFactoryService: this.remoteSocketFactoryService,
-			// signService: this._signService,
+			signService: this._signService,
 			logService: this._logService,
 			ipcLogger: null
 		};

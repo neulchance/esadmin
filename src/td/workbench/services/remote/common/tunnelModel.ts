@@ -420,7 +420,7 @@ export class TunnelModel extends Disposable {
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
 		@ILogService private readonly logService: ILogService,
 		@IDialogService private readonly dialogService: IDialogService,
-		// @IExtensionService private readonly extensionService: IExtensionService,
+		@IExtensionService private readonly extensionService: IExtensionService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService
 	) {
 		super();
@@ -490,10 +490,10 @@ export class TunnelModel extends Disposable {
 	}
 
 	private extensionHasActivationEvent() {
-		// if (this.extensionService.extensions.find(extension => extension.activationEvents?.includes(ACTIVATION_EVENT))) {
-		// 	this.contextKeyService.createKey(forwardedPortsViewEnabled.key, true);
-		// 	return true;
-		// }
+		if (this.extensionService.extensions.find(extension => extension.activationEvents?.includes(ACTIVATION_EVENT))) {
+			this.contextKeyService.createKey(forwardedPortsViewEnabled.key, true);
+			return true;
+		}
 		return false;
 	}
 
@@ -502,11 +502,11 @@ export class TunnelModel extends Disposable {
 			return;
 		}
 
-		// const activationDisposable = this._register(this.extensionService.onDidRegisterExtensions(() => {
-		// 	if (this.extensionHasActivationEvent()) {
-		// 		activationDisposable.dispose();
-		// 	}
-		// }));
+		const activationDisposable = this._register(this.extensionService.onDidRegisterExtensions(() => {
+			if (this.extensionHasActivationEvent()) {
+				activationDisposable.dispose();
+			}
+		}));
 	}
 
 	private async onTunnelClosed(address: { host: string; port: number }, reason: TunnelCloseReason) {
@@ -531,6 +531,7 @@ export class TunnelModel extends Disposable {
 		const workspaceHash = workspace.configuration ? hash(workspace.configuration.path) : (workspace.folders.length > 0 ? hash(workspace.folders[0].uri.path) : undefined);
 		if (workspaceHash === undefined) {
 			this.logService.debug('Could not get workspace hash for forwarded ports storage key.');
+			console.error('Could not get workspace hash for forwarded ports storage key.')
 			return undefined;
 		}
 		return `${TUNNELS_TO_RESTORE}.${this.environmentService.remoteAuthority}.${workspaceHash}`;
@@ -632,7 +633,7 @@ export class TunnelModel extends Disposable {
 	}
 
 	private async doForward(tunnelProperties: TunnelProperties, attributes?: Attributes | null): Promise<RemoteTunnel | string | undefined> {
-		// await this.extensionService.activateByEvent(ACTIVATION_EVENT);
+		await this.extensionService.activateByEvent(ACTIVATION_EVENT);
 
 		const existingTunnel = mapHasAddressLocalhostOrAllInterfaces(this.forwarded, tunnelProperties.remote.host, tunnelProperties.remote.port);
 		attributes = attributes ??

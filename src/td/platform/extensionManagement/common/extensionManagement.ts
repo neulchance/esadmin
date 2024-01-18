@@ -219,6 +219,7 @@ export interface IGalleryExtension {
 	properties: IGalleryExtensionProperties;
 	telemetryData?: any;
 	queryContext?: IStringDictionary<any>;
+	supportLink?: string;
 }
 
 export interface IGalleryMetadata {
@@ -316,7 +317,7 @@ export const enum InstallOperation {
 }
 
 export interface ITranslation {
-	contents: { [key: string]: /* {} */ NonNullable<unknown> };
+	contents: { [key: string]: {} };
 }
 
 export interface IExtensionInfo extends IExtensionIdentifier {

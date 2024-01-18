@@ -30,7 +30,7 @@ import {IUserDataProfile, IUserDataProfilesService} from 'td/platform/userDataPr
 import {AbstractInitializer, AbstractSynchroniser, getSyncResourceLogLabel, IAcceptResult, IMergeResult, IResourcePreview} from 'td/platform/userDataSync/common/abstractSynchronizer';
 import {IMergeResult as IExtensionMergeResult, merge} from 'td/platform/userDataSync/common/extensionsMerge';
 import {IIgnoredExtensionsManagementService} from 'td/platform/userDataSync/common/ignoredExtensions';
-import {Change, IRemoteUserData, ISyncData, ISyncExtension, IUserDataSyncLocalStoreService, IUserDataSynchroniser, IUserDataSyncLogService, /* IUserDataSyncEnablementService, */ IUserDataSyncStoreService, SyncResource, USER_DATA_SYNC_SCHEME, ILocalSyncExtension} from 'td/platform/userDataSync/common/userDataSync';
+import {Change, IRemoteUserData, ISyncData, ISyncExtension, IUserDataSyncLocalStoreService, IUserDataSynchroniser, IUserDataSyncLogService, IUserDataSyncEnablementService, IUserDataSyncStoreService, SyncResource, USER_DATA_SYNC_SCHEME, ILocalSyncExtension} from 'td/platform/userDataSync/common/userDataSync';
 import {IUserDataProfileStorageService} from 'td/platform/userDataProfile/common/userDataProfileStorageService';
 
 type IExtensionResourceMergeResult = IAcceptResult & IExtensionMergeResult;
@@ -125,14 +125,14 @@ export class ExtensionsSynchroniser extends AbstractSynchroniser implements IUse
 		@IIgnoredExtensionsManagementService private readonly ignoredExtensionsManagementService: IIgnoredExtensionsManagementService,
 		@IUserDataSyncLogService logService: IUserDataSyncLogService,
 		@IConfigurationService configurationService: IConfigurationService,
-		// @IUserDataSyncEnablementService userDataSyncEnablementService: IUserDataSyncEnablementService,
+		@IUserDataSyncEnablementService userDataSyncEnablementService: IUserDataSyncEnablementService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IExtensionStorageService extensionStorageService: IExtensionStorageService,
 		@IUriIdentityService uriIdentityService: IUriIdentityService,
 		@IUserDataProfileStorageService userDataProfileStorageService: IUserDataProfileStorageService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 	) {
-		super({syncResource: SyncResource.Extensions, profile}, collection, fileService, environmentService, storageService, userDataSyncStoreService, userDataSyncLocalStoreService, /* userDataSyncEnablementService, */ telemetryService, logService, configurationService, uriIdentityService);
+		super({syncResource: SyncResource.Extensions, profile}, collection, fileService, environmentService, storageService, userDataSyncStoreService, userDataSyncLocalStoreService, userDataSyncEnablementService, telemetryService, logService, configurationService, uriIdentityService);
 		this.localExtensionsProvider = this.instantiationService.createInstance(LocalExtensionsProvider);
 		this._register(
 			Event.any<any>(

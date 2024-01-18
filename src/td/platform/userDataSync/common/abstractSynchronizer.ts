@@ -26,7 +26,7 @@ import {getServiceMachineId} from 'td/platform/externalServices/common/serviceMa
 import {IStorageService, StorageScope, StorageTarget} from 'td/platform/storage/common/storage';
 import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
 import {IUriIdentityService} from 'td/platform/uriIdentity/common/uriIdentity';
-import {Change, getLastSyncResourceUri, IRemoteUserData, IResourcePreview as IBaseResourcePreview, ISyncData, IUserDataSyncResourcePreview as IBaseSyncResourcePreview, IUserData, IUserDataSyncResourceInitializer, IUserDataSyncLocalStoreService, IUserDataSyncConfiguration, IUserDataSynchroniser, IUserDataSyncLogService, /* IUserDataSyncEnablementService, */ IUserDataSyncStoreService, IUserDataSyncUtilService, MergeState, PREVIEW_DIR_NAME, SyncResource, SyncStatus, UserDataSyncError, UserDataSyncErrorCode, USER_DATA_SYNC_CONFIGURATION_SCOPE, USER_DATA_SYNC_SCHEME, IUserDataResourceManifest, getPathSegments, IUserDataSyncResourceConflicts, IUserDataSyncResource} from 'td/platform/userDataSync/common/userDataSync';
+import {Change, getLastSyncResourceUri, IRemoteUserData, IResourcePreview as IBaseResourcePreview, ISyncData, IUserDataSyncResourcePreview as IBaseSyncResourcePreview, IUserData, IUserDataSyncResourceInitializer, IUserDataSyncLocalStoreService, IUserDataSyncConfiguration, IUserDataSynchroniser, IUserDataSyncLogService, IUserDataSyncEnablementService, IUserDataSyncStoreService, IUserDataSyncUtilService, MergeState, PREVIEW_DIR_NAME, SyncResource, SyncStatus, UserDataSyncError, UserDataSyncErrorCode, USER_DATA_SYNC_CONFIGURATION_SCOPE, USER_DATA_SYNC_SCHEME, IUserDataResourceManifest, getPathSegments, IUserDataSyncResourceConflicts, IUserDataSyncResource} from 'td/platform/userDataSync/common/userDataSync';
 import {IUserDataProfile, IUserDataProfilesService} from 'td/platform/userDataProfile/common/userDataProfile';
 
 type IncompatibleSyncSourceClassification = {
@@ -154,7 +154,7 @@ export abstract class AbstractSynchroniser extends Disposable implements IUserDa
 		@IStorageService protected readonly storageService: IStorageService,
 		@IUserDataSyncStoreService protected readonly userDataSyncStoreService: IUserDataSyncStoreService,
 		@IUserDataSyncLocalStoreService protected readonly userDataSyncLocalStoreService: IUserDataSyncLocalStoreService,
-		// @IUserDataSyncEnablementService protected readonly userDataSyncEnablementService: IUserDataSyncEnablementService,
+		@IUserDataSyncEnablementService protected readonly userDataSyncEnablementService: IUserDataSyncEnablementService,
 		@ITelemetryService protected readonly telemetryService: ITelemetryService,
 		@IUserDataSyncLogService protected readonly logService: IUserDataSyncLogService,
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
@@ -605,13 +605,13 @@ export abstract class AbstractSynchroniser extends Disposable implements IUserDa
 		}
 
 		const lastSyncUserDataState: ILastSyncUserDataState = JSON.parse(storedLastSyncUserDataStateContent);
-		// const resourceSyncStateVersion = this.userDataSyncEnablementService.getResourceSyncStateVersion(this.resource);
-		// this.hasSyncResourceStateVersionChanged = !!lastSyncUserDataState.version && !!resourceSyncStateVersion && lastSyncUserDataState.version !== resourceSyncStateVersion;
-		// if (this.hasSyncResourceStateVersionChanged) {
-		// 	this.logService.info(`${this.syncResourceLogLabel}: Reset last sync state because last sync state version ${lastSyncUserDataState.version} is not compatible with current sync state version ${resourceSyncStateVersion}.`);
-		// 	await this.resetLocal();
-		// 	return null;
-		// }
+		const resourceSyncStateVersion = this.userDataSyncEnablementService.getResourceSyncStateVersion(this.resource);
+		this.hasSyncResourceStateVersionChanged = !!lastSyncUserDataState.version && !!resourceSyncStateVersion && lastSyncUserDataState.version !== resourceSyncStateVersion;
+		if (this.hasSyncResourceStateVersionChanged) {
+			this.logService.info(`${this.syncResourceLogLabel}: Reset last sync state because last sync state version ${lastSyncUserDataState.version} is not compatible with current sync state version ${resourceSyncStateVersion}.`);
+			await this.resetLocal();
+			return null;
+		}
 
 		let syncData: ISyncData | null | undefined = undefined;
 
@@ -672,14 +672,14 @@ export abstract class AbstractSynchroniser extends Disposable implements IUserDa
 			throw new Error('Cannot have core properties as additional');
 		}
 
-		// const version = this.userDataSyncEnablementService.getResourceSyncStateVersion(this.resource);
-		// const lastSyncUserDataState: ILastSyncUserDataState = {
-		// 	ref: lastSyncRemoteUserData.ref,
-		// 	version,
-		// 	...additionalProps
-		// };
+		const version = this.userDataSyncEnablementService.getResourceSyncStateVersion(this.resource);
+		const lastSyncUserDataState: ILastSyncUserDataState = {
+			ref: lastSyncRemoteUserData.ref,
+			version,
+			...additionalProps
+		};
 
-		// this.storageService.store(this.lastSyncUserDataStateKey, JSON.stringify(lastSyncUserDataState), StorageScope.APPLICATION, StorageTarget.MACHINE);
+		this.storageService.store(this.lastSyncUserDataStateKey, JSON.stringify(lastSyncUserDataState), StorageScope.APPLICATION, StorageTarget.MACHINE);
 		await this.writeLastSyncStoredRemoteUserData(lastSyncRemoteUserData);
 	}
 
@@ -821,13 +821,13 @@ export abstract class AbstractFileSynchroniser extends AbstractSynchroniser {
 		@IStorageService storageService: IStorageService,
 		@IUserDataSyncStoreService userDataSyncStoreService: IUserDataSyncStoreService,
 		@IUserDataSyncLocalStoreService userDataSyncLocalStoreService: IUserDataSyncLocalStoreService,
-		// @IUserDataSyncEnablementService userDataSyncEnablementService: IUserDataSyncEnablementService,
+		@IUserDataSyncEnablementService userDataSyncEnablementService: IUserDataSyncEnablementService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IUserDataSyncLogService logService: IUserDataSyncLogService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IUriIdentityService uriIdentityService: IUriIdentityService,
 	) {
-		super(syncResource, collection, fileService, environmentService, storageService, userDataSyncStoreService, userDataSyncLocalStoreService, /* userDataSyncEnablementService, */ telemetryService, logService, configurationService, uriIdentityService);
+		super(syncResource, collection, fileService, environmentService, storageService, userDataSyncStoreService, userDataSyncLocalStoreService, userDataSyncEnablementService, telemetryService, logService, configurationService, uriIdentityService);
 		this._register(this.fileService.watch(this.extUri.dirname(file)));
 		this._register(this.fileService.onDidFilesChange(e => this.onFileChanges(e)));
 	}
@@ -889,14 +889,14 @@ export abstract class AbstractJsonFileSynchroniser extends AbstractFileSynchroni
 		@IStorageService storageService: IStorageService,
 		@IUserDataSyncStoreService userDataSyncStoreService: IUserDataSyncStoreService,
 		@IUserDataSyncLocalStoreService userDataSyncLocalStoreService: IUserDataSyncLocalStoreService,
-		// @IUserDataSyncEnablementService userDataSyncEnablementService: IUserDataSyncEnablementService,
+		@IUserDataSyncEnablementService userDataSyncEnablementService: IUserDataSyncEnablementService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IUserDataSyncLogService logService: IUserDataSyncLogService,
 		@IUserDataSyncUtilService protected readonly userDataSyncUtilService: IUserDataSyncUtilService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IUriIdentityService uriIdentityService: IUriIdentityService,
 	) {
-		super(file, syncResource, collection, fileService, environmentService, storageService, userDataSyncStoreService, userDataSyncLocalStoreService, /* userDataSyncEnablementService, */ telemetryService, logService, configurationService, uriIdentityService);
+		super(file, syncResource, collection, fileService, environmentService, storageService, userDataSyncStoreService, userDataSyncLocalStoreService, userDataSyncEnablementService, telemetryService, logService, configurationService, uriIdentityService);
 	}
 
 	protected hasErrors(content: string, isArray: boolean): boolean {

@@ -182,7 +182,8 @@ export class UtilityProcess extends Disposable {
 		if (this.configuration?.correlationId) {
 			logMsg = `[UtilityProcess id: ${this.configuration?.correlationId}, type: ${this.configuration?.type}, pid: ${this.processPid ?? '<none>'}]: ${msg}`;
 		} else {
-			logMsg = `[UtilityProcess type: ${this.configuration?.type}, pid: ${this.processPid ?? '<none>'}]: ${msg}`;
+			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+			logMsg = `[${x1b35}UtilityProcess type${done}: ${this.configuration?.type}, pid: ${this.processPid ?? '<none>'}]: ${msg}`;
 		}
 
 		switch (severity) {
@@ -311,6 +312,8 @@ export class UtilityProcess extends Disposable {
 
 		// Exit
 		this._register(Event.fromNodeEventEmitter<number>(process, 'exit')(code => {
+			console.error('?????')
+			this.logService.error('check')
 			this.log(`received exit event with code ${code}`, Severity.Info);
 
 			// Event

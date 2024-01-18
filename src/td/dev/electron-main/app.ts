@@ -164,6 +164,9 @@ export class DevApplication extends Disposable {
     
     // Open Windows
 		await appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor/* , initialProtocolUrls */));
+
+		// Signal phase: after window open
+		this.lifecycleMainService.phase = LifecycleMainPhase.AfterWindowOpen;
   }
 
 	private setupSharedProcess(machineId: string, sqmId: string): { sharedProcessReady: Promise<MessagePortClient>; sharedProcessClient: Promise<MessagePortClient> } {

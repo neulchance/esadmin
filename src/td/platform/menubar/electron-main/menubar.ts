@@ -69,7 +69,7 @@ export class Menubar {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
 		@IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
-		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		// @ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IWorkspacesHistoryMainService private readonly workspacesHistoryMainService: IWorkspacesHistoryMainService,
 		@IStateService private readonly stateService: IStateService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
@@ -247,7 +247,7 @@ export class Menubar {
 		}
 
 		const focusedWindow = BrowserWindow.getFocusedWindow();
-		this.noActiveMainWindow = !focusedWindow || !!this.auxiliaryWindowsMainService.getWindowById(focusedWindow.id);
+		this.noActiveMainWindow = !focusedWindow /* || !!this.auxiliaryWindowsMainService.getWindowById(focusedWindow.id) */;
 		this.scheduleUpdateMenu();
 	}
 
@@ -383,9 +383,9 @@ export class Menubar {
 		Menu.setApplicationMenu(menu);
 
 		if (menu) {
-			for (const window of this.auxiliaryWindowsMainService.getWindows()) {
-				window.win?.setMenu(null);
-			}
+			// for (const window of this.auxiliaryWindowsMainService.getWindows()) {
+			// 	window.win?.setMenu(null);
+			// }
 		}
 	}
 
@@ -862,7 +862,7 @@ export class Menubar {
 	}
 
 	private reportMenuActionTelemetry(id: string): void {
-		this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {id, from: telemetryFrom});
+		// this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {id, from: telemetryFrom});
 	}
 
 	private mnemonicLabel(label: string): string {

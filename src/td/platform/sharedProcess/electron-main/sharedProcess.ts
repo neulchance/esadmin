@@ -65,7 +65,10 @@ export class SharedProcess extends Disposable {
 		// we do not just wait for IPC ready because the
 		// workbench window will communicate directly
 
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+		console.log(`${x1b35}this.whenIpcReady 11${done}`)
 		await this.whenReady();
+		console.log(`${x1b35}this.whenIpcReady 22${done}`)
 
 		// connect to the shared process passing the responseChannel
 		// as payload to give a hint what the connection is about
@@ -98,6 +101,7 @@ export class SharedProcess extends Disposable {
 			this._whenReady = (async () => {
 
 				// Wait for shared process being ready to accept connection
+				
 				await this.whenIpcReady;
 
 				// Overall signal that the shared process was loaded and
@@ -138,7 +142,8 @@ export class SharedProcess extends Disposable {
 				}
 
 				await sharedProcessIpcReady.p;
-				this.logService.trace('[SharedProcess] IPC ready');
+				const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";				
+				this.logService.trace(`${x1b35}[SharedProcess] IPC ready${done}`);
 			})();
 		}
 
@@ -186,7 +191,10 @@ export class SharedProcess extends Disposable {
 	async connect(payload?: unknown): Promise<MessagePortMain> {
 
 		// Wait for shared process being ready to accept connection
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const done = "\x1b[0m";
+		console.log(`${red}this.whenIpcReady 1${done}`)
 		await this.whenIpcReady;
+		console.log(`${red}this.whenIpcReady 2${done}`)
 
 		// Connect and return message port
 		const utilityProcess = assertIsDefined(this.utilityProcess);

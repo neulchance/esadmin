@@ -50,8 +50,8 @@ import product from 'td/platform/product/common/product';
 import {IProductService} from 'td/platform/product/common/productService';
 import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol';
 import {ProtocolMainService} from 'td/platform/protocol/electron-main/protocolMainService';
-// import {ITunnelService} from 'td/platform/tunnel/common/tunnel';
-// import {TunnelService} from 'td/platform/tunnel/node/tunnelService';
+import {ITunnelService} from 'td/platform/tunnel/common/tunnel';
+import {TunnelService} from 'td/platform/tunnel/node/tunnelService';
 import {IRequestService} from 'td/platform/request/common/request';
 import {RequestMainService} from 'td/platform/request/electron-main/requestMainService';
 // import {ISignService} from 'td/platform/sign/common/sign';
@@ -222,7 +222,7 @@ class DevMain {
 		// services.set(ISignService, new SyncDescriptor(SignService, undefined, false /* proxied to other processes */));
 
 		// Tunnel
-		// services.set(ITunnelService, new SyncDescriptor(TunnelService));
+		services.set(ITunnelService, new SyncDescriptor(TunnelService));
 
 		// Protocol (instantiated early and not using sync descriptor for security reasons)
 		services.set(IProtocolMainService, new ProtocolMainService(environmentMainService, userDataProfilesMainService, logService));
