@@ -591,13 +591,7 @@ class StatusbarPart extends Part implements IStatusbarEntryContainer {
 		const itemBorderColor = this.getColor(STATUS_BAR_ITEM_FOCUS_BORDER);
 
 		// Border color
-		console.log('styleOverride', styleOverride)
-		console.log('this.contextService.getWorkbenchState()', this.contextService.getWorkbenchState(), WorkbenchState.EMPTY, STATUS_BAR_BORDER, STATUS_BAR_NO_FOLDER_BORDER)
-		console.log('this.getColor(contrastBorder)', this.getColor(contrastBorder))
-		console.log('this.getColor(STATUS_BAR_BORDER)', this.getColor(STATUS_BAR_BORDER))
 		const borderColor = this.getColor(styleOverride?.border ?? (this.contextService.getWorkbenchState() !== WorkbenchState.EMPTY ? STATUS_BAR_BORDER : STATUS_BAR_NO_FOLDER_BORDER)) || this.getColor(contrastBorder);
-		// const borderColor = '#2b2b2b';
-		console.log('borderColor', borderColor)
 		if (borderColor) {
 			container.classList.add('status-border-top');
 			container.style.setProperty('--status-border-top-color', borderColor);

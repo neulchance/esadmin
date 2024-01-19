@@ -54,6 +54,18 @@ import {DarwinUpdateService} from 'td/platform/update/electron-main/updateServic
 import {RequestChannel} from 'td/platform/request/common/requestIpc';
 import {IRequestService} from 'td/platform/request/common/request';
 import {isLaunchedFromCli} from 'td/platform/environment/node/argvHelper';
+import {IAuxiliaryWindowsMainService, isAuxiliaryWindow} from 'td/platform/auxiliaryWindow/electron-main/auxiliaryWindows';
+import {AuxiliaryWindowsMainService} from 'td/platform/auxiliaryWindow/electron-main/auxiliaryWindowsMainService';
+import {IUtilityProcessWorkerMainService, UtilityProcessWorkerMainService} from 'td/platform/utilityProcess/electron-main/utilityProcessWorkerMainService';
+import {ipcUtilityProcessWorkerChannelName} from 'td/platform/utilityProcess/common/utilityProcessWorkerService';
+import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
+import {NullTelemetryService} from 'td/platform/telemetry/common/telemetryUtils';
+import {LOCAL_FILE_SYSTEM_CHANNEL_NAME} from 'td/platform/files/common/diskFileSystemProviderClient';
+import {IFileService} from 'td/platform/files/common/files';
+import {DiskFileSystemProviderChannel} from 'td/platform/files/electron-main/diskFileSystemProviderServer';
+import {DiskFileSystemProvider} from 'td/platform/files/node/diskFileSystemProvider';
+import {assertType} from 'td/base/common/types';
+import {Schemas} from 'td/base/common/network';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -62,6 +74,7 @@ import {isLaunchedFromCli} from 'td/platform/environment/node/argvHelper';
 export class DevApplication extends Disposable {
 
   private windowsMainService: IWindowsMainService | undefined;
+	private auxiliaryWindowsMainService: IAuxiliaryWindowsMainService | undefined;
 	private nativeHostMainService: INativeHostMainService | undefined;
 
   constructor(
@@ -72,6 +85,7 @@ export class DevApplication extends Disposable {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILogService private readonly logService: ILogService,
 		@IStateService private readonly stateService: IStateService,
+		@IFileService private readonly fileService: IFileService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
 		@IProductService private readonly productService: IProductService,
 		@IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService
@@ -167,6 +181,12 @@ export class DevApplication extends Disposable {
 
 		// Signal phase: after window open
 		this.lifecycleMainService.phase = LifecycleMainPhase.AfterWindowOpen;
+
+		// Set lifecycle phase to `Eventually` after a short delay and when idle (min 2.5sec, max 5sec)
+		const eventuallyPhaseScheduler = this._register(new RunOnceScheduler(() => {
+			this._register(runWhenGlobalIdle(() => this.lifecycleMainService.phase = LifecycleMainPhase.Eventually, 2500));
+		}, 2500));
+		eventuallyPhaseScheduler.schedule();
   }
 
 	private setupSharedProcess(machineId: string, sqmId: string): { sharedProcessReady: Promise<MessagePortClient>; sharedProcessClient: Promise<MessagePortClient> } {
@@ -184,6 +204,7 @@ export class DevApplication extends Disposable {
 
 		const sharedProcessReady = (async () => {
 			await sharedProcess.whenReady();
+			
 
 			return sharedProcessClient;
 		})();
@@ -213,12 +234,13 @@ export class DevApplication extends Disposable {
 				break;
 		}
 
+		// Windows
+    services.set(IWindowsMainService, new SyncDescriptor(WindowsMainService, [machineId, sqmId, this.userEnv], false));
+		services.set(IAuxiliaryWindowsMainService, new SyncDescriptor(AuxiliaryWindowsMainService, undefined, false));
+
 		// Dialogs
 		const dialogMainService = new DialogMainService(this.logService, this.productService);
 		services.set(IDialogMainService, dialogMainService);
-
-    // Windows
-    services.set(IWindowsMainService, new SyncDescriptor(WindowsMainService, [machineId, sqmId, this.userEnv], false));
 
 		// Keyboard Layout
 		services.set(IKeyboardLayoutMainService, new SyncDescriptor(KeyboardLayoutMainService));
@@ -246,6 +268,12 @@ export class DevApplication extends Disposable {
 		// Default Extensions Profile Init
 		// services.set(IExtensionsScannerService, new SyncDescriptor(ExtensionsScannerService, undefined, true));
 
+		// Telemetry
+		services.set(ITelemetryService, NullTelemetryService);
+
+		// Utility Process Worker
+		services.set(IUtilityProcessWorkerMainService, new SyncDescriptor(UtilityProcessWorkerMainService, undefined, true));
+
 		// Init services that require it
 		await Promises.settled([
 			// backupMainService.initialize(),
@@ -268,6 +296,18 @@ export class DevApplication extends Disposable {
 		const policyChannel = new PolicyChannel(accessor.get(IPolicyService));
 		mainProcessElectronServer.registerChannel('policy', policyChannel);
 		sharedProcessClient.then(client => client.registerChannel('policy', policyChannel));
+
+		// Local Files
+		const diskFileSystemProvider = this.fileService.getProvider(Schemas.file);
+		assertType(diskFileSystemProvider instanceof DiskFileSystemProvider);
+		const fileSystemProviderChannel = new DiskFileSystemProviderChannel(diskFileSystemProvider, this.logService, this.environmentMainService);
+		mainProcessElectronServer.registerChannel(LOCAL_FILE_SYSTEM_CHANNEL_NAME, fileSystemProviderChannel);
+		sharedProcessClient.then(client => client.registerChannel(LOCAL_FILE_SYSTEM_CHANNEL_NAME, fileSystemProviderChannel));
+
+		// User Data Profiles
+		const userDataProfilesService = ProxyChannel.fromService(accessor.get(IUserDataProfilesMainService), disposables);
+		mainProcessElectronServer.registerChannel('userDataProfiles', userDataProfilesService);
+		sharedProcessClient.then(client => client.registerChannel('userDataProfiles', userDataProfilesService));
 
 		// Request
 		const requestService = new RequestChannel(accessor.get(IRequestService));
@@ -294,11 +334,6 @@ export class DevApplication extends Disposable {
 		// Menubar
 		const menubarChannel = ProxyChannel.fromService(accessor.get(IMenubarMainService), disposables);
 		mainProcessElectronServer.registerChannel('menubar', menubarChannel);
-		
-		// User Data Profiles
-		const userDataProfilesService = ProxyChannel.fromService(accessor.get(IUserDataProfilesMainService), disposables);
-		mainProcessElectronServer.registerChannel('userDataProfiles', userDataProfilesService);
-		sharedProcessClient.then(client => client.registerChannel('userDataProfiles', userDataProfilesService));
 
 		// Storage (main & shared process)
 		const storageChannel = this._register(new StorageDatabaseChannel(this.logService, accessor.get(IStorageMainService)));
@@ -309,6 +344,10 @@ export class DevApplication extends Disposable {
 		const loggerChannel = new LoggerChannel(accessor.get(ILoggerMainService),);
 		mainProcessElectronServer.registerChannel('logger', loggerChannel);
 		sharedProcessClient.then(client => client.registerChannel('logger', loggerChannel));
+
+		// Utility Process Worker
+		const utilityProcessWorkerChannel = ProxyChannel.fromService(accessor.get(IUtilityProcessWorkerMainService), disposables);
+		mainProcessElectronServer.registerChannel(ipcUtilityProcessWorkerChannelName, utilityProcessWorkerChannel);
 	}
 
   private async openFirstWindow(accessor: ServicesAccessor, /* initialProtocolUrls: IInitialProtocolUrls | undefined */): Promise<IDevWindow[]> {

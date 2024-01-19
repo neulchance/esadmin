@@ -392,7 +392,7 @@ export class LifecycleMainService extends Disposable implements ILifecycleMainSe
 			return;
 		}
 
-		this.trace(`lifecycle (main): phase changed (value: ${value})`);
+		this.trace(`\x1b[35m lifecycle (main): phase changed (value: ${value}) \x1b[0m`);
 
 		this._phase = value;
 

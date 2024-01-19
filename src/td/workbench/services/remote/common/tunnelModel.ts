@@ -531,7 +531,6 @@ export class TunnelModel extends Disposable {
 		const workspaceHash = workspace.configuration ? hash(workspace.configuration.path) : (workspace.folders.length > 0 ? hash(workspace.folders[0].uri.path) : undefined);
 		if (workspaceHash === undefined) {
 			this.logService.debug('Could not get workspace hash for forwarded ports storage key.');
-			console.error('Could not get workspace hash for forwarded ports storage key.')
 			return undefined;
 		}
 		return `${TUNNELS_TO_RESTORE}.${this.environmentService.remoteAuthority}.${workspaceHash}`;

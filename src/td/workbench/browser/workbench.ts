@@ -122,7 +122,6 @@ export class Workbench extends Layout {
 	}
 
   startup(): IInstantiationService {
-		console.log('startup')
     try {
 
 			// Configure emitter leak warning threshold

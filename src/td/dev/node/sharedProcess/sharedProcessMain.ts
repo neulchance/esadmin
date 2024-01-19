@@ -490,6 +490,7 @@ export async function main(configuration: ISharedProcessConfiguration): Promise<
 
 	// await initialization and signal this back to electron-main
 	await sharedProcess.init();
+	
 
 	process.parentPort.postMessage(SharedProcessLifecycle.initDone);
 }

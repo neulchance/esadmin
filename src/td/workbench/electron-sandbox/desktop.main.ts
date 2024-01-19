@@ -36,6 +36,7 @@ import {IStorageService} from 'td/platform/storage/common/storage';
 import {onUnexpectedError} from 'td/base/common/errors';
 import {ConfigurationCache} from 'td/workbench/services/configuration/common/configurationCache';
 import {Schemas} from 'td/base/common/network';
+import {DiskFileSystemProvider} from 'td/workbench/services/files/electron-sandbox/diskFileSystemProvider';
 import {ElectronRemoteResourceLoader} from 'td/platform/remote/electron-sandbox/electronRemoteResourceLoader';
 import {IRemoteSocketFactoryService, RemoteSocketFactoryService} from 'td/platform/remote/common/remoteSocketFactoryService';
 import {BrowserSocketFactory} from 'td/platform/remote/browser/browserSocketFactory';
@@ -130,12 +131,6 @@ export class DesktopMain extends Disposable {
 		//
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    // User Data Profiles
-		const userDataProfilesService = new UserDataProfilesService(this.configuration.profiles.all, URI.revive(this.configuration.profiles.home).with({scheme: environmentService.userRoamingDataHome.scheme}), mainProcessService.getChannel('userDataProfiles'));
-    serviceCollection.set(IUserDataProfilesService, userDataProfilesService);
-    const userDataProfileService = new UserDataProfileService(reviveProfile(this.configuration.profiles.profile, userDataProfilesService.profilesHome.scheme));
-    serviceCollection.set(IUserDataProfileService, userDataProfileService);
-
 		// Files
 		const fileService = this._register(new FileService(logService));
 		serviceCollection.set(IFileService, fileService);
@@ -144,9 +139,19 @@ export class DesktopMain extends Disposable {
 		const remoteAuthorityResolverService = new RemoteAuthorityResolverService(productService, new ElectronRemoteResourceLoader(environmentService.window.id, mainProcessService, fileService));
 		serviceCollection.set(IRemoteAuthorityResolverService, remoteAuthorityResolverService);
 
+		// Local Files
+		const diskFileSystemProvider = this._register(new DiskFileSystemProvider(mainProcessService, utilityProcessWorkerWorkbenchService, logService));
+		fileService.registerProvider(Schemas.file, diskFileSystemProvider);
+
 		// URI Identity
 		const uriIdentityService = new UriIdentityService(fileService);
 		serviceCollection.set(IUriIdentityService, uriIdentityService);
+
+		// User Data Profiles
+		const userDataProfilesService = new UserDataProfilesService(this.configuration.profiles.all, URI.revive(this.configuration.profiles.home).with({scheme: environmentService.userRoamingDataHome.scheme}), mainProcessService.getChannel('userDataProfiles'));
+    serviceCollection.set(IUserDataProfilesService, userDataProfilesService);
+    const userDataProfileService = new UserDataProfileService(reviveProfile(this.configuration.profiles.profile, userDataProfilesService.profilesHome.scheme));
+    serviceCollection.set(IUserDataProfileService, userDataProfileService);
 
 		// Remote Agent
 		const remoteSocketFactoryService = new RemoteSocketFactoryService();

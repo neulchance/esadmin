@@ -414,7 +414,7 @@ export class DevWindow extends BaseWindow {
     {
       this._win = new BrowserWindow({
         width: 1000	,
-        height: 600,
+        height: 800,
         backgroundColor: 'black',
         webPreferences: {
           preload: FileAccess.asFileUri('td/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
@@ -441,6 +441,7 @@ export class DevWindow extends BaseWindow {
 		this.updateConfiguration(configuration)
 
 		this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench.html`).toString(true));
+		this._win.webContents.openDevTools()
 	}
 
 	private updateConfiguration(configuration: INativeWindowConfiguration, options?: ILoadOptions): void {

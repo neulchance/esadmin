@@ -54,7 +54,8 @@ export class SharedProcess extends Disposable {
 	}
 
 	private async onWindowConnection(e: IpcMainEvent, nonce: string, responseChannel: string): Promise<void> {
-		this.logService.trace(`[SharedProcess] onWindowConnection for: ${responseChannel}`);
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+		this.logService.trace(`${red}[SharedProcess] onWindowConnection for: ${responseChannel}${done}`);
 
 		// release barrier if this is the first window connection
 		if (!this.firstWindowConnectionBarrier.isOpen()) {
@@ -65,7 +66,6 @@ export class SharedProcess extends Disposable {
 		// we do not just wait for IPC ready because the
 		// workbench window will communicate directly
 
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
 		console.log(`${x1b35}this.whenIpcReady 11${done}`)
 		await this.whenReady();
 		console.log(`${x1b35}this.whenIpcReady 22${done}`)
@@ -136,8 +136,10 @@ export class SharedProcess extends Disposable {
 				// Wait for shared process indicating that IPC connections are accepted
 				const sharedProcessIpcReady = new DeferredPromise<void>();
 				if (this.utilityProcess) {
+					this.logService.trace(`\x1b[35m what state of this.utilityProcess? 11 \x1b[0m`);
 					this.utilityProcess.once(SharedProcessLifecycle.ipcReady, () => sharedProcessIpcReady.complete());
 				} else {
+					this.logService.trace(`\x1b[35m what state of this.utilityProcess? 22 \x1b[0m`);
 					validatedIpcMain.once(SharedProcessLifecycle.ipcReady, () => sharedProcessIpcReady.complete());
 				}
 
@@ -164,6 +166,7 @@ export class SharedProcess extends Disposable {
 			}
 		}
 
+		console.log('execArgv', execArgv)
 		this.utilityProcess.start({
 			type: 'shared-process',
 			entryPoint: 'td/dev/node/sharedProcess/sharedProcessMain',
@@ -192,9 +195,9 @@ export class SharedProcess extends Disposable {
 
 		// Wait for shared process being ready to accept connection
 		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const done = "\x1b[0m";
-		console.log(`${red}this.whenIpcReady 1${done}`)
+		console.log(`${red}this.whenIpcReady before${done}`)
 		await this.whenIpcReady;
-		console.log(`${red}this.whenIpcReady 2${done}`)
+		console.log(`${red}this.whenIpcReady after${done}`)
 
 		// Connect and return message port
 		const utilityProcess = assertIsDefined(this.utilityProcess);

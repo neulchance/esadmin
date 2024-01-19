@@ -64,9 +64,9 @@ app.once('ready', function () {
  */
 function startup() {
 	// Load main in AMD
-	// perf.mark('code/willLoadMainBundle');
+	perf.mark('code/willLoadMainBundle');
 	require('./bootstrap-amd').load('td/dev/electron-main/main', () => {
-		// perf.mark('code/didLoadMainBundle');
+		perf.mark('code/didLoadMainBundle');
 	});
 }
 

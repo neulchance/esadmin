@@ -752,6 +752,7 @@ export class NativeHostMainService extends Disposable implements INativeHostMain
 	}
 
 	async exit(windowId: number | undefined, code: number): Promise<void> {
+		console.log('windowId windowId windowId windowId')
 		await this.lifecycleMainService.kill(code);
 	}
 

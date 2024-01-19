@@ -116,7 +116,7 @@ export abstract class AbstractNativeEnvironmentService implements INativeEnviron
 		if (cliBuiltinExtensionsDir) {
 			return resolve(cliBuiltinExtensionsDir);
 		}
-		console.log(normalize(join(FileAccess.asFileUri('').fsPath, '..', 'extensions')));
+		
 		return normalize(join(FileAccess.asFileUri('').fsPath, '..', 'extensions'));
 	}
 
