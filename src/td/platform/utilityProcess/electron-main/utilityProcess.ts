@@ -182,8 +182,7 @@ export class UtilityProcess extends Disposable {
 		if (this.configuration?.correlationId) {
 			logMsg = `[UtilityProcess id: ${this.configuration?.correlationId}, type: ${this.configuration?.type}, pid: ${this.processPid ?? '<none>'}]: ${msg}`;
 		} else {
-			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-			logMsg = `[${x1b35}UtilityProcess type${done}: ${this.configuration?.type}, pid: ${this.processPid ?? '<none>'}]: ${msg}`;
+			logMsg = `[UtilityProcess type: ${this.configuration?.type}, pid: ${this.processPid ?? '<none>'}]: ${msg}`;
 		}
 
 		switch (severity) {
@@ -282,8 +281,6 @@ export class UtilityProcess extends Disposable {
 	}
 
 	private registerListeners(process: ElectronUtilityProcess, configuration: IUtilityProcessConfiguration, serviceName: string): void {
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";				
-		console.log(`${x1b35}readched here?${done}`)
 
 		// Stdout
 		if (process.stdout) {
@@ -298,12 +295,7 @@ export class UtilityProcess extends Disposable {
 		}
 
 		// Messages
-		this._register(Event.fromNodeEventEmitter(process, 'message')(msg => {
-			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-			console.log(`${x1b35}some message comes here????${done}`);
-			console.log(msg);
-			this._onMessage.fire(msg)
-		}));
+		this._register(Event.fromNodeEventEmitter(process, 'message')(msg => this._onMessage.fire(msg)));
 
 		// Spawn
 		this._register(Event.fromNodeEventEmitter<void>(process, 'spawn')(() => {
@@ -362,10 +354,6 @@ export class UtilityProcess extends Disposable {
 	}
 
 	once(message: unknown, callback: () => void): void {
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-		const x1b36m = "\x1b[36m";
-		const lightgreen = "\x1b[32;1m";
-		this.logService.trace(`${lightgreen}once:: ${message}${done}`);
 		const disposable = this._register(this._onMessage.event(msg => {
 			if (msg === message) {
 				disposable.dispose();
