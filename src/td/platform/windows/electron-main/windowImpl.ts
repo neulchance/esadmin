@@ -408,21 +408,21 @@ export class DevWindow extends BaseWindow {
   ) {
     super(configurationService, stateService, environmentMainService);
 
-		
-
     //#region create browser window
     {
       this._win = new BrowserWindow({
+        backgroundColor: '#1f1f1f',
         width: 1000	,
         height: 800,
-        backgroundColor: 'black',
         webPreferences: {
           preload: FileAccess.asFileUri('td/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
 					/* 
 					Error in Electron Browser
 					VM5:66 Uncaught (in promise) Error: Preload: did not find expected vscode-window-config in renderer process arguments list. */
 					additionalArguments: [`--vscode-window-config=${this.configObjectUrl.resource.toString()}`],
-        }
+					sandbox: true,
+					spellcheck: false,
+        },
       })
 
       this._id = this._win.id;
