@@ -7,6 +7,8 @@ import {Registry} from 'td/platform/registry/common/platform';
 import {IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution} from 'td/workbench/common/contributions';
 import {RemoteExtensionsInitializerContribution} from 'td/workbench/contrib/extensions/electron-sandbox/remoteExtensionsInit';
 import {LifecyclePhase} from 'td/workbench/services/lifecycle/common/lifecycle';
+// import {CleanUpExtensionsFolderAction, OpenExtensionsFolderAction} from 'td/workbench/contrib/extensions/electron-sandbox/extensionsActions';
+// import {ExtensionsWorkbenchService} from 'vs/workbench/contrib/extensions/browser/extensionsWorkbenchService';
 
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);

@@ -85,6 +85,9 @@ import 'td/workbench/contrib/files/browser/explorerViewlet';
 import 'td/workbench/contrib/files/browser/fileActions.contribution';
 import 'td/workbench/contrib/files/browser/files.contribution';/* this help to working the EditorFactoryRegistry.getFileEditorFactory */
 
+// Extensions Management
+import 'td/workbench/contrib/extensions/browser/extensions.contribution';
+
 // Themes
 import 'td/workbench/contrib/themes/browser/themes.contribution';
 
