@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import {Command} from 'td/editor/common/languages';
+import {Command} from 'td/editor/common/languages';
 import {UriComponents, URI} from 'td/base/common/uri';
 import {Event, Emitter} from 'td/base/common/event';
 import {ContextKeyExpression} from 'td/platform/contextkey/common/contextkey';
@@ -720,7 +720,7 @@ export interface ITreeItemLabel {
 
 }
 
-export type TreeCommand = /* Command &  */{ originalId?: string };
+export type TreeCommand = Command & { originalId?: string };
 
 export interface ITreeItemCheckboxState {
 	isChecked: boolean;
@@ -775,7 +775,7 @@ export class ResolvableTreeItem implements ITreeItem {
 	resourceUri?: UriComponents;
 	tooltip?: string | IMarkdownString;
 	contextValue?: string;
-	command?: /* Command &  */{ originalId?: string };
+	command?: Command & { originalId?: string };
 	children?: ITreeItem[];
 	accessibilityInformation?: IAccessibilityInformation;
 	resolve: (token: CancellationToken) => Promise<void>;

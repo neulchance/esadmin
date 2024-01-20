@@ -56,6 +56,8 @@ import 'td/workbench/services/activity/browser/activityService';
 
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
+import {ExtensionGalleryService} from 'td/platform/extensionManagement/common/extensionGalleryService';
+import {IExtensionGalleryService, IGlobalExtensionEnablementService} from 'td/platform/extensionManagement/common/extensionManagement';
 import {ContextViewService} from 'td/platform/contextview/browser/contextViewService';
 import {IContextViewService} from 'td/platform/contextview/browser/contextView';
 import {IMarkerService} from 'td/platform/markers/common/markers';
@@ -67,7 +69,13 @@ import {TextResourceConfigurationService} from 'td/editor/common/services/textRe
 import {IOpenerService} from 'td/platform/opener/common/opener';
 import {OpenerService} from 'td/editor/browser/services/openerService';
 import {ExtensionStorageService, IExtensionStorageService} from 'td/platform/extensionManagement/common/extensionStorage';
+import {IIgnoredExtensionsManagementService, IgnoredExtensionsManagementService} from 'td/platform/userDataSync/common/ignoredExtensions';
+import {IUserDataSyncLogService} from 'td/platform/userDataSync/common/userDataSync';
+import {UserDataSyncLogService} from 'td/platform/userDataSync/common/userDataSyncLog';
 
+registerSingleton(IExtensionGalleryService, ExtensionGalleryService, InstantiationType.Delayed);
+registerSingleton(IUserDataSyncLogService, UserDataSyncLogService, InstantiationType.Delayed);
+registerSingleton(IIgnoredExtensionsManagementService, IgnoredExtensionsManagementService, InstantiationType.Delayed);
 registerSingleton(IContextViewService, ContextViewService, InstantiationType.Delayed);
 registerSingleton(IMarkerService, MarkerService, InstantiationType.Delayed);
 registerSingleton(IExtensionStorageService, ExtensionStorageService, InstantiationType.Delayed);
@@ -90,5 +98,9 @@ import 'td/workbench/contrib/extensions/browser/extensions.contribution';
 
 // Themes
 import 'td/workbench/contrib/themes/browser/themes.contribution';
+
+// User Data Sync
+import 'td/workbench/contrib/userDataSync/browser/userDataSync.contribution';
+
 
 //#endregion
