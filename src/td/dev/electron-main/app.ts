@@ -40,6 +40,8 @@ import {DialogMainService, IDialogMainService} from 'td/platform/dialogs/electro
 import {IProductService} from 'td/platform/product/common/productService';
 import {Promises, RunOnceScheduler, runWhenGlobalIdle} from 'td/base/common/async';
 import {IKeyboardLayoutMainService, KeyboardLayoutMainService} from 'td/platform/keyboardLayout/electron-main/keyboardLayoutMainService';
+import {IExtensionsProfileScannerService} from 'td/platform/extensionManagement/common/extensionsProfileScannerService';
+import {ExtensionsProfileScannerService} from 'td/platform/extensionManagement/node/extensionsProfileScannerService';
 import {IExtensionsScannerService} from 'td/platform/extensionManagement/common/extensionsScannerService';
 import {ExtensionsScannerService} from 'td/platform/extensionManagement/node/extensionsScannerService';
 import {IWorkspacesService} from 'td/platform/workspaces/common/workspaces';
@@ -265,11 +267,12 @@ export class DevApplication extends Disposable {
 		services.set(IWorkspacesService, new SyncDescriptor(WorkspacesMainService, undefined, false /* proxied to other processes */));
 		services.set(IWorkspacesHistoryMainService, new SyncDescriptor(WorkspacesHistoryMainService, undefined, false));
 
-		// Default Extensions Profile Init
-		// services.set(IExtensionsScannerService, new SyncDescriptor(ExtensionsScannerService, undefined, true));
-
 		// Telemetry
 		services.set(ITelemetryService, NullTelemetryService);
+
+		// Default Extensions Profile Init
+		services.set(IExtensionsProfileScannerService, new SyncDescriptor(ExtensionsProfileScannerService, undefined, true));
+		services.set(IExtensionsScannerService, new SyncDescriptor(ExtensionsScannerService, undefined, true));
 
 		// Utility Process Worker
 		services.set(IUtilityProcessWorkerMainService, new SyncDescriptor(UtilityProcessWorkerMainService, undefined, true));

@@ -52,12 +52,14 @@ import 'td/workbench/services/textresourceProperties/common/textResourceProperti
 import 'td/workbench/services/language/common/languageService';
 import 'td/workbench/services/model/common/modelService';
 import 'td/workbench/services/quickinput/browser/quickInputService';
+import 'td/workbench/services/userDataSync/browser/userDataSyncWorkbenchService';
 import 'td/workbench/services/activity/browser/activityService';
 
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {ExtensionGalleryService} from 'td/platform/extensionManagement/common/extensionGalleryService';
 import {IExtensionGalleryService, IGlobalExtensionEnablementService} from 'td/platform/extensionManagement/common/extensionManagement';
+import {GlobalExtensionEnablementService} from 'td/platform/extensionManagement/common/extensionEnablementService';
 import {ContextViewService} from 'td/platform/contextview/browser/contextViewService';
 import {IContextViewService} from 'td/platform/contextview/browser/contextView';
 import {IMarkerService} from 'td/platform/markers/common/markers';
@@ -72,9 +74,12 @@ import {ExtensionStorageService, IExtensionStorageService} from 'td/platform/ext
 import {IIgnoredExtensionsManagementService, IgnoredExtensionsManagementService} from 'td/platform/userDataSync/common/ignoredExtensions';
 import {IUserDataSyncLogService} from 'td/platform/userDataSync/common/userDataSync';
 import {UserDataSyncLogService} from 'td/platform/userDataSync/common/userDataSyncLog';
+import {IDownloadService} from 'td/platform/download/common/download';
+import {DownloadService} from 'td/platform/download/common/downloadService';
 
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, InstantiationType.Delayed);
 registerSingleton(IUserDataSyncLogService, UserDataSyncLogService, InstantiationType.Delayed);
+registerSingleton(IGlobalExtensionEnablementService, GlobalExtensionEnablementService, InstantiationType.Delayed);
 registerSingleton(IIgnoredExtensionsManagementService, IgnoredExtensionsManagementService, InstantiationType.Delayed);
 registerSingleton(IContextViewService, ContextViewService, InstantiationType.Delayed);
 registerSingleton(IMarkerService, MarkerService, InstantiationType.Delayed);
@@ -82,6 +87,7 @@ registerSingleton(IExtensionStorageService, ExtensionStorageService, Instantiati
 registerSingleton(IContextKeyService, ContextKeyService, InstantiationType.Delayed);
 registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService, InstantiationType.Delayed);
 registerSingleton(IOpenerService, OpenerService, InstantiationType.Delayed);
+registerSingleton(IDownloadService, DownloadService, InstantiationType.Delayed);
 
 //#endregion
 
@@ -101,6 +107,12 @@ import 'td/workbench/contrib/themes/browser/themes.contribution';
 
 // User Data Sync
 import 'td/workbench/contrib/userDataSync/browser/userDataSync.contribution';
+
+// Output View
+// import 'vs/workbench/contrib/output/common/outputChannelModelService';
+import 'td/workbench/contrib/output/browser/output.contribution';
+
+// import 'vs/workbench/contrib/output/browser/outputView';
 
 
 //#endregion

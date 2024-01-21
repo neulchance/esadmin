@@ -195,18 +195,18 @@ export class Workbench extends Layout {
     const instantiationService = new InstantiationService(serviceCollection, true);
 
 		// // Wrap up
-		// instantiationService.invokeFunction(accessor => {
-		// 	const lifecycleService = accessor.get(ILifecycleService);
+		instantiationService.invokeFunction(accessor => {
+			const lifecycleService = accessor.get(ILifecycleService);
 
 		// 	// TODO@Sandeep debt around cyclic dependencies
-		// 	const configurationService = accessor.get(IConfigurationService) as any;
-		// 	if (typeof configurationService.acquireInstantiationService === 'function') {
-		// 		configurationService.acquireInstantiationService(instantiationService);
-		// 	}
+			const configurationService = accessor.get(IConfigurationService) as any;
+			if (typeof configurationService.acquireInstantiationService === 'function') {
+				configurationService.acquireInstantiationService(instantiationService);
+			}
 
-		// 	// Signal to lifecycle that services are set
-		// 	lifecycleService.phase = LifecyclePhase.Ready;
-		// });
+			// Signal to lifecycle that services are set
+			lifecycleService.phase = LifecyclePhase.Ready;
+		});
 
     return instantiationService
   }

@@ -52,8 +52,9 @@ import 'td/workbench/services/extensions/electron-sandbox/extensionsScannerServi
 import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementServerService';
 import 'td/workbench/services/accessibility/electron-sandbox/accessibilityService';
 import 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayout';
+import 'td/workbench/services/userDataSync/browser/userDataSyncEnablementService';
 import 'td/workbench/services/files/electron-sandbox/elevatedFileService';
-import 'td/workbench/services/localization/electron-sandbox/localeService';
+import 'td/workbench/services/localization/electron-sandbox/localeService'
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {IUserDataInitializationService, UserDataInitializationService} from 'td/workbench/services/userData/browser/userDataInit';
