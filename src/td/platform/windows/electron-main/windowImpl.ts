@@ -20,6 +20,8 @@ import {FileAccess} from 'td/base/common/network';
 import {NativeParsedArgs} from 'td/platform/environment/common/argv';
 import {getMarks, mark} from 'td/base/common/performance';
 import {ILogService} from 'td/platform/log/common/log';
+import {CancellationToken} from 'vscode';
+import {toErrorMessage} from 'td/base/common/errorMessage';
 
 export interface IWindowCreationOptions {
 	readonly state: IWindowState;
@@ -490,5 +492,47 @@ export class DevWindow extends BaseWindow {
 
 		// Update in config object URL for usage in renderer
 		this.configObjectUrl.update(configuration);
+	}
+
+	get isReady(): boolean {
+		return this.readyState === ReadyState.READY;
+	}
+
+	ready(): Promise<IDevWindow> {
+		return new Promise<IDevWindow>(resolve => {
+			if (this.isReady) {
+				return resolve(this);
+			}
+
+			// otherwise keep and call later when we are ready
+			this.whenReadyCallbacks.push(resolve);
+		});
+	}
+
+	sendWhenReady(channel: string, token: CancellationToken, ...args: any[]): void {
+		if (this.isReady) {
+			this.send(channel, ...args);
+		} else {
+			this.ready().then(() => {
+				if (!token.isCancellationRequested) {
+					this.send(channel, ...args);
+				}
+			});
+		}
+	}
+
+	send(channel: string, ...args: any[]): void {
+		if (this._win) {
+			if (this._win.isDestroyed() || this._win.webContents.isDestroyed()) {
+				this.logService.warn(`Sending IPC message to channel '${channel}' for window that is destroyed`);
+				return;
+			}
+
+			try {
+				this._win.webContents.send(channel, ...args);
+			} catch (error) {
+				this.logService.warn(`Error sending IPC message to channel '${channel}' of window ${this._id}: ${toErrorMessage(error)}`);
+			}
+		}
 	}
 }
