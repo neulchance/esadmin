@@ -114,10 +114,6 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		// };
 		// this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', startingTelemetryEvent);
 
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-		console.log(`${x1b35}dkdkdk${done}`)
-		console.log(this._extensionHost)
-
 		this._proxy = this._extensionHost.start().then(
 			(protocol) => {
 				this._hasStarted = true;
@@ -137,7 +133,7 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 				this._logService.error(err);
 
 				// Track errors during extension host startup
-				const failureTelemetryEvent: ExtensionHostStartupEvent = {
+				/* const failureTelemetryEvent: ExtensionHostStartupEvent = {
 					time: Date.now(),
 					action: 'error',
 					kind: extensionHostKindToString(this.kind)
@@ -151,13 +147,18 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 				}
 				if (err && err.stack) {
 					failureTelemetryEvent.errorStack = err.stack;
-				}
-				this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', failureTelemetryEvent);
+				} */
+				// this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', failureTelemetryEvent);
 
 				return null;
 			}
 		);
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+		console.log(`${red}???????????????????11111111111111${done}`)
+		console.log(this._proxy)
 		this._proxy.then(() => {
+			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+			console.log(`${red}???????????????????${done}`)
 			initialActivationEvents.forEach((activationEvent) => this.activateByEvent(activationEvent, ActivationKind.Normal));
 			this._register(registerLatencyTestProvider({
 				measure: () => this.measure()

@@ -392,12 +392,34 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 }
 
 export class DevWindow extends BaseWindow {
+
+	//#region Events
+
+	private readonly _onWillLoad = this._register(new Emitter<ILoadEvent>());
+	readonly onWillLoad = this._onWillLoad.event;
+
+	private readonly _onDidSignalReady = this._register(new Emitter<void>());
+	readonly onDidSignalReady = this._onDidSignalReady.event;
+
+	private readonly _onDidDestroy = this._register(new Emitter<void>());
+	readonly onDidDestroy = this._onDidDestroy.event;
+
+	//#endregion
+
+
+	//#region Properties
+
   private _id: number;
 	get id(): number { return this._id; }
 
   protected override _win: BrowserWindow;
+
+  //#endregion
+
+	private readonly whenReadyCallbacks: { (window: IDevWindow): void }[] = [];
+
   private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
-  
+
   constructor(
 		config: IWindowCreationOptions,
 		@ILogService private readonly logService: ILogService,
@@ -430,6 +452,22 @@ export class DevWindow extends BaseWindow {
     //#endregion
     
   }
+
+	private readyState = ReadyState.NONE;
+
+	setReady(): void {
+		this.logService.trace(`window#load: window reported ready (id: ${this._id})`);
+
+		this.readyState = ReadyState.READY;
+
+		// inform all waiting promises that we are ready now
+		while (this.whenReadyCallbacks.length) {
+			this.whenReadyCallbacks.pop()!(this);
+		}
+
+		// Events
+		this._onDidSignalReady.fire();
+	}
 
 	/* Invoked in windowsMainService.ts #doOpenInBrowserWindow */
 	load(configuration: INativeWindowConfiguration, options: ILoadOptions = Object.create(null)): void {

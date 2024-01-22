@@ -360,6 +360,8 @@ class Lock {
 		}
 
 		const customer = this._pendingCustomers.shift()!;
+		console.log('customer')
+		console.log(customer)
 
 		this._isLocked = true;
 		let customerHoldsLock = true;

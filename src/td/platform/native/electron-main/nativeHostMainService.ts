@@ -689,8 +689,8 @@ export class NativeHostMainService extends Disposable implements INativeHostMain
 	}
 
 	async updateTouchBar(windowId: number | undefined, items: ISerializableCommandAction[][]): Promise<void> {
-		const window = this.codeWindowById(windowId);
-		window?.updateTouchBar(items);
+		// const window = this.codeWindowById(windowId);
+		// window?.updateTouchBar(items);
 	}
 
 	//#endregion

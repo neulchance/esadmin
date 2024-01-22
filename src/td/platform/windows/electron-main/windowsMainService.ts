@@ -19,6 +19,7 @@ import {ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier} from 'td/platfor
 import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
 import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
 import {Schemas} from 'td/base/common/network';
+import {getMarks, mark} from 'td/base/common/performance';
 import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {Disposable} from 'td/base/common/lifecycle';
@@ -175,13 +176,19 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
       os: {release: release(), hostname: hostname(), arch: arch()},
     }
     
+		// New window
     if (!window) {
       
       // const state = this.windowsStateHandler.getNewWindowState(configuration);
 
+			mark('code/willCreateCodeWindow');
       const createdWindow = window = this.instantiationService.createInstance(DevWindow, {
         state: {}
       });
+			mark('code/didCreateCodeWindow');
+
+			// Add to our list of windows
+			this.windows.set(createdWindow.id, createdWindow);
 
 			// Lifecycle
 			// this.lifecycleMainService.registerWindow(createdWindow);
