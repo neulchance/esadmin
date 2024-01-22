@@ -53,6 +53,9 @@ protocol.registerSchemesAsPrivileged([
 	}
 ]);
 
+// Global app listeners
+registerListeners();
+
 app.once('ready', function () {
   ipcMain.handle('ping', () => 'pong')
 
@@ -190,4 +193,48 @@ function getArgvConfigPath() {
 
 	// @ts-ignore
 	return path.join(os.homedir(), dataFolderName, 'argv.json');
+}
+
+function registerListeners() {
+
+	/**
+	 * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
+	 * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
+	 *
+	 * @type {string[]}
+	 */
+	const macOpenFiles = [];
+	// @ts-ignore
+	global['macOpenFiles'] = macOpenFiles;
+	app.on('open-file', function (event, path) {
+		macOpenFiles.push(path);
+	});
+
+	/**
+	 * macOS: react to open-url requests.
+	 *
+	 * @type {string[]}
+	 */
+	const openUrls = [];
+	const onOpenUrl =
+		/**
+		 * @param {{ preventDefault: () => void; }} event
+		 * @param {string} url
+		 */
+		function (event, url) {
+			event.preventDefault();
+
+			openUrls.push(url);
+		};
+
+	app.on('will-finish-launching', function () {
+		app.on('open-url', onOpenUrl);
+	});
+
+	// @ts-ignore
+	global['getOpenUrls'] = function () {
+		app.removeListener('open-url', onOpenUrl);
+
+		return openUrls;
+	};
 }

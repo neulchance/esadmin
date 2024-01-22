@@ -122,6 +122,7 @@ class DevMain {
 				const lifecycleMainService = accessor.get(ILifecycleMainService);
 				const fileService = accessor.get(IFileService);
 				const loggerService = accessor.get(ILoggerService);
+				loggerService.setLogLevel(1)
 
 				// Create the main IPC server by trying to be the server
 				// If this throws an error it means we are not the first

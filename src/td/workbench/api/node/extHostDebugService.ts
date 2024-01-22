@@ -3,30 +3,30 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createCancelablePromise, firstParallel } from 'td/base/common/async';
-import { IDisposable } from 'td/base/common/lifecycle';
+import {createCancelablePromise, firstParallel} from 'td/base/common/async';
+import {IDisposable} from 'td/base/common/lifecycle';
 import * as platform from 'td/base/common/platform';
 import * as nls from 'td/nls';
-import { IExternalTerminalService } from 'td/platform/externalTerminal/common/externalTerminal';
-import { LinuxExternalTerminalService, MacExternalTerminalService, WindowsExternalTerminalService } from 'td/platform/externalTerminal/node/externalTerminalService';
-import { ISignService } from 'td/platform/sign/common/sign';
-import { SignService } from 'td/platform/sign/node/signService';
-import { ExtHostDebugServiceBase, ExtHostDebugSession } from 'td/workbench/api/common/extHostDebugService';
-import { IExtHostEditorTabs } from 'td/workbench/api/common/extHostEditorTabs';
-import { IExtHostExtensionService } from 'td/workbench/api/common/extHostExtensionService';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { IExtHostTerminalService } from 'td/workbench/api/common/extHostTerminalService';
-import { DebugAdapterExecutable, ThemeIcon } from 'td/workbench/api/common/extHostTypes';
-import { IExtHostVariableResolverProvider } from 'td/workbench/api/common/extHostVariableResolverService';
-import { IExtHostWorkspace } from 'td/workbench/api/common/extHostWorkspace';
-import { AbstractDebugAdapter } from 'td/workbench/contrib/debug/common/abstractDebugAdapter';
-import { IAdapterDescriptor } from 'td/workbench/contrib/debug/common/debug';
-import { ExecutableDebugAdapter, NamedPipeDebugAdapter, SocketDebugAdapter } from 'td/workbench/contrib/debug/node/debugAdapter';
-import { hasChildProcesses, prepareCommand } from 'td/workbench/contrib/debug/node/terminals';
-import { ExtensionDescriptionRegistry } from 'td/workbench/services/extensions/common/extensionDescriptionRegistry';
+import {IExternalTerminalService} from 'td/platform/externalTerminal/common/externalTerminal';
+import {LinuxExternalTerminalService, MacExternalTerminalService, WindowsExternalTerminalService} from 'td/platform/externalTerminal/node/externalTerminalService';
+import {ISignService} from 'td/platform/sign/common/sign';
+import {SignService} from 'td/platform/sign/node/signService';
+import {ExtHostDebugServiceBase, ExtHostDebugSession} from 'td/workbench/api/common/extHostDebugService';
+import {IExtHostEditorTabs} from 'td/workbench/api/common/extHostEditorTabs';
+import {IExtHostExtensionService} from 'td/workbench/api/common/extHostExtensionService';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {IExtHostTerminalService} from 'td/workbench/api/common/extHostTerminalService';
+import {DebugAdapterExecutable, ThemeIcon} from 'td/workbench/api/common/extHostTypes';
+import {IExtHostVariableResolverProvider} from 'td/workbench/api/common/extHostVariableResolverService';
+import {IExtHostWorkspace} from 'td/workbench/api/common/extHostWorkspace';
+import {AbstractDebugAdapter} from 'td/workbench/contrib/debug/common/abstractDebugAdapter';
+import {IAdapterDescriptor} from 'td/workbench/contrib/debug/common/debug';
+import {ExecutableDebugAdapter, NamedPipeDebugAdapter, SocketDebugAdapter} from 'td/workbench/contrib/debug/node/debugAdapter';
+import {hasChildProcesses, prepareCommand} from 'td/workbench/contrib/debug/node/terminals';
+import {ExtensionDescriptionRegistry} from 'td/workbench/services/extensions/common/extensionDescriptionRegistry';
 import type * as vscode from 'vscode';
-import { ExtHostConfigProvider, IExtHostConfiguration } from '../common/extHostConfiguration';
-import { IExtHostCommands } from 'td/workbench/api/common/extHostCommands';
+import {ExtHostConfigProvider, IExtHostConfiguration} from '../common/extHostConfiguration';
+import {IExtHostCommands} from 'td/workbench/api/common/extHostCommands';
 
 export class ExtHostDebugService extends ExtHostDebugServiceBase {
 
@@ -89,7 +89,7 @@ export class ExtHostDebugService extends ExtHostDebugServiceBase {
 
 			const terminalName = args.title || nls.localize('debug.terminal.title', "Debug Process");
 
-			const shellConfig = JSON.stringify({ shell, shellArgs });
+			const shellConfig = JSON.stringify({shell, shellArgs});
 			let terminal = await this._integratedTerminalInstances.checkout(shellConfig, terminalName);
 
 			let cwdForPrepareCommand: string | undefined;
@@ -213,7 +213,7 @@ class DebugTerminalCollection {
 	}
 
 	public insert(terminal: vscode.Terminal, termConfig: string) {
-		this._terminalInstances.set(terminal, { lastUsedAt: Date.now(), config: termConfig });
+		this._terminalInstances.set(terminal, {lastUsedAt: Date.now(), config: termConfig});
 	}
 
 	public free(terminal: vscode.Terminal) {
