@@ -33,7 +33,7 @@
 		"./td/**/*.ts",
 		// "td/base/common/marked/marked.js",
 		// "td/base/common/semver/semver.js"
-		// "vscode-dts/vscode.proposed.*.d.ts",
-		// "vscode-dts/vscode.d.ts"
+		"vscode-dts/vscode.proposed.*.d.ts",
+		"vscode-dts/vscode.d.ts"
 	]
 }
