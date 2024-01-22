@@ -17,7 +17,7 @@ import {VIEWLET_ID, IExtensionsWorkbenchService, IExtensionsViewPaneContainer, T
 import {ReinstallAction, InstallSpecificVersionOfExtensionAction, ConfigureWorkspaceRecommendedExtensionsAction, ConfigureWorkspaceFolderRecommendedExtensionsAction, PromptExtensionInstallFailureAction, SearchExtensionsAction, SwitchToPreReleaseVersionAction, SwitchToReleasedVersionAction, SetColorThemeAction, SetFileIconThemeAction, SetProductIconThemeAction, ClearLanguageAction, ToggleAutoUpdateForExtensionAction, ToggleAutoUpdatesForPublisherAction} from 'td/workbench/contrib/extensions/browser/extensionsActions';
 import {ExtensionsInput} from 'td/workbench/contrib/extensions/common/extensionsInput';
 import {ExtensionEditor} from 'td/workbench/contrib/extensions/browser/extensionEditor';
-import {StatusUpdater, MaliciousExtensionChecker, ExtensionsViewletViewsContribution, ExtensionsViewPaneContainer, BuiltInExtensionsContext, SearchMarketplaceExtensionsContext, RecommendedExtensionsContext, DefaultViewsContext, ExtensionsSortByContext, SearchHasTextContext} from 'td/workbench/contrib/extensions/browser/extensionsViewlet';
+// import {StatusUpdater, MaliciousExtensionChecker, ExtensionsViewletViewsContribution, ExtensionsViewPaneContainer, BuiltInExtensionsContext, SearchMarketplaceExtensionsContext, RecommendedExtensionsContext, DefaultViewsContext, ExtensionsSortByContext, SearchHasTextContext} from 'td/workbench/contrib/extensions/browser/extensionsViewlet';
 import {IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope} from 'td/platform/configuration/common/configurationRegistry';
 import * as jsonContributionRegistry from 'td/platform/jsonschemas/common/jsonContributionRegistry';
 import {ExtensionsConfigurationSchema, ExtensionsConfigurationSchemaId} from 'td/workbench/contrib/extensions/common/extensionsFileTemplate';
@@ -104,7 +104,7 @@ Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane).registerEditorPane
 		new SyncDescriptor(ExtensionsInput)
 	]);
 
-Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(
+/* Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(
 	{
 		id: VIEWLET_ID,
 		title: localize2('extensions', "Extensions"),
@@ -119,7 +119,7 @@ Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegis
 		order: 4,
 		rejectAddedViews: true,
 		alwaysUseContainerInfo: true,
-	}, ViewContainerLocation.Sidebar);
+	}, ViewContainerLocation.Sidebar); */
 
 
 Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
@@ -1097,7 +1097,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 		});
 
 		const extensionsSortSubMenu = new MenuId('extensionsSortSubMenu');
-		MenuRegistry.appendMenuItem(extensionsFilterSubMenu, <ISubmenuItem>{
+		/* MenuRegistry.appendMenuItem(extensionsFilterSubMenu, <ISubmenuItem>{
 			submenu: extensionsSortSubMenu,
 			title: localize('sorty by', "Sort By"),
 			when: ContextKeyExpr.and(ContextKeyExpr.or(CONTEXT_HAS_GALLERY, DefaultViewsContext)),
@@ -1130,9 +1130,9 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 					extensionsViewPaneContainer.focus();
 				}
 			});
-		});
+		}); */
 
-		this.registerExtensionAction({
+		/* this.registerExtensionAction({
 			id: 'workbench.extensions.action.clearExtensionsSearchResults',
 			title: localize2('clearExtensionsSearchResults', 'Clear Extensions Search Results'),
 			category: ExtensionsLocalizedLabel,
@@ -1152,7 +1152,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 					extensionsViewPaneContainer.focus();
 				}
 			}
-		});
+		}); */
 
 		this.registerExtensionAction({
 			id: 'workbench.extensions.action.refreshExtension',
@@ -1699,10 +1699,10 @@ class ExtensionStorageCleaner implements IWorkbenchContribution {
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchRegistry.registerWorkbenchContribution(ExtensionsContributions, LifecyclePhase.Restored);
-workbenchRegistry.registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Eventually);
-workbenchRegistry.registerWorkbenchContribution(MaliciousExtensionChecker, LifecyclePhase.Eventually);
+// workbenchRegistry.registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Eventually);
+// workbenchRegistry.registerWorkbenchContribution(MaliciousExtensionChecker, LifecyclePhase.Eventually);
 // workbenchRegistry.registerWorkbenchContribution(KeymapExtensions, LifecyclePhase.Restored);
-workbenchRegistry.registerWorkbenchContribution(ExtensionsViewletViewsContribution, LifecyclePhase.Restored);
+// workbenchRegistry.registerWorkbenchContribution(ExtensionsViewletViewsContribution, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(ExtensionActivationProgress, LifecyclePhase.Eventually);
 workbenchRegistry.registerWorkbenchContribution(ExtensionDependencyChecker, LifecyclePhase.Eventually);
 // workbenchRegistry.registerWorkbenchContribution(ExtensionEnablementWorkspaceTrustTransitionParticipant, LifecyclePhase.Restored);

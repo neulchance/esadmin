@@ -182,6 +182,8 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 	}
 
 	private async _start(): Promise<IMessagePassingProtocol> {
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+		console.log(`${red}this._start()${done}`)
 		const [extensionHostCreationResult, portNumber, processEnv] = await Promise.all([
 			this._extensionHostStarter.createExtensionHost(),
 			this._tryFindDebugPort(),

@@ -50,6 +50,7 @@ import 'td/workbench/services/tunnel/electron-sandbox/tunnelService';
 import 'td/workbench/services/request/electron-sandbox/requestService';
 import 'td/workbench/services/extensions/electron-sandbox/extensionsScannerService';
 import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementServerService';
+import 'td/workbench/services/extensions/electron-sandbox/extensionHostStarter';
 import 'td/workbench/services/accessibility/electron-sandbox/accessibilityService';
 import 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayout';
 import 'td/workbench/services/userDataSync/browser/userDataSyncEnablementService';
@@ -72,6 +73,9 @@ registerSingleton(IExtensionsProfileScannerService, ExtensionsProfileScannerServ
 
 // Extensions Management
 // import 'td/workbench/contrib/extensions/electron-sandbox/extensions.contribution';
+
+// Debug
+import 'td/workbench/contrib/debug/electron-sandbox/extensionHostDebugService';
 
 //#endregion
 

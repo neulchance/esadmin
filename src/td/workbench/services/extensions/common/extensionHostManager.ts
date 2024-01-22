@@ -107,24 +107,28 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		this._extensionHost = extensionHost;
 		this.onDidExit = this._extensionHost.onExit;
 
-		const startingTelemetryEvent: ExtensionHostStartupEvent = {
-			time: Date.now(),
-			action: 'starting',
-			kind: extensionHostKindToString(this.kind)
-		};
-		this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', startingTelemetryEvent);
+		// const startingTelemetryEvent: ExtensionHostStartupEvent = {
+		// 	time: Date.now(),
+		// 	action: 'starting',
+		// 	kind: extensionHostKindToString(this.kind)
+		// };
+		// this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', startingTelemetryEvent);
+
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+		console.log(`${x1b35}dkdkdk${done}`)
+		console.log(this._extensionHost)
 
 		this._proxy = this._extensionHost.start().then(
 			(protocol) => {
 				this._hasStarted = true;
 
 				// Track healthy extension host startup
-				const successTelemetryEvent: ExtensionHostStartupEvent = {
-					time: Date.now(),
-					action: 'success',
-					kind: extensionHostKindToString(this.kind)
-				};
-				this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', successTelemetryEvent);
+				// const successTelemetryEvent: ExtensionHostStartupEvent = {
+				// 	time: Date.now(),
+				// 	action: 'success',
+				// 	kind: extensionHostKindToString(this.kind)
+				// };
+				// this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', successTelemetryEvent);
 
 				return this._createExtensionHostCustomers(this.kind, protocol);
 			},

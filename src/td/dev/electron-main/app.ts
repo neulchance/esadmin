@@ -68,6 +68,9 @@ import {DiskFileSystemProviderChannel} from 'td/platform/files/electron-main/dis
 import {DiskFileSystemProvider} from 'td/platform/files/node/diskFileSystemProvider';
 import {assertType} from 'td/base/common/types';
 import {Schemas} from 'td/base/common/network';
+import {ElectronExtensionHostDebugBroadcastChannel} from 'td/platform/debug/electron-main/extensionHostDebugIpc';
+import {IExtensionHostStarter, ipcExtensionHostStarterChannelName} from 'td/platform/extensions/common/extensionHostStarter';
+import {ExtensionHostStarter} from 'td/platform/extensions/electron-main/extensionHostStarter';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -253,6 +256,9 @@ export class DevApplication extends Disposable {
 		// Menubar
 		services.set(IMenubarMainService, new SyncDescriptor(MenubarMainService));
 
+		// Extension Host Starter
+		services.set(IExtensionHostStarter, new SyncDescriptor(ExtensionHostStarter));
+
 		// Storage
 		services.set(IStorageMainService, new SyncDescriptor(StorageMainService));
 		services.set(IApplicationStorageMainService, new SyncDescriptor(ApplicationStorageMainService));
@@ -347,6 +353,14 @@ export class DevApplication extends Disposable {
 		const loggerChannel = new LoggerChannel(accessor.get(ILoggerMainService),);
 		mainProcessElectronServer.registerChannel('logger', loggerChannel);
 		sharedProcessClient.then(client => client.registerChannel('logger', loggerChannel));
+
+		// Extension Host Debug Broadcasting
+		const electronExtensionHostDebugBroadcastChannel = new ElectronExtensionHostDebugBroadcastChannel(accessor.get(IWindowsMainService));
+		mainProcessElectronServer.registerChannel('extensionhostdebugservice', electronExtensionHostDebugBroadcastChannel);
+
+		// Extension Host Starter
+		const extensionHostStarterChannel = ProxyChannel.fromService(accessor.get(IExtensionHostStarter), disposables);
+		mainProcessElectronServer.registerChannel(ipcExtensionHostStarterChannelName, extensionHostStarterChannel);
 
 		// Utility Process Worker
 		const utilityProcessWorkerChannel = ProxyChannel.fromService(accessor.get(IUtilityProcessWorkerMainService), disposables);

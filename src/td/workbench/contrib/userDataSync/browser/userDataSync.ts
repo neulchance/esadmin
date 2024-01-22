@@ -116,7 +116,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 		@IUserDataSyncStoreManagementService private readonly userDataSyncStoreManagementService: IUserDataSyncStoreManagementService,
 		@IHostService private readonly hostService: IHostService,
 		@ICommandService private readonly commandService: ICommandService,
-		@IWorkbenchIssueService private readonly workbenchIssueService: IWorkbenchIssueService
+		// @IWorkbenchIssueService private readonly workbenchIssueService: IWorkbenchIssueService
 	) {
 		super();
 
@@ -294,7 +294,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 					actions: {
 						primary: [
 							new Action('Show Sync Logs', localize('show sync logs', "Show Log"), undefined, true, () => this.commandService.executeCommand(SHOW_SYNC_LOG_COMMAND_ID)),
-							new Action('Report Issue', localize('report issue', "Report Issue"), undefined, true, () => this.workbenchIssueService.openReporter())
+							// new Action('Report Issue', localize('report issue', "Report Issue"), undefined, true, () => this.workbenchIssueService.openReporter())
 						]
 					}
 				});

@@ -84,7 +84,7 @@ export class NativeExtensionService extends AbstractExtensionService implements 
 		@INativeHostService private readonly _nativeHostService: INativeHostService,
 		@IHostService private readonly _hostService: IHostService,
 		@IRemoteExplorerService private readonly _remoteExplorerService: IRemoteExplorerService,
-		// @IExtensionGalleryService private readonly _extensionGalleryService: IExtensionGalleryService,
+		@IExtensionGalleryService private readonly _extensionGalleryService: IExtensionGalleryService,
 		// @IWorkspaceTrustManagementService private readonly _workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IDialogService dialogService: IDialogService,
 	) {
@@ -494,13 +494,13 @@ export class NativeExtensionService extends AbstractExtensionService implements 
 					label: nls.localize('install', 'Install and Reload'),
 					run: async () => {
 						sendTelemetry('install');
-						// const [galleryExtension] = await this._extensionGalleryService.getExtensions([{id: resolverExtensionId}], CancellationToken.None);
-						// if (galleryExtension) {
-						// 	await this._extensionManagementService.installFromGallery(galleryExtension);
-						// 	await this._hostService.reload();
-						// } else {
-						// 	this._notificationService.error(nls.localize('resolverExtensionNotFound', "`{0}` not found on marketplace"));
-						// }
+						const [galleryExtension] = await this._extensionGalleryService.getExtensions([{id: resolverExtensionId}], CancellationToken.None);
+						if (galleryExtension) {
+							await this._extensionManagementService.installFromGallery(galleryExtension);
+							await this._hostService.reload();
+						} else {
+							this._notificationService.error(nls.localize('resolverExtensionNotFound', "`{0}` not found on marketplace"));
+						}
 
 					}
 				}],
