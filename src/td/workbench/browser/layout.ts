@@ -2729,6 +2729,8 @@ class LayoutStateModel extends Disposable {
 	}
 
 	private isActivityBarHidden(): boolean {
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+		console.log(`${red}isActivityBarHidden${done}`)
 		const oldValue = this.configurationService.getValue<boolean | undefined>('workbench.activityBar.visible');
 		if (oldValue !== undefined) {
 			return !oldValue;

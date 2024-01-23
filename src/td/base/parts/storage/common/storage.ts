@@ -219,6 +219,13 @@ export class Storage extends Disposable implements IStorage {
 			아래 함수 getItems 는 src/td/platform/storage/common/storageIpc.ts:61 를 가리킬 수 있다.
 		*/
 		this.cache = await this.database.getItems();
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
+		console.log(`${red}FIGUREOUTs${done} td/platform/storage/common/storage.ts::Storage::init`)
+		console.log(this.cache)
+		// FIGUREOUTs
+		/* 
+			'this.cache'에 'userDataDir/dev-oss-dev/User/globalStorage/state.vscdb'의 내용이 잡힌다.
+		 */
 	}
 
 	get(key: string, fallbackValue: string): string;
@@ -383,6 +390,8 @@ export class Storage extends Disposable implements IStorage {
 		// Update in storage and release any
 		// waiters we have once done
 		return this.database.updateItems(updateRequest).finally(() => {
+			console.log('updateRequest ?????')
+			console.log(updateRequest)
 			if (!this.hasPending) {
 				while (this.whenFlushedCallbacks.length) {
 					this.whenFlushedCallbacks.pop()?.();
