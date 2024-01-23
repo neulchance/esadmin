@@ -2632,6 +2632,9 @@ class LayoutStateModel extends Disposable {
 			}
 		}
 
+		console.log('this.stateCache')
+		console.log(this.stateCache)
+
 		// Apply legacy settings
 		this.stateCache.set(LayoutStateKeys.ACTIVITYBAR_HIDDEN.name, this.isActivityBarHidden());
 		this.stateCache.set(LayoutStateKeys.STATUSBAR_HIDDEN.name, !this.configurationService.getValue(LegacyWorkbenchLayoutSettings.STATUSBAR_VISIBLE));

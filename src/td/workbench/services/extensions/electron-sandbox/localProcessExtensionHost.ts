@@ -188,8 +188,6 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 			this._shellEnvironmentService.getShellEnv(),
 		]);
 
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-		console.log(`${red}_start${done}`)
 		console.log(extensionHostCreationResult, portNumber, processEnv)
 
 		this._extensionHostProcess = new ExtensionHostProcess(extensionHostCreationResult.id, this._extensionHostStarter);
@@ -318,9 +316,6 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 		}
 
 		// Initialize extension host process with hand shakes
-		// const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-		console.log(`${red}check${done}`)
-		console.log(this._extensionHostProcess)
 		const protocol = await this._establishProtocol(this._extensionHostProcess, opts);
 		await this._performHandshake(protocol);
 		clearTimeout(startupTimeoutHandle);

@@ -267,6 +267,8 @@ export class LockableExtensionDescriptionRegistry implements IReadOnlyExtensionD
 	}
 
 	public async acquireLock(customerName: string): Promise<ExtensionDescriptionRegistryLock> {
+		console.log('customerName')
+		console.log(customerName)
 		const lock = await this._lock.acquire(customerName);
 		return new ExtensionDescriptionRegistryLock(this, lock);
 	}
