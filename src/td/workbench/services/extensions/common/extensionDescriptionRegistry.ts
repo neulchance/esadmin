@@ -56,6 +56,8 @@ export class ExtensionDescriptionRegistry implements IReadOnlyExtensionDescripti
 		private readonly _activationEventsReader: IActivationEventsReader,
 		extensionDescriptions: IExtensionDescription[]
 	) {
+		console.log('extensionDescriptions')
+		console.log(extensionDescriptions)
 		this._extensionDescriptions = extensionDescriptions;
 		this._initialize();
 	}
@@ -270,6 +272,8 @@ export class LockableExtensionDescriptionRegistry implements IReadOnlyExtensionD
 		console.log('customerName')
 		console.log(customerName)
 		const lock = await this._lock.acquire(customerName);
+		console.log('lock')
+		console.log(lock)
 		return new ExtensionDescriptionRegistryLock(this, lock);
 	}
 

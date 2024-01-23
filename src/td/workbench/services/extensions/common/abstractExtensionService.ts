@@ -431,6 +431,8 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 		this._startExtensionHostsIfNecessary(true, []);
 
 		const lock = await this._registry.acquireLock('_initialize');
+		console.log('can i got it?')
+		console.log(lock)
 		try {
 			const resolvedExtensions = await this._resolveExtensions();
 
