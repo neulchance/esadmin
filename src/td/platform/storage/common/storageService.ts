@@ -34,18 +34,12 @@ export class RemoteStorageService extends AbstractStorageService {
 		private readonly remoteService: IRemoteService,
 		private readonly environmentService: IEnvironmentService
 	) {
-
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
-		console.log(`${red}FIGUREOUTs RemoteStorageService constructor${done}`)
 		super();
 	}
 
 	private createApplicationStorage(): IStorage {
 		const storageDataBaseClient = this._register(new ApplicationStorageDatabaseClient(this.remoteService.getChannel('storage')));
 		const applicationStorage = this._register(new Storage(storageDataBaseClient));
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
-		console.log(`${red}FIGUREOUTs applicationStorage${done}`)
-		console.log(applicationStorage)
 
 		this._register(applicationStorage.onDidChangeStorage(e => this.emitDidChangeValue(StorageScope.APPLICATION, e)));
 
@@ -75,10 +69,6 @@ export class RemoteStorageService extends AbstractStorageService {
 		}
 
 		this.profileStorageDisposables.add(profileStorage.onDidChangeStorage(e => this.emitDidChangeValue(StorageScope.PROFILE, e)));
-
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
-		console.log(`${red}FIGUREOUTs profileStorage${done}`)
-		console.log(profileStorage)
 
 		return profileStorage;
 	}

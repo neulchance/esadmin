@@ -208,7 +208,10 @@ export abstract class AbstractExtensionsScannerService extends Disposable implem
 				throw error;
 			}
 		}
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
+		console.log(`${blue}FIGUREOUTs 1${done}`)
 		extensions = await this.applyScanOptions(extensions, ExtensionType.User, scanOptions, true);
+		console.log(`${blue}FIGUREOUTs 2${done}`)
 		this.logService.trace('Scanned user extensions:', extensions.length);
 		return extensions;
 	}
@@ -316,13 +319,14 @@ export abstract class AbstractExtensionsScannerService extends Disposable implem
 	}
 
 	private async applyScanOptions(extensions: IRelaxedScannedExtension[], type: ExtensionType | 'development', scanOptions: ScanOptions, pickLatest: boolean): Promise<IRelaxedScannedExtension[]> {
+		console.trace('applyScanOptions')
 		if (!scanOptions.includeAllVersions) {
 			extensions = this.dedupExtensions(type === ExtensionType.System ? extensions : undefined, type === ExtensionType.User ? extensions : undefined, type === 'development' ? extensions : undefined, await this.getTargetPlatform(), pickLatest);
 		}
 		if (!scanOptions.includeInvalid) {
 			extensions = extensions.filter(extension => extension.isValid);
 		}
-		return extensions.sort((a, b) => {
+		const sorted = extensions.sort((a, b) => {
 			const aLastSegment = path.basename(a.location.fsPath);
 			const bLastSegment = path.basename(b.location.fsPath);
 			if (aLastSegment < bLastSegment) {
@@ -333,6 +337,10 @@ export abstract class AbstractExtensionsScannerService extends Disposable implem
 			}
 			return 0;
 		});
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
+		console.log(`${red}FIGUREOUTs sorted${done}`)
+		console.log(sorted)
+		return sorted
 	}
 
 	private dedupExtensions(system: IScannedExtension[] | undefined, user: IScannedExtension[] | undefined, development: IScannedExtension[] | undefined, targetPlatform: TargetPlatform, pickLatest: boolean): IScannedExtension[] {

@@ -98,8 +98,6 @@ export class ExtensionHostStarter implements IDisposable, IExtensionHostStarter 
 	}
 
 	async start(id: string, opts: IExtensionHostProcessOptions): Promise<{ pid: number | undefined }> {
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-		console.log(`${green}start on src/td/platform/extensions/electron-main/extensionHostStarter.ts${done}`)
 		if (this._shutdown) {
 			throw canceled();
 		}

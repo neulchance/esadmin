@@ -188,8 +188,6 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 			this._shellEnvironmentService.getShellEnv(),
 		]);
 
-		console.log(extensionHostCreationResult, portNumber, processEnv)
-
 		this._extensionHostProcess = new ExtensionHostProcess(extensionHostCreationResult.id, this._extensionHostStarter);
 
 		const env = objects.mixin(processEnv, {

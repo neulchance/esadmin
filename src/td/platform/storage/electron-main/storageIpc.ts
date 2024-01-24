@@ -144,9 +144,6 @@ export class StorageDatabaseChannel extends Disposable implements IServerChannel
 
 	private async withStorageInitialized(profile: IUserDataProfile | undefined, workspace: IAnyWorkspaceIdentifier | undefined): Promise<IStorageMain> {
 		let storage: IStorageMain;
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
-		console.log(`${red}withStorageInitialized${done}`)
-		console.log(workspace, profile)
 		if (workspace) {
 			storage = this.storageMainService.workspaceStorage(workspace);
 		} else if (profile) {

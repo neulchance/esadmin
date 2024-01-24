@@ -451,9 +451,6 @@ export class WindowUtilityProcess extends UtilityProcess {
 	}
 
 	override start(configuration: IWindowUtilityProcessConfiguration): boolean {
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-		console.log(`${red}start on src/td/platform/utilityProcess/electron-main/utilityProcess.ts${done}`)
-		console.log('configuration.responseWindowId', configuration.responseWindowId)
 		const responseWindow = this.windowsMainService.getWindowById(configuration.responseWindowId);
 		if (!responseWindow?.win || responseWindow.win.isDestroyed() || responseWindow.win.webContents.isDestroyed()) {
 			this.log('Refusing to start utility process because requesting window cannot be found or is destroyed...', Severity.Error);
@@ -473,7 +470,6 @@ export class WindowUtilityProcess extends UtilityProcess {
 		// Establish & exchange message ports
 		const windowPort = this.connect(configuration.payload);
 		responseWindow.win.webContents.postMessage(configuration.responseChannel, configuration.responseNonce, [windowPort]);
-		console.log(`${red}it is can go?${done}`)
 
 		return true;
 	}

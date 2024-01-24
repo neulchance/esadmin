@@ -56,8 +56,6 @@ export class ExtensionDescriptionRegistry implements IReadOnlyExtensionDescripti
 		private readonly _activationEventsReader: IActivationEventsReader,
 		extensionDescriptions: IExtensionDescription[]
 	) {
-		console.log('extensionDescriptions')
-		console.log(extensionDescriptions)
 		this._extensionDescriptions = extensionDescriptions;
 		this._initialize();
 	}
@@ -269,11 +267,7 @@ export class LockableExtensionDescriptionRegistry implements IReadOnlyExtensionD
 	}
 
 	public async acquireLock(customerName: string): Promise<ExtensionDescriptionRegistryLock> {
-		console.log('customerName')
-		console.log(customerName)
 		const lock = await this._lock.acquire(customerName);
-		console.log('lock')
-		console.log(lock)
 		return new ExtensionDescriptionRegistryLock(this, lock);
 	}
 
@@ -366,8 +360,6 @@ class Lock {
 		}
 
 		const customer = this._pendingCustomers.shift()!;
-		console.log('customer')
-		console.log(customer)
 
 		this._isLocked = true;
 		let customerHoldsLock = true;

@@ -2632,9 +2632,6 @@ class LayoutStateModel extends Disposable {
 			}
 		}
 
-		console.log('this.stateCache')
-		console.log(this.stateCache)
-
 		// Apply legacy settings
 		this.stateCache.set(LayoutStateKeys.ACTIVITYBAR_HIDDEN.name, this.isActivityBarHidden());
 		this.stateCache.set(LayoutStateKeys.STATUSBAR_HIDDEN.name, !this.configurationService.getValue(LegacyWorkbenchLayoutSettings.STATUSBAR_VISIBLE));
@@ -2732,8 +2729,6 @@ class LayoutStateModel extends Disposable {
 	}
 
 	private isActivityBarHidden(): boolean {
-		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-		console.log(`${red}isActivityBarHidden${done}`)
 		const oldValue = this.configurationService.getValue<boolean | undefined>('workbench.activityBar.visible');
 		if (oldValue !== undefined) {
 			return !oldValue;

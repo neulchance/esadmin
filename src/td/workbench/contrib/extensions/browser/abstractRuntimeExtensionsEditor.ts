@@ -100,6 +100,7 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 	}
 
 	private async _resolveExtensions(): Promise<IRuntimeExtension[]> {
+		console.log('?????????? _resolveExtensions ??????????')
 		// We only deal with extensions with source code!
 		await this._extensionService.whenInstalledExtensionsRegistered();
 		const extensionsDescriptions = this._extensionService.extensions.filter((extension) => {

@@ -58,6 +58,8 @@ export class CachedExtensionScanner {
 				this._extensionsScannerService.scanSystemExtensions({language, useCache: true, checkControlFile: true}),
 				this._extensionsScannerService.scanUserExtensions({language, profileLocation: this._userDataProfileService.currentProfile.extensionsResource, useCache: true})]);
 
+			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
+			console.log(`${red}FIGUREOUTs _scanInstalledExtensions${done}`)
 			let scannedSystemExtensions: IScannedExtension[] = [],
 				scannedUserExtensions: IScannedExtension[] = [],
 				scannedDevelopedExtensions: IScannedExtension[] = [],
