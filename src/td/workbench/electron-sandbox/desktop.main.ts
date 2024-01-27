@@ -47,6 +47,7 @@ import {SharedProcessService} from 'td/workbench/services/sharedProcess/electron
 import {INativeKeyboardLayoutService, NativeKeyboardLayoutService} from 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayoutService';
 import {PolicyChannelClient} from 'td/platform/policy/common/policyIpc';
 import {IUtilityProcessWorkerWorkbenchService, UtilityProcessWorkerWorkbenchService} from 'td/workbench/services/utilityProcess/electron-sandbox/utilityProcessWorkerWorkbenchService';
+import {FileUserDataProvider} from 'td/platform/userData/common/fileUserDataProvider';
 
 export class DesktopMain extends Disposable {
   
@@ -153,6 +154,10 @@ export class DesktopMain extends Disposable {
     const userDataProfileService = new UserDataProfileService(reviveProfile(this.configuration.profiles.profile, userDataProfilesService.profilesHome.scheme));
     serviceCollection.set(IUserDataProfileService, userDataProfileService);
 
+		// Use FileUserDataProvider for user data to
+		// enable atomic read / write operations.
+		fileService.registerProvider(Schemas.vscodeUserData, this._register(new FileUserDataProvider(Schemas.file, diskFileSystemProvider, Schemas.vscodeUserData, userDataProfilesService, uriIdentityService, logService)));
+
 		// Remote Agent
 		const remoteSocketFactoryService = new RemoteSocketFactoryService();
 		remoteSocketFactoryService.register(RemoteConnectionType.WebSocket, new BrowserSocketFactory(null));
@@ -160,6 +165,14 @@ export class DesktopMain extends Disposable {
 		const remoteAgentService = this._register(new RemoteAgentService(remoteSocketFactoryService, userDataProfileService, environmentService, productService, remoteAuthorityResolverService, /* signService, */ logService));
 		serviceCollection.set(IRemoteAgentService, remoteAgentService);
 
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//
+		// NOTE: Please do NOT register services here. Use `registerSingleton()`
+		//       from `workbench.common.main.ts` if the service is shared between
+		//       desktop and web or `workbench.desktop.main.ts` if the service
+		//       is desktop only.
+		//
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // Create services that require resolving in parallel
 		const workspace = this.resolveWorkspaceIdentifier(environmentService);

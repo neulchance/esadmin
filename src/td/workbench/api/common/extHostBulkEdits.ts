@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { MainContext, MainThreadBulkEditsShape } from 'td/workbench/api/common/extHost.protocol';
-import { ExtHostDocumentsAndEditors } from 'td/workbench/api/common/extHostDocumentsAndEditors';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { WorkspaceEdit } from 'td/workbench/api/common/extHostTypeConverters';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {MainContext, MainThreadBulkEditsShape} from 'td/workbench/api/common/extHost.protocol';
+import {ExtHostDocumentsAndEditors} from 'td/workbench/api/common/extHostDocumentsAndEditors';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {WorkspaceEdit} from 'td/workbench/api/common/extHostTypeConverters';
 import type * as vscode from 'vscode';
 
 export class ExtHostBulkEdits {

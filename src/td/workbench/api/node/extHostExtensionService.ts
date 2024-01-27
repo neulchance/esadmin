@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as performance from 'td/base/common/performance';
-import { createApiFactoryAndRegisterActors } from 'td/workbench/api/common/extHost.api.impl';
-import { RequireInterceptor } from 'td/workbench/api/common/extHostRequireInterceptor';
-import { ExtensionActivationTimesBuilder } from 'td/workbench/api/common/extHostExtensionActivator';
-import { connectProxyResolver } from 'td/workbench/api/node/proxyResolver';
-import { AbstractExtHostExtensionService } from 'td/workbench/api/common/extHostExtensionService';
-import { ExtHostDownloadService } from 'td/workbench/api/node/extHostDownloadService';
-import { URI } from 'td/base/common/uri';
-import { Schemas } from 'td/base/common/network';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { ExtensionRuntime } from 'td/workbench/api/common/extHostTypes';
-import { CLIServer } from 'td/workbench/api/node/extHostCLIServer';
-import { realpathSync } from 'td/base/node/extpath';
-import { ExtHostConsoleForwarder } from 'td/workbench/api/node/extHostConsoleForwarder';
-import { ExtHostDiskFileSystemProvider } from 'td/workbench/api/node/extHostDiskFileSystemProvider';
+import {createApiFactoryAndRegisterActors} from 'td/workbench/api/common/extHost.api.impl';
+import {RequireInterceptor} from 'td/workbench/api/common/extHostRequireInterceptor';
+import {ExtensionActivationTimesBuilder} from 'td/workbench/api/common/extHostExtensionActivator';
+import {connectProxyResolver} from 'td/workbench/api/node/proxyResolver';
+import {AbstractExtHostExtensionService} from 'td/workbench/api/common/extHostExtensionService';
+import {ExtHostDownloadService} from 'td/workbench/api/node/extHostDownloadService';
+import {URI} from 'td/base/common/uri';
+import {Schemas} from 'td/base/common/network';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {ExtensionRuntime} from 'td/workbench/api/common/extHostTypes';
+import {CLIServer} from 'td/workbench/api/node/extHostCLIServer';
+import {realpathSync} from 'td/base/node/extpath';
+import {ExtHostConsoleForwarder} from 'td/workbench/api/node/extHostConsoleForwarder';
+import {ExtHostDiskFileSystemProvider} from 'td/workbench/api/node/extHostDiskFileSystemProvider';
 
 class NodeModuleRequireInterceptor extends RequireInterceptor {
 
@@ -79,7 +79,7 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 		this._instaService.createInstance(ExtHostDiskFileSystemProvider);
 
 		// Module loading tricks
-		const interceptor = this._instaService.createInstance(NodeModuleRequireInterceptor, extensionApiFactory, { mine: this._myRegistry, all: this._globalRegistry });
+		const interceptor = this._instaService.createInstance(NodeModuleRequireInterceptor, extensionApiFactory, {mine: this._myRegistry, all: this._globalRegistry});
 		await interceptor.install();
 		performance.mark('code/extHost/didInitAPI');
 

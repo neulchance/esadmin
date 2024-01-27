@@ -743,6 +743,7 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 
 	private _createExtensionHostManager(runningLocation: ExtensionRunningLocation, isInitialStart: boolean, initialActivationEvents: string[]): IExtensionHostManager | null {
 		const extensionHost = this._extensionHostFactory.createExtensionHost(this._runningLocations, runningLocation, isInitialStart);
+		// This is where NativeLocalProcessExtensionHost is created.
 		if (!extensionHost) {
 			return null;
 		}

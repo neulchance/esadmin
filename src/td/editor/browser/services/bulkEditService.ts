@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ICodeEditor } from 'td/editor/browser/editorBrowser';
-import { TextEdit, WorkspaceEdit, WorkspaceEditMetadata, IWorkspaceFileEdit, WorkspaceFileEditOptions, IWorkspaceTextEdit } from 'td/editor/common/languages';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { IProgress, IProgressStep } from 'td/platform/progress/common/progress';
-import { IDisposable } from 'td/base/common/lifecycle';
-import { URI } from 'td/base/common/uri';
-import { isObject } from 'td/base/common/types';
-import { UndoRedoSource } from 'td/platform/undoRedo/common/undoRedo';
-import { CancellationToken } from 'td/base/common/cancellation';
+import {ICodeEditor} from 'td/editor/browser/editorBrowser';
+import {TextEdit, WorkspaceEdit, WorkspaceEditMetadata, IWorkspaceFileEdit, WorkspaceFileEditOptions, IWorkspaceTextEdit} from 'td/editor/common/languages';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {IProgress, IProgressStep} from 'td/platform/progress/common/progress';
+import {IDisposable} from 'td/base/common/lifecycle';
+import {URI} from 'td/base/common/uri';
+import {isObject} from 'td/base/common/types';
+import {UndoRedoSource} from 'td/platform/undoRedo/common/undoRedo';
+import {CancellationToken} from 'td/base/common/cancellation';
 
 export const IBulkEditService = createDecorator<IBulkEditService>('IWorkspaceEditService');
 

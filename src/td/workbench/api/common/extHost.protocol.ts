@@ -61,21 +61,21 @@ import * as notebookCommon from 'td/workbench/contrib/notebook/common/notebookCo
 import {CellExecutionUpdateType} from 'td/workbench/contrib/notebook/common/notebookExecutionService';
 import {ICellExecutionComplete, ICellExecutionStateUpdate} from 'td/workbench/contrib/notebook/common/notebookExecutionStateService';
 import {ICellRange} from 'td/workbench/contrib/notebook/common/notebookRange';
-import {InputValidationType} from 'td/workbench/contrib/scm/common/scm';
-import {IWorkspaceSymbol, NotebookPriorityInfo} from 'td/workbench/contrib/search/common/search';
+// import {InputValidationType} from 'td/workbench/contrib/scm/common/scm';
+// import {IWorkspaceSymbol, NotebookPriorityInfo} from 'td/workbench/contrib/search/common/search';
 import {IRawClosedNotebookFileMatch} from 'td/workbench/contrib/search/common/searchNotebookHelpers';
-import {IKeywordRecognitionEvent, ISpeechProviderMetadata, ISpeechToTextEvent} from 'td/workbench/contrib/speech/common/speechService';
+// import {IKeywordRecognitionEvent, ISpeechProviderMetadata, ISpeechToTextEvent} from 'td/workbench/contrib/speech/common/speechService';
 import {CoverageDetails, ExtensionRunTestsRequest, ICallProfileRunHandler, IFileCoverage, ISerializedTestResults, IStartControllerTests, ITestItem, ITestMessage, ITestRunProfile, ITestRunTask, ResolvedTestRunRequest, TestResultState, TestsDiffOp} from 'td/workbench/contrib/testing/common/testTypes';
-import {Timeline, TimelineChangeEvent, TimelineOptions, TimelineProviderDescriptor} from 'td/workbench/contrib/timeline/common/timeline';
-import {TypeHierarchyItem} from 'td/workbench/contrib/typeHierarchy/common/typeHierarchy';
-import {RelatedInformationResult, RelatedInformationType} from 'td/workbench/services/aiRelatedInformation/common/aiRelatedInformation';
+// import {Timeline, TimelineChangeEvent, TimelineOptions, TimelineProviderDescriptor} from 'td/workbench/contrib/timeline/common/timeline';
+// import {TypeHierarchyItem} from 'td/workbench/contrib/typeHierarchy/common/typeHierarchy';
+// import {RelatedInformationResult, RelatedInformationType} from 'td/workbench/services/aiRelatedInformation/common/aiRelatedInformation';
 import {AuthenticationSession, AuthenticationSessionsChangeEvent, IAuthenticationCreateSessionOptions} from 'td/workbench/services/authentication/common/authentication';
 import {EditorGroupColumn} from 'td/workbench/services/editor/common/editorGroupColumn';
 import {IExtensionDescriptionDelta, IStaticWorkspaceData} from 'td/workbench/services/extensions/common/extensionHostProtocol';
 import {IResolveAuthorityResult} from 'td/workbench/services/extensions/common/extensionHostProxy';
 import {ActivationKind, ExtensionActivationReason, MissingExtensionDependency} from 'td/workbench/services/extensions/common/extensions';
 import {Dto, IRPCProtocol, SerializableObjectWithBuffers, createProxyIdentifier} from 'td/workbench/services/extensions/common/proxyIdentifier';
-import {ILanguageStatus} from 'td/workbench/services/languageStatus/common/languageStatusService';
+// import {ILanguageStatus} from 'td/workbench/services/languageStatus/common/languageStatusService';
 import {OutputChannelUpdateMode} from 'td/workbench/services/output/common/output';
 import {CandidatePort} from 'td/workbench/services/remote/common/tunnelModel';
 import {ITextQueryBuilderOptions} from 'td/workbench/services/search/common/queryBuilder';
@@ -441,7 +441,7 @@ export interface MainThreadLanguageFeaturesShape extends IDisposable {
 export interface MainThreadLanguagesShape extends IDisposable {
 	$changeLanguage(resource: UriComponents, languageId: string): Promise<void>;
 	$tokensAtPosition(resource: UriComponents, position: IPosition): Promise<undefined | { type: StandardTokenType; range: IRange }>;
-	$setLanguageStatus(handle: number, status: ILanguageStatus): void;
+	// $setLanguageStatus(handle: number, status: ILanguageStatus): void;
 	$removeLanguageStatus(handle: number): void;
 }
 
@@ -1155,11 +1155,11 @@ export interface MainThreadInteractiveShape extends IDisposable {
 }
 
 export interface MainThreadSpeechShape extends IDisposable {
-	$registerProvider(handle: number, identifier: string, metadata: ISpeechProviderMetadata): void;
+	// $registerProvider(handle: number, identifier: string, metadata: ISpeechProviderMetadata): void;
 	$unregisterProvider(handle: number): void;
 
-	$emitSpeechToTextEvent(session: number, event: ISpeechToTextEvent): void;
-	$emitKeywordRecognitionEvent(session: number, event: IKeywordRecognitionEvent): void;
+	// $emitSpeechToTextEvent(session: number, event: ISpeechToTextEvent): void;
+	// $emitKeywordRecognitionEvent(session: number, event: IKeywordRecognitionEvent): void;
 }
 
 export interface ExtHostSpeechShape {
@@ -1508,7 +1508,7 @@ export interface MainThreadSCMShape extends IDisposable {
 	$setInputBoxPlaceholder(sourceControlHandle: number, placeholder: string): void;
 	$setInputBoxEnablement(sourceControlHandle: number, enabled: boolean): void;
 	$setInputBoxVisibility(sourceControlHandle: number, visible: boolean): void;
-	$showValidationMessage(sourceControlHandle: number, message: string | IMarkdownString, type: InputValidationType): void;
+	// $showValidationMessage(sourceControlHandle: number, message: string | IMarkdownString, type: InputValidationType): void;
 	$setValidationProviderIsEnabled(sourceControlHandle: number, enabled: boolean): void;
 
 	$onDidChangeHistoryProviderCurrentHistoryItemGroup(sourceControlHandle: number, historyItemGroup: SCMHistoryItemGroupDto | undefined): void;
@@ -1598,9 +1598,9 @@ export interface MainThreadTunnelServiceShape extends IDisposable {
 }
 
 export interface MainThreadTimelineShape extends IDisposable {
-	$registerTimelineProvider(provider: TimelineProviderDescriptor): void;
+	// $registerTimelineProvider(provider: TimelineProviderDescriptor): void;
 	$unregisterTimelineProvider(source: string): void;
-	$emitTimelineChangeEvent(e: TimelineChangeEvent | undefined): void;
+	// $emitTimelineChangeEvent(e: TimelineChangeEvent | undefined): void;
 }
 
 // -- extension host
@@ -1774,12 +1774,12 @@ export interface ExtHostAuthenticationShape {
 }
 
 export interface ExtHostAiRelatedInformationShape {
-	$provideAiRelatedInformation(handle: number, query: string, token: CancellationToken): Promise<RelatedInformationResult[]>;
+	// $provideAiRelatedInformation(handle: number, query: string, token: CancellationToken): Promise<RelatedInformationResult[]>;
 }
 
 export interface MainThreadAiRelatedInformationShape {
-	$getAiRelatedInformation(query: string, types: RelatedInformationType[]): Promise<RelatedInformationResult[]>;
-	$registerAiRelatedInformationProvider(handle: number, type: RelatedInformationType): void;
+	// $getAiRelatedInformation(query: string, types: RelatedInformationType[]): Promise<RelatedInformationResult[]>;
+	// $registerAiRelatedInformationProvider(handle: number, type: RelatedInformationType): void;
 	$unregisterAiRelatedInformationProvider(handle: number): void;
 }
 
@@ -1944,8 +1944,8 @@ export type IInlayHintsDto = CachedSession<{ hints: IInlayHintDto[] }>;
 export type ILocationDto = Dto<languages.Location>;
 export type ILocationLinkDto = Dto<languages.LocationLink>;
 
-export type IWorkspaceSymbolDto = CachedSessionItem<Dto<IWorkspaceSymbol>>;
-export type IWorkspaceSymbolsDto = CachedSession<{ symbols: IWorkspaceSymbolDto[] }>;
+// export type IWorkspaceSymbolDto = CachedSessionItem<Dto<IWorkspaceSymbol>>;
+// export type IWorkspaceSymbolsDto = CachedSession<{ symbols: IWorkspaceSymbolDto[] }>;
 
 export interface IWorkspaceEditEntryMetadataDto {
 	needsConfirmation: boolean;
@@ -2043,7 +2043,7 @@ export interface IInlineValueContextDto {
 	stoppedLocation: IRange;
 }
 
-export type ITypeHierarchyItemDto = Dto<TypeHierarchyItem>;
+// export type ITypeHierarchyItemDto = Dto<TypeHierarchyItem>;
 
 export interface IPasteEditProviderMetadataDto {
 	readonly supportsCopy: boolean;
@@ -2096,8 +2096,8 @@ export interface ExtHostLanguageFeaturesShape {
 	$provideDocumentRangeFormattingEdits(handle: number, resource: UriComponents, range: IRange, options: languages.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[] | undefined>;
 	$provideDocumentRangesFormattingEdits(handle: number, resource: UriComponents, range: IRange[], options: languages.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[] | undefined>;
 	$provideOnTypeFormattingEdits(handle: number, resource: UriComponents, position: IPosition, ch: string, options: languages.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[] | undefined>;
-	$provideWorkspaceSymbols(handle: number, search: string, token: CancellationToken): Promise<IWorkspaceSymbolsDto>;
-	$resolveWorkspaceSymbol(handle: number, symbol: IWorkspaceSymbolDto, token: CancellationToken): Promise<IWorkspaceSymbolDto | undefined>;
+	// $provideWorkspaceSymbols(handle: number, search: string, token: CancellationToken): Promise<IWorkspaceSymbolsDto>;
+	// $resolveWorkspaceSymbol(handle: number, symbol: IWorkspaceSymbolDto, token: CancellationToken): Promise<IWorkspaceSymbolDto | undefined>;
 	$releaseWorkspaceSymbols(handle: number, id: number): void;
 	$provideRenameEdits(handle: number, resource: UriComponents, position: IPosition, newName: string, token: CancellationToken): Promise<IWorkspaceEditDto & { rejectReason?: string } | undefined>;
 	$resolveRenameLocation(handle: number, resource: UriComponents, position: IPosition, token: CancellationToken): Promise<languages.RenameLocation | undefined>;
@@ -2128,9 +2128,9 @@ export interface ExtHostLanguageFeaturesShape {
 	$provideCallHierarchyOutgoingCalls(handle: number, sessionId: string, itemId: string, token: CancellationToken): Promise<IOutgoingCallDto[] | undefined>;
 	$releaseCallHierarchy(handle: number, sessionId: string): void;
 	$setWordDefinitions(wordDefinitions: ILanguageWordDefinitionDto[]): void;
-	$prepareTypeHierarchy(handle: number, resource: UriComponents, position: IPosition, token: CancellationToken): Promise<ITypeHierarchyItemDto[] | undefined>;
-	$provideTypeHierarchySupertypes(handle: number, sessionId: string, itemId: string, token: CancellationToken): Promise<ITypeHierarchyItemDto[] | undefined>;
-	$provideTypeHierarchySubtypes(handle: number, sessionId: string, itemId: string, token: CancellationToken): Promise<ITypeHierarchyItemDto[] | undefined>;
+	// $prepareTypeHierarchy(handle: number, resource: UriComponents, position: IPosition, token: CancellationToken): Promise<ITypeHierarchyItemDto[] | undefined>;
+	// $provideTypeHierarchySupertypes(handle: number, sessionId: string, itemId: string, token: CancellationToken): Promise<ITypeHierarchyItemDto[] | undefined>;
+	// $provideTypeHierarchySubtypes(handle: number, sessionId: string, itemId: string, token: CancellationToken): Promise<ITypeHierarchyItemDto[] | undefined>;
 	$releaseTypeHierarchy(handle: number, sessionId: string): void;
 	$provideDocumentOnDropEdits(handle: number, requestId: number, resource: UriComponents, position: IPosition, dataTransferDto: DataTransferDTO, token: CancellationToken): Promise<IDocumentOnDropEditDto | undefined>;
 	$provideMappedEdits(handle: number, document: UriComponents, codeBlocks: string[], context: IMappedEditsContextDto, token: CancellationToken): Promise<IWorkspaceEditDto | null>;
@@ -2494,7 +2494,7 @@ export interface ExtHostNotebookShape extends ExtHostNotebookDocumentsAndEditors
 	$notebookToData(handle: number, data: SerializableObjectWithBuffers<NotebookDataDto>, token: CancellationToken): Promise<VSBuffer>;
 	$saveNotebook(handle: number, uri: UriComponents, versionId: number, options: files.IWriteFileOptions, token: CancellationToken): Promise<INotebookPartialFileStatsWithMetadata>;
 
-	$searchInNotebooks(handle: number, textQuery: search.ITextQuery, viewTypeFileTargets: NotebookPriorityInfo[], otherViewTypeFileTargets: NotebookPriorityInfo[], token: CancellationToken): Promise<{ results: IRawClosedNotebookFileMatch[]; limitHit: boolean }>;
+	// $searchInNotebooks(handle: number, textQuery: search.ITextQuery, viewTypeFileTargets: NotebookPriorityInfo[], otherViewTypeFileTargets: NotebookPriorityInfo[], token: CancellationToken): Promise<{ results: IRawClosedNotebookFileMatch[]; limitHit: boolean }>;
 }
 
 export interface ExtHostNotebookDocumentSaveParticipantShape {
@@ -2624,7 +2624,7 @@ export interface ExtHostTunnelServiceShape {
 }
 
 export interface ExtHostTimelineShape {
-	$getTimeline(source: string, uri: UriComponents, options: TimelineOptions, token: CancellationToken): Promise<Dto<Timeline> | undefined>;
+	// $getTimeline(source: string, uri: UriComponents, options: TimelineOptions, token: CancellationToken): Promise<Dto<Timeline> | undefined>;
 }
 
 export const enum ExtHostTestingResource {
@@ -2735,7 +2735,7 @@ export interface MainThreadTestingShape {
 // --- proxy identifiers
 
 export const MainContext = {
-	MainThreadAuthentication: createProxyIdentifier<MainThreadAuthenticationShape>('MainThreadAuthentication'),
+	// MainThreadAuthentication: createProxyIdentifier<MainThreadAuthenticationShape>('MainThreadAuthentication'),
 	MainThreadBulkEdits: createProxyIdentifier<MainThreadBulkEditsShape>('MainThreadBulkEdits'),
 	MainThreadChatProvider: createProxyIdentifier<MainThreadChatProviderShape>('MainThreadChatProvider'),
 	MainThreadChatAgents2: createProxyIdentifier<MainThreadChatAgentsShape2>('MainThreadChatAgents2'),

@@ -8,15 +8,15 @@ import * as https from 'https';
 import * as tls from 'tls';
 import * as net from 'net';
 
-import { IExtHostWorkspaceProvider } from 'td/workbench/api/common/extHostWorkspace';
-import { ExtHostConfigProvider } from 'td/workbench/api/common/extHostConfiguration';
-import { MainThreadTelemetryShape } from 'td/workbench/api/common/extHost.protocol';
-import { IExtensionHostInitData } from 'td/workbench/services/extensions/common/extensionHostProtocol';
-import { ExtHostExtensionService } from 'td/workbench/api/node/extHostExtensionService';
-import { URI } from 'td/base/common/uri';
-import { ILogService, LogLevel as LogServiceLevel } from 'td/platform/log/common/log';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { LogLevel, createHttpPatch, createProxyResolver, createTlsPatch, ProxySupportSetting, ProxyAgentParams, createNetPatch, loadSystemCertificates } from '@vscode/proxy-agent';
+import {IExtHostWorkspaceProvider} from 'td/workbench/api/common/extHostWorkspace';
+import {ExtHostConfigProvider} from 'td/workbench/api/common/extHostConfiguration';
+import {MainThreadTelemetryShape} from 'td/workbench/api/common/extHost.protocol';
+import {IExtensionHostInitData} from 'td/workbench/services/extensions/common/extensionHostProtocol';
+import {ExtHostExtensionService} from 'td/workbench/api/node/extHostExtensionService';
+import {URI} from 'td/base/common/uri';
+import {ILogService, LogLevel as LogServiceLevel} from 'td/platform/log/common/log';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {LogLevel, createHttpPatch, createProxyResolver, createTlsPatch, ProxySupportSetting, ProxyAgentParams, createNetPatch, loadSystemCertificates} from '@vscode/proxy-agent';
 
 const systemCertificatesV2Default = false;
 
@@ -59,7 +59,7 @@ export function connectProxyResolver(
 		loadAdditionalCertificates: async () => {
 			const promises: Promise<string[]>[] = [];
 			if (initData.remote.isRemote) {
-				promises.push(loadSystemCertificates({ log: extHostLogService }));
+				promises.push(loadSystemCertificates({log: extHostLogService}));
 			}
 			if (doUseHostProxy) {
 				extHostLogService.trace('ProxyResolver#loadAdditionalCertificates: Loading certificates from main process');
@@ -121,7 +121,7 @@ function configureModuleLoading(extensionService: ExtHostExtensionService, looku
 				}
 				if (!cache[request]) {
 					const mod = lookup[request];
-					cache[request] = <any>{ ...mod }; // Copy to work around #93167.
+					cache[request] = <any>{...mod}; // Copy to work around #93167.
 				}
 				return cache[request];
 			};

@@ -5,6 +5,9 @@
 
 //#region --- editor/workbench core
 
+// import 'td/editor/editor.all';
+
+import 'td/workbench/api/browser/extensionHost.contribution';
 import 'td/workbench/browser/workbench.contribution';
 
 //#endregion
@@ -54,7 +57,7 @@ import 'td/workbench/services/model/common/modelService';
 import 'td/workbench/services/quickinput/browser/quickInputService';
 import 'td/workbench/services/userDataSync/browser/userDataSyncWorkbenchService';
 import 'td/workbench/services/activity/browser/activityService';
-
+import 'td/workbench/services/timer/electron-sandbox/timerService';
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {ExtensionGalleryService} from 'td/platform/extensionManagement/common/extensionGalleryService';
@@ -113,6 +116,9 @@ import 'td/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 import 'td/workbench/contrib/output/browser/output.contribution';
 
 // import 'vs/workbench/contrib/output/browser/outputView';
+
+// Bulk Edit
+// import 'td/workbench/contrib/bulkEdit/browser/bulkEditService';
 
 
 //#endregion

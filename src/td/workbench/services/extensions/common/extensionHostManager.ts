@@ -113,7 +113,8 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		// 	kind: extensionHostKindToString(this.kind)
 		// };
 		// this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', startingTelemetryEvent);
-
+		
+		// this._extensionHost is NativeLocalProcessExtensionHost(file:localProcessExtensionHost.ts)
 		this._proxy = this._extensionHost.start().then(
 			(protocol) => {
 				this._hasStarted = true;

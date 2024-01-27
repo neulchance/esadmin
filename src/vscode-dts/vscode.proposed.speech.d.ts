@@ -5,8 +5,6 @@
 
 declare module 'vscode' {
 
-	// todo@bpasero work in progress speech API
-
 	export enum SpeechToTextStatus {
 		Started = 1,
 		Recognizing = 2,
@@ -23,27 +21,15 @@ declare module 'vscode' {
 		readonly onDidChange: Event<SpeechToTextEvent>;
 	}
 
-	export enum KeywordRecognitionStatus {
-		Recognized = 1,
-		Stopped = 2
-	}
-
-	export interface KeywordRecognitionEvent {
-		readonly status: KeywordRecognitionStatus;
-		readonly text?: string;
-	}
-
-	export interface KeywordRecognitionSession extends Disposable {
-		readonly onDidChange: Event<KeywordRecognitionEvent>;
-	}
-
 	export interface SpeechProvider {
 		provideSpeechToTextSession(token: CancellationToken): SpeechToTextSession;
-		provideKeywordRecognitionSession(token: CancellationToken): KeywordRecognitionSession;
 	}
 
 	export namespace speech {
 
+		/**
+		 * TODO@bpasero work in progress speech provider API
+		 */
 		export function registerSpeechProvider(id: string, provider: SpeechProvider): Disposable;
 	}
 }

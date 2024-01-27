@@ -266,6 +266,11 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 	}
 
 	public set<T, R extends T>(identifier: ProxyIdentifier<T>, value: R): R {
+		if (!identifier.nid) {
+			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
+			console.log(`${red}FIGUREOUTs identifier${done}`)
+			console.log(identifier)
+		}
 		this._locals[identifier.nid] = value;
 		return value;
 	}

@@ -3,110 +3,110 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationTokenSource } from 'td/base/common/cancellation';
+import {CancellationTokenSource} from 'td/base/common/cancellation';
 import * as errors from 'td/base/common/errors';
-import { Emitter, Event } from 'td/base/common/event';
-import { combinedDisposable } from 'td/base/common/lifecycle';
-import { Schemas, matchesScheme } from 'td/base/common/network';
+import {Emitter, Event} from 'td/base/common/event';
+import {combinedDisposable} from 'td/base/common/lifecycle';
+import {Schemas, matchesScheme} from 'td/base/common/network';
 import Severity from 'td/base/common/severity';
-import { URI } from 'td/base/common/uri';
-import { TextEditorCursorStyle } from 'td/editor/common/config/editorOptions';
-import { score } from 'td/editor/common/languageSelector';
+import {URI} from 'td/base/common/uri';
+import {TextEditorCursorStyle} from 'td/editor/common/config/editorOptions';
+import {score} from 'td/editor/common/languageSelector';
 import * as languageConfiguration from 'td/editor/common/languages/languageConfiguration';
-import { OverviewRulerLane } from 'td/editor/common/model';
-import { ExtensionIdentifierSet, IExtensionDescription } from 'td/platform/extensions/common/extensions';
+import {OverviewRulerLane} from 'td/editor/common/model';
+import {ExtensionIdentifierSet, IExtensionDescription} from 'td/platform/extensions/common/extensions';
 import * as files from 'td/platform/files/common/files';
-import { ServicesAccessor } from 'td/platform/instantiation/common/instantiation';
-import { ILogService, ILoggerService, LogLevel } from 'td/platform/log/common/log';
-import { getRemoteName } from 'td/platform/remote/common/remoteHosts';
-import { TelemetryTrustedValue } from 'td/platform/telemetry/common/telemetryUtils';
-import { EditSessionIdentityMatch } from 'td/platform/workspace/common/editSessions';
-import { CandidatePortSource, ExtHostContext, ExtHostLogLevelServiceShape, MainContext } from 'td/workbench/api/common/extHost.protocol';
-import { ExtHostRelatedInformation } from 'td/workbench/api/common/extHostAiRelatedInformation';
-import { ExtHostApiCommands } from 'td/workbench/api/common/extHostApiCommands';
-import { IExtHostApiDeprecationService } from 'td/workbench/api/common/extHostApiDeprecationService';
-import { ExtHostAuthentication } from 'td/workbench/api/common/extHostAuthentication';
-import { ExtHostBulkEdits } from 'td/workbench/api/common/extHostBulkEdits';
-import { ExtHostChat } from 'td/workbench/api/common/extHostChat';
-import { ExtHostChatAgents2 } from 'td/workbench/api/common/extHostChatAgents2';
-import { ExtHostChatProvider } from 'td/workbench/api/common/extHostChatProvider';
-import { ExtHostChatVariables } from 'td/workbench/api/common/extHostChatVariables';
-import { ExtHostClipboard } from 'td/workbench/api/common/extHostClipboard';
-import { ExtHostEditorInsets } from 'td/workbench/api/common/extHostCodeInsets';
-import { IExtHostCommands } from 'td/workbench/api/common/extHostCommands';
-import { createExtHostComments } from 'td/workbench/api/common/extHostComments';
-import { ExtHostConfigProvider, IExtHostConfiguration } from 'td/workbench/api/common/extHostConfiguration';
-import { ExtHostCustomEditors } from 'td/workbench/api/common/extHostCustomEditors';
-import { IExtHostDebugService } from 'td/workbench/api/common/extHostDebugService';
-import { IExtHostDecorations } from 'td/workbench/api/common/extHostDecorations';
-import { ExtHostDiagnostics } from 'td/workbench/api/common/extHostDiagnostics';
-import { ExtHostDialogs } from 'td/workbench/api/common/extHostDialogs';
-import { ExtHostDocumentContentProvider } from 'td/workbench/api/common/extHostDocumentContentProviders';
-import { ExtHostDocumentSaveParticipant } from 'td/workbench/api/common/extHostDocumentSaveParticipant';
-import { ExtHostDocuments } from 'td/workbench/api/common/extHostDocuments';
-import { IExtHostDocumentsAndEditors } from 'td/workbench/api/common/extHostDocumentsAndEditors';
-import { IExtHostEditorTabs } from 'td/workbench/api/common/extHostEditorTabs';
-import { ExtHostAiEmbeddingVector } from 'td/workbench/api/common/extHostEmbeddingVector';
-import { Extension, IExtHostExtensionService } from 'td/workbench/api/common/extHostExtensionService';
-import { ExtHostFileSystem } from 'td/workbench/api/common/extHostFileSystem';
-import { IExtHostConsumerFileSystem } from 'td/workbench/api/common/extHostFileSystemConsumer';
-import { ExtHostFileSystemEventService, FileSystemWatcherCreateOptions } from 'td/workbench/api/common/extHostFileSystemEventService';
-import { IExtHostFileSystemInfo } from 'td/workbench/api/common/extHostFileSystemInfo';
-import { IExtHostInitDataService } from 'td/workbench/api/common/extHostInitDataService';
-import { ExtHostInteractiveEditor } from 'td/workbench/api/common/extHostInlineChat';
-import { ExtHostInteractive } from 'td/workbench/api/common/extHostInteractive';
-import { ExtHostIssueReporter } from 'td/workbench/api/common/extHostIssueReporter';
-import { ExtHostLabelService } from 'td/workbench/api/common/extHostLabelService';
-import { ExtHostLanguageFeatures } from 'td/workbench/api/common/extHostLanguageFeatures';
-import { ExtHostLanguages } from 'td/workbench/api/common/extHostLanguages';
-import { IExtHostLocalizationService } from 'td/workbench/api/common/extHostLocalizationService';
-import { IExtHostManagedSockets } from 'td/workbench/api/common/extHostManagedSockets';
-import { ExtHostMessageService } from 'td/workbench/api/common/extHostMessageService';
-import { ExtHostNotebookController } from 'td/workbench/api/common/extHostNotebook';
-import { ExtHostNotebookDocumentSaveParticipant } from 'td/workbench/api/common/extHostNotebookDocumentSaveParticipant';
-import { ExtHostNotebookDocuments } from 'td/workbench/api/common/extHostNotebookDocuments';
-import { ExtHostNotebookEditors } from 'td/workbench/api/common/extHostNotebookEditors';
-import { ExtHostNotebookKernels } from 'td/workbench/api/common/extHostNotebookKernels';
-import { ExtHostNotebookRenderers } from 'td/workbench/api/common/extHostNotebookRenderers';
-import { IExtHostOutputService } from 'td/workbench/api/common/extHostOutput';
-import { ExtHostProfileContentHandlers } from 'td/workbench/api/common/extHostProfileContentHandler';
-import { ExtHostProgress } from 'td/workbench/api/common/extHostProgress';
-import { ExtHostQuickDiff } from 'td/workbench/api/common/extHostQuickDiff';
-import { createExtHostQuickOpen } from 'td/workbench/api/common/extHostQuickOpen';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { ExtHostSCM } from 'td/workbench/api/common/extHostSCM';
-import { IExtHostSearch } from 'td/workbench/api/common/extHostSearch';
-import { IExtHostSecretState } from 'td/workbench/api/common/extHostSecretState';
-import { ExtHostShare } from 'td/workbench/api/common/extHostShare';
-import { ExtHostSpeech } from 'td/workbench/api/common/extHostSpeech';
-import { ExtHostStatusBar } from 'td/workbench/api/common/extHostStatusBar';
-import { IExtHostStorage } from 'td/workbench/api/common/extHostStorage';
-import { IExtensionStoragePaths } from 'td/workbench/api/common/extHostStoragePaths';
-import { IExtHostTask } from 'td/workbench/api/common/extHostTask';
-import { ExtHostTelemetryLogger, IExtHostTelemetry, isNewAppInstall } from 'td/workbench/api/common/extHostTelemetry';
-import { IExtHostTerminalService } from 'td/workbench/api/common/extHostTerminalService';
-import { ExtHostTesting } from 'td/workbench/api/common/extHostTesting';
-import { ExtHostEditors } from 'td/workbench/api/common/extHostTextEditors';
-import { ExtHostTheming } from 'td/workbench/api/common/extHostTheming';
-import { ExtHostTimeline } from 'td/workbench/api/common/extHostTimeline';
-import { ExtHostTreeViews } from 'td/workbench/api/common/extHostTreeViews';
-import { IExtHostTunnelService } from 'td/workbench/api/common/extHostTunnelService';
+import {ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
+import {ILogService, ILoggerService, LogLevel} from 'td/platform/log/common/log';
+import {getRemoteName} from 'td/platform/remote/common/remoteHosts';
+import {TelemetryTrustedValue} from 'td/platform/telemetry/common/telemetryUtils';
+import {EditSessionIdentityMatch} from 'td/platform/workspace/common/editSessions';
+import {CandidatePortSource, ExtHostContext, ExtHostLogLevelServiceShape, MainContext} from 'td/workbench/api/common/extHost.protocol';
+import {ExtHostRelatedInformation} from 'td/workbench/api/common/extHostAiRelatedInformation';
+import {ExtHostApiCommands} from 'td/workbench/api/common/extHostApiCommands';
+import {IExtHostApiDeprecationService} from 'td/workbench/api/common/extHostApiDeprecationService';
+// import {ExtHostAuthentication} from 'td/workbench/api/common/extHostAuthentication';
+import {ExtHostBulkEdits} from 'td/workbench/api/common/extHostBulkEdits';
+import {ExtHostChat} from 'td/workbench/api/common/extHostChat';
+import {ExtHostChatAgents2} from 'td/workbench/api/common/extHostChatAgents2';
+import {ExtHostChatProvider} from 'td/workbench/api/common/extHostChatProvider';
+import {ExtHostChatVariables} from 'td/workbench/api/common/extHostChatVariables';
+import {ExtHostClipboard} from 'td/workbench/api/common/extHostClipboard';
+import {ExtHostEditorInsets} from 'td/workbench/api/common/extHostCodeInsets';
+import {IExtHostCommands} from 'td/workbench/api/common/extHostCommands';
+import {createExtHostComments} from 'td/workbench/api/common/extHostComments';
+import {ExtHostConfigProvider, IExtHostConfiguration} from 'td/workbench/api/common/extHostConfiguration';
+import {ExtHostCustomEditors} from 'td/workbench/api/common/extHostCustomEditors';
+import {IExtHostDebugService} from 'td/workbench/api/common/extHostDebugService';
+import {IExtHostDecorations} from 'td/workbench/api/common/extHostDecorations';
+import {ExtHostDiagnostics} from 'td/workbench/api/common/extHostDiagnostics';
+import {ExtHostDialogs} from 'td/workbench/api/common/extHostDialogs';
+import {ExtHostDocumentContentProvider} from 'td/workbench/api/common/extHostDocumentContentProviders';
+import {ExtHostDocumentSaveParticipant} from 'td/workbench/api/common/extHostDocumentSaveParticipant';
+import {ExtHostDocuments} from 'td/workbench/api/common/extHostDocuments';
+import {IExtHostDocumentsAndEditors} from 'td/workbench/api/common/extHostDocumentsAndEditors';
+import {IExtHostEditorTabs} from 'td/workbench/api/common/extHostEditorTabs';
+import {ExtHostAiEmbeddingVector} from 'td/workbench/api/common/extHostEmbeddingVector';
+import {Extension, IExtHostExtensionService} from 'td/workbench/api/common/extHostExtensionService';
+import {ExtHostFileSystem} from 'td/workbench/api/common/extHostFileSystem';
+import {IExtHostConsumerFileSystem} from 'td/workbench/api/common/extHostFileSystemConsumer';
+import {ExtHostFileSystemEventService, FileSystemWatcherCreateOptions} from 'td/workbench/api/common/extHostFileSystemEventService';
+import {IExtHostFileSystemInfo} from 'td/workbench/api/common/extHostFileSystemInfo';
+import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
+import {ExtHostInteractiveEditor} from 'td/workbench/api/common/extHostInlineChat';
+import {ExtHostInteractive} from 'td/workbench/api/common/extHostInteractive';
+import {ExtHostIssueReporter} from 'td/workbench/api/common/extHostIssueReporter';
+import {ExtHostLabelService} from 'td/workbench/api/common/extHostLabelService';
+import {ExtHostLanguageFeatures} from 'td/workbench/api/common/extHostLanguageFeatures';
+import {ExtHostLanguages} from 'td/workbench/api/common/extHostLanguages';
+import {IExtHostLocalizationService} from 'td/workbench/api/common/extHostLocalizationService';
+import {IExtHostManagedSockets} from 'td/workbench/api/common/extHostManagedSockets';
+import {ExtHostMessageService} from 'td/workbench/api/common/extHostMessageService';
+import {ExtHostNotebookController} from 'td/workbench/api/common/extHostNotebook';
+import {ExtHostNotebookDocumentSaveParticipant} from 'td/workbench/api/common/extHostNotebookDocumentSaveParticipant';
+import {ExtHostNotebookDocuments} from 'td/workbench/api/common/extHostNotebookDocuments';
+import {ExtHostNotebookEditors} from 'td/workbench/api/common/extHostNotebookEditors';
+import {ExtHostNotebookKernels} from 'td/workbench/api/common/extHostNotebookKernels';
+import {ExtHostNotebookRenderers} from 'td/workbench/api/common/extHostNotebookRenderers';
+import {IExtHostOutputService} from 'td/workbench/api/common/extHostOutput';
+import {ExtHostProfileContentHandlers} from 'td/workbench/api/common/extHostProfileContentHandler';
+import {ExtHostProgress} from 'td/workbench/api/common/extHostProgress';
+import {ExtHostQuickDiff} from 'td/workbench/api/common/extHostQuickDiff';
+import {createExtHostQuickOpen} from 'td/workbench/api/common/extHostQuickOpen';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {ExtHostSCM} from 'td/workbench/api/common/extHostSCM';
+import {IExtHostSearch} from 'td/workbench/api/common/extHostSearch';
+import {IExtHostSecretState} from 'td/workbench/api/common/extHostSecretState';
+import {ExtHostShare} from 'td/workbench/api/common/extHostShare';
+import {ExtHostSpeech} from 'td/workbench/api/common/extHostSpeech';
+import {ExtHostStatusBar} from 'td/workbench/api/common/extHostStatusBar';
+import {IExtHostStorage} from 'td/workbench/api/common/extHostStorage';
+import {IExtensionStoragePaths} from 'td/workbench/api/common/extHostStoragePaths';
+import {IExtHostTask} from 'td/workbench/api/common/extHostTask';
+import {ExtHostTelemetryLogger, IExtHostTelemetry, isNewAppInstall} from 'td/workbench/api/common/extHostTelemetry';
+import {IExtHostTerminalService} from 'td/workbench/api/common/extHostTerminalService';
+import {ExtHostTesting} from 'td/workbench/api/common/extHostTesting';
+import {ExtHostEditors} from 'td/workbench/api/common/extHostTextEditors';
+import {ExtHostTheming} from 'td/workbench/api/common/extHostTheming';
+import {ExtHostTimeline} from 'td/workbench/api/common/extHostTimeline';
+import {ExtHostTreeViews} from 'td/workbench/api/common/extHostTreeViews';
+import {IExtHostTunnelService} from 'td/workbench/api/common/extHostTunnelService';
 import * as typeConverters from 'td/workbench/api/common/extHostTypeConverters';
 import * as extHostTypes from 'td/workbench/api/common/extHostTypes';
-import { ExtHostUriOpeners } from 'td/workbench/api/common/extHostUriOpener';
-import { IURITransformerService } from 'td/workbench/api/common/extHostUriTransformerService';
-import { ExtHostUrls } from 'td/workbench/api/common/extHostUrls';
-import { ExtHostWebviews } from 'td/workbench/api/common/extHostWebview';
-import { ExtHostWebviewPanels } from 'td/workbench/api/common/extHostWebviewPanels';
-import { ExtHostWebviewViews } from 'td/workbench/api/common/extHostWebviewView';
-import { IExtHostWindow } from 'td/workbench/api/common/extHostWindow';
-import { IExtHostWorkspace } from 'td/workbench/api/common/extHostWorkspace';
-import { DebugConfigurationProviderTriggerKind } from 'td/workbench/contrib/debug/common/debug';
-import { ExtensionDescriptionRegistry } from 'td/workbench/services/extensions/common/extensionDescriptionRegistry';
-import { UIKind } from 'td/workbench/services/extensions/common/extensionHostProtocol';
-import { checkProposedApiEnabled, isProposedApiEnabled } from 'td/workbench/services/extensions/common/extensions';
-import { ProxyIdentifier } from 'td/workbench/services/extensions/common/proxyIdentifier';
-import { TextSearchCompleteMessageType } from 'td/workbench/services/search/common/searchExtTypes';
+import {ExtHostUriOpeners} from 'td/workbench/api/common/extHostUriOpener';
+import {IURITransformerService} from 'td/workbench/api/common/extHostUriTransformerService';
+import {ExtHostUrls} from 'td/workbench/api/common/extHostUrls';
+import {ExtHostWebviews} from 'td/workbench/api/common/extHostWebview';
+import {ExtHostWebviewPanels} from 'td/workbench/api/common/extHostWebviewPanels';
+import {ExtHostWebviewViews} from 'td/workbench/api/common/extHostWebviewView';
+import {IExtHostWindow} from 'td/workbench/api/common/extHostWindow';
+import {IExtHostWorkspace} from 'td/workbench/api/common/extHostWorkspace';
+import {DebugConfigurationProviderTriggerKind} from 'td/workbench/contrib/debug/common/debug';
+import {ExtensionDescriptionRegistry} from 'td/workbench/services/extensions/common/extensionDescriptionRegistry';
+import {UIKind} from 'td/workbench/services/extensions/common/extensionHostProtocol';
+import {checkProposedApiEnabled, isProposedApiEnabled} from 'td/workbench/services/extensions/common/extensions';
+import {ProxyIdentifier} from 'td/workbench/services/extensions/common/proxyIdentifier';
+import {TextSearchCompleteMessageType} from 'td/workbench/services/search/common/searchExtTypes';
 import type * as vscode from 'vscode';
 
 export interface IExtensionRegistries {
@@ -196,7 +196,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostProgress = rpcProtocol.set(ExtHostContext.ExtHostProgress, new ExtHostProgress(rpcProtocol.getProxy(MainContext.MainThreadProgress)));
 	const extHostLabelService = rpcProtocol.set(ExtHostContext.ExtHostLabelService, new ExtHostLabelService(rpcProtocol));
 	const extHostTheming = rpcProtocol.set(ExtHostContext.ExtHostTheming, new ExtHostTheming(rpcProtocol));
-	const extHostAuthentication = rpcProtocol.set(ExtHostContext.ExtHostAuthentication, new ExtHostAuthentication(rpcProtocol));
+	// const extHostAuthentication = rpcProtocol.set(ExtHostContext.ExtHostAuthentication, new ExtHostAuthentication(rpcProtocol));
 	const extHostTimeline = rpcProtocol.set(ExtHostContext.ExtHostTimeline, new ExtHostTimeline(rpcProtocol, extHostCommands));
 	const extHostWebviews = rpcProtocol.set(ExtHostContext.ExtHostWebviews, new ExtHostWebviews(rpcProtocol, initData.remote, extHostWorkspace, extHostLogService, extHostApiDeprecation));
 	const extHostWebviewPanels = rpcProtocol.set(ExtHostContext.ExtHostWebviewPanels, new ExtHostWebviewPanels(rpcProtocol, extHostWebviews, extHostWorkspace));
@@ -241,7 +241,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 					try {
 						listener.call(thisArgs, e);
 					} catch (err) {
-						errors.onUnexpectedExternalError(new Error(`[ExtensionListenerError] Extension '${extension.identifier.value}' FAILED to handle event`, { cause: err }));
+						errors.onUnexpectedExternalError(new Error(`[ExtensionListenerError] Extension '${extension.identifier.value}' FAILED to handle event`, {cause: err}));
 						extHostTelemetry.onExtensionError(extension.identifier, err);
 					}
 				});
@@ -282,26 +282,26 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			};
 		})();
 
-		const authentication: typeof vscode.authentication = {
-			getSession(providerId: string, scopes: readonly string[], options?: vscode.AuthenticationGetSessionOptions) {
-				return extHostAuthentication.getSession(extension, providerId, scopes, options as any);
-			},
-			getSessions(providerId: string, scopes: readonly string[]) {
-				checkProposedApiEnabled(extension, 'authGetSessions');
-				return extHostAuthentication.getSessions(extension, providerId, scopes);
-			},
-			// TODO: remove this after GHPR and Codespaces move off of it
-			async hasSession(providerId: string, scopes: readonly string[]) {
-				checkProposedApiEnabled(extension, 'authSession');
-				return !!(await extHostAuthentication.getSession(extension, providerId, scopes, { silent: true } as any));
-			},
-			get onDidChangeSessions(): vscode.Event<vscode.AuthenticationSessionsChangeEvent> {
-				return _asExtensionEvent(extHostAuthentication.onDidChangeSessions);
-			},
-			registerAuthenticationProvider(id: string, label: string, provider: vscode.AuthenticationProvider, options?: vscode.AuthenticationProviderOptions): vscode.Disposable {
-				return extHostAuthentication.registerAuthenticationProvider(id, label, provider, options);
-			}
-		};
+		// const authentication: typeof vscode.authentication = {
+		// 	getSession(providerId: string, scopes: readonly string[], options?: vscode.AuthenticationGetSessionOptions) {
+		// 		return extHostAuthentication.getSession(extension, providerId, scopes, options as any);
+		// 	},
+		// 	getSessions(providerId: string, scopes: readonly string[]) {
+		// 		checkProposedApiEnabled(extension, 'authGetSessions');
+		// 		return extHostAuthentication.getSessions(extension, providerId, scopes);
+		// 	},
+		// 	// TODO: remove this after GHPR and Codespaces move off of it
+		// 	async hasSession(providerId: string, scopes: readonly string[]) {
+		// 		checkProposedApiEnabled(extension, 'authSession');
+		// 		return !!(await extHostAuthentication.getSession(extension, providerId, scopes, {silent: true} as any));
+		// 	},
+		// 	get onDidChangeSessions(): vscode.Event<vscode.AuthenticationSessionsChangeEvent> {
+		// 		return _asExtensionEvent(extHostAuthentication.onDidChangeSessions);
+		// 	},
+		// 	registerAuthenticationProvider(id: string, label: string, provider: vscode.AuthenticationProvider, options?: vscode.AuthenticationProviderOptions): vscode.Disposable {
+		// 		return extHostAuthentication.registerAuthenticationProvider(id, label, provider, options);
+		// 	}
+		// };
 
 		// namespace: commands
 		const commands: typeof vscode.commands = {
@@ -398,7 +398,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				}
 
 				try {
-					return await extHostWindow.asExternalUri(uri, { allowTunneling: !!initData.remote.authority });
+					return await extHostWindow.asExternalUri(uri, {allowTunneling: !!initData.remote.authority});
 				} catch (err) {
 					if (matchesScheme(uri, Schemas.http) || matchesScheme(uri, Schemas.https)) {
 						return uri;
@@ -779,7 +779,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				extHostApiDeprecation.report('window.withScmProgress', extension,
 					`Use 'withProgress' instead.`);
 
-				return extHostProgress.withProgress(extension, { location: extHostTypes.ProgressLocation.SourceControl }, (progress, token) => task({ report(n: number) { /*noop*/ } }));
+				return extHostProgress.withProgress(extension, {location: extHostTypes.ProgressLocation.SourceControl}, (progress, token) => task({report(n: number) { /*noop*/ }}));
 			},
 			withProgress<R>(options: vscode.ProgressOptions, task: (progress: vscode.Progress<{ message?: string; worked?: number }>, token: vscode.CancellationToken) => Thenable<R>) {
 				return extHostProgress.withProgress(extension, options, task);
@@ -1033,7 +1033,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 					uri = uriOrType;
 					await extHostNotebook.openNotebookDocument(uriOrType);
 				} else if (typeof uriOrType === 'string') {
-					uri = URI.revive(await extHostNotebook.createNotebookDocument({ viewType: uriOrType, content }));
+					uri = URI.revive(await extHostNotebook.createNotebookDocument({viewType: uriOrType, content}));
 				} else {
 					throw new Error('Invalid arguments');
 				}
@@ -1211,10 +1211,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get stackFrameFocus() {
 				return extHostDebugService.stackFrameFocus;
 			},
-			registerDebugVisualizationProvider(id, provider) {
-				checkProposedApiEnabled(extension, 'debugVisualization');
-				return extHostDebugService.registerDebugVisualizationProvider(extension, id, provider);
-			},
 			onDidStartDebugSession(listener, thisArg?, disposables?) {
 				return _asExtensionEvent(extHostDebugService.onDidStartDebugSession)(listener, thisArg, disposables);
 			},
@@ -1245,7 +1241,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			},
 			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration, parentSessionOrOptions?: vscode.DebugSession | vscode.DebugSessionOptions) {
 				if (!parentSessionOrOptions || (typeof parentSessionOrOptions === 'object' && 'configuration' in parentSessionOrOptions)) {
-					return extHostDebugService.startDebugging(folder, nameOrConfig, { parentSession: parentSessionOrOptions });
+					return extHostDebugService.startDebugging(folder, nameOrConfig, {parentSession: parentSessionOrOptions});
 				}
 				return extHostDebugService.startDebugging(folder, nameOrConfig, parentSessionOrOptions || {});
 			},
@@ -1324,7 +1320,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 					// We have either rest args which are Array<string | number | boolean> or an array with a single Record<string, any>.
 					// This ensures we get a Record<string | number, any> which will be formatted correctly.
 					const argsFormatted = !params || typeof params[0] !== 'object' ? params : params[0];
-					return extHostLocalization.getMessage(extension.identifier.value, { message: key, args: argsFormatted as Record<string | number, any> | undefined });
+					return extHostLocalization.getMessage(extension.identifier.value, {message: key, args: argsFormatted as Record<string | number, any> | undefined});
 				}
 
 				return extHostLocalization.getMessage(extension.identifier.value, params[0]);
@@ -1413,7 +1409,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			version: initData.version,
 			// namespaces
 			ai,
-			authentication,
+			// authentication,
 			commands,
 			comments,
 			chat,
@@ -1469,7 +1465,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			DebugAdapterServer: extHostTypes.DebugAdapterServer,
 			DebugConfigurationProviderTriggerKind: DebugConfigurationProviderTriggerKind,
 			DebugConsoleMode: extHostTypes.DebugConsoleMode,
-			DebugVisualization: extHostTypes.DebugVisualization,
 			DecorationRangeBehavior: extHostTypes.DecorationRangeBehavior,
 			Diagnostic: extHostTypes.Diagnostic,
 			DiagnosticRelatedInformation: extHostTypes.DiagnosticRelatedInformation,
@@ -1632,8 +1627,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			StackFrameFocus: extHostTypes.StackFrameFocus,
 			ThreadFocus: extHostTypes.ThreadFocus,
 			RelatedInformationType: extHostTypes.RelatedInformationType,
-			SpeechToTextStatus: extHostTypes.SpeechToTextStatus,
-			KeywordRecognitionStatus: extHostTypes.KeywordRecognitionStatus
+			SpeechToTextStatus: extHostTypes.SpeechToTextStatus
 		};
 	};
 }

@@ -29,6 +29,9 @@ import {ExtHostVariableResolverProviderService, IExtHostVariableResolverProvider
 import {ExtHostLocalizationService, IExtHostLocalizationService} from 'td/workbench/api/common/extHostLocalizationService';
 import {ExtHostManagedSockets, IExtHostManagedSockets} from 'td/workbench/api/common/extHostManagedSockets';
 
+const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
+console.log(`${blue}FIGUREOUTs extHost.common.services.ts${done}`)
+
 registerSingleton(IExtHostLocalizationService, ExtHostLocalizationService, InstantiationType.Delayed);
 registerSingleton(ILoggerService, ExtHostLoggerService, InstantiationType.Delayed);
 registerSingleton(IExtHostApiDeprecationService, ExtHostApiDeprecationService, InstantiationType.Delayed);
