@@ -3,36 +3,36 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { delta as arrayDelta, mapArrayOrNot } from 'td/base/common/arrays';
-import { Barrier } from 'td/base/common/async';
-import { CancellationToken } from 'td/base/common/cancellation';
-import { AsyncEmitter, Emitter, Event } from 'td/base/common/event';
-import { toDisposable } from 'td/base/common/lifecycle';
-import { TernarySearchTree } from 'td/base/common/ternarySearchTree';
-import { Schemas } from 'td/base/common/network';
-import { Counter } from 'td/base/common/numbers';
-import { basename, basenameOrAuthority, dirname, ExtUri, relativePath } from 'td/base/common/resources';
-import { compare } from 'td/base/common/strings';
-import { URI, UriComponents } from 'td/base/common/uri';
-import { localize } from 'td/nls';
-import { ExtensionIdentifier, IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { FileSystemProviderCapabilities } from 'td/platform/files/common/files';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { ILogService } from 'td/platform/log/common/log';
-import { Severity } from 'td/platform/notification/common/notification';
-import { EditSessionIdentityMatch } from 'td/platform/workspace/common/editSessions';
-import { Workspace, WorkspaceFolder } from 'td/platform/workspace/common/workspace';
-import { IExtHostFileSystemInfo } from 'td/workbench/api/common/extHostFileSystemInfo';
-import { IExtHostInitDataService } from 'td/workbench/api/common/extHostInitDataService';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { GlobPattern } from 'td/workbench/api/common/extHostTypeConverters';
-import { Range } from 'td/workbench/api/common/extHostTypes';
-import { IURITransformerService } from 'td/workbench/api/common/extHostUriTransformerService';
-import { ITextQueryBuilderOptions } from 'td/workbench/services/search/common/queryBuilder';
-import { IRawFileMatch2, ITextSearchResult, resultIsMatch } from 'td/workbench/services/search/common/search';
+import {delta as arrayDelta, mapArrayOrNot} from 'td/base/common/arrays';
+import {Barrier} from 'td/base/common/async';
+import {CancellationToken} from 'td/base/common/cancellation';
+import {AsyncEmitter, Emitter, Event} from 'td/base/common/event';
+import {toDisposable} from 'td/base/common/lifecycle';
+import {TernarySearchTree} from 'td/base/common/ternarySearchTree';
+import {Schemas} from 'td/base/common/network';
+import {Counter} from 'td/base/common/numbers';
+import {basename, basenameOrAuthority, dirname, ExtUri, relativePath} from 'td/base/common/resources';
+import {compare} from 'td/base/common/strings';
+import {URI, UriComponents} from 'td/base/common/uri';
+import {localize} from 'td/nls';
+import {ExtensionIdentifier, IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {FileSystemProviderCapabilities} from 'td/platform/files/common/files';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {ILogService} from 'td/platform/log/common/log';
+import {Severity} from 'td/platform/notification/common/notification';
+import {EditSessionIdentityMatch} from 'td/platform/workspace/common/editSessions';
+import {Workspace, WorkspaceFolder} from 'td/platform/workspace/common/workspace';
+import {IExtHostFileSystemInfo} from 'td/workbench/api/common/extHostFileSystemInfo';
+import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {GlobPattern} from 'td/workbench/api/common/extHostTypeConverters';
+import {Range} from 'td/workbench/api/common/extHostTypes';
+import {IURITransformerService} from 'td/workbench/api/common/extHostUriTransformerService';
+import {ITextQueryBuilderOptions} from 'td/workbench/services/search/common/queryBuilder';
+import {IRawFileMatch2, ITextSearchResult, resultIsMatch} from 'td/workbench/services/search/common/search';
 import * as vscode from 'vscode';
-import { ExtHostWorkspaceShape, IRelativePatternDto, IWorkspaceData, MainContext, MainThreadMessageOptions, MainThreadMessageServiceShape, MainThreadWorkspaceShape } from './extHost.protocol';
-import { revive } from 'td/base/common/marshalling';
+import {ExtHostWorkspaceShape, IRelativePatternDto, IWorkspaceData, MainContext, MainThreadMessageOptions, MainThreadMessageServiceShape, MainThreadWorkspaceShape} from './extHost.protocol';
+import {revive} from 'td/base/common/marshalling';
 
 export interface IExtHostWorkspaceProvider {
 	getWorkspaceFolder2(uri: vscode.Uri, resolveParent?: boolean): Promise<vscode.WorkspaceFolder | undefined>;
@@ -79,10 +79,10 @@ class ExtHostWorkspaceImpl extends Workspace {
 
 	static toExtHostWorkspace(data: IWorkspaceData | null, previousConfirmedWorkspace: ExtHostWorkspaceImpl | undefined, previousUnconfirmedWorkspace: ExtHostWorkspaceImpl | undefined, extHostFileSystemInfo: IExtHostFileSystemInfo): { workspace: ExtHostWorkspaceImpl | null; added: vscode.WorkspaceFolder[]; removed: vscode.WorkspaceFolder[] } {
 		if (!data) {
-			return { workspace: null, added: [], removed: [] };
+			return {workspace: null, added: [], removed: []};
 		}
 
-		const { id, name, folders, configuration, transient, isUntitled } = data;
+		const {id, name, folders, configuration, transient, isUntitled} = data;
 		const newWorkspaceFolders: vscode.WorkspaceFolder[] = [];
 
 		// If we have an existing workspace, we try to find the folders that match our
@@ -100,20 +100,20 @@ class ExtHostWorkspaceImpl extends Workspace {
 
 					newWorkspaceFolders.push(existingFolder);
 				} else {
-					newWorkspaceFolders.push({ uri: folderUri, name: folderData.name, index });
+					newWorkspaceFolders.push({uri: folderUri, name: folderData.name, index});
 				}
 			});
 		} else {
-			newWorkspaceFolders.push(...folders.map(({ uri, name, index }) => ({ uri: URI.revive(uri), name, index })));
+			newWorkspaceFolders.push(...folders.map(({uri, name, index}) => ({uri: URI.revive(uri), name, index})));
 		}
 
 		// make sure to restore sort order based on index
 		newWorkspaceFolders.sort((f1, f2) => f1.index < f2.index ? -1 : 1);
 
 		const workspace = new ExtHostWorkspaceImpl(id, name, newWorkspaceFolders, !!transient, configuration ? URI.revive(configuration) : null, !!isUntitled, uri => ignorePathCasing(uri, extHostFileSystemInfo));
-		const { added, removed } = delta(oldWorkspace ? oldWorkspace.workspaceFolders : [], workspace.workspaceFolders, compareWorkspaceFolderByUri, extHostFileSystemInfo);
+		const {added, removed} = delta(oldWorkspace ? oldWorkspace.workspaceFolders : [], workspace.workspaceFolders, compareWorkspaceFolderByUri, extHostFileSystemInfo);
 
-		return { workspace, added, removed };
+		return {workspace, added, removed};
 	}
 
 	private static _findFolder(workspace: ExtHostWorkspaceImpl, folderUriToFind: URI, extHostFileSystemInfo: IExtHostFileSystemInfo): MutableWorkspaceFolder | undefined {
@@ -237,7 +237,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		if (this._actualWorkspace) {
 			if (this._actualWorkspace.configuration) {
 				if (this._actualWorkspace.isUntitled) {
-					return URI.from({ scheme: Schemas.untitled, path: basename(dirname(this._actualWorkspace.configuration)) }); // Untitled Workspace: return untitled URI
+					return URI.from({scheme: Schemas.untitled, path: basename(dirname(this._actualWorkspace.configuration))}); // Untitled Workspace: return untitled URI
 				}
 
 				return this._actualWorkspace.configuration; // Workspace: return the configuration location
@@ -271,12 +271,12 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		if (Array.isArray(workspaceFoldersToAdd)) {
 			workspaceFoldersToAdd.forEach(folderToAdd => {
 				if (URI.isUri(folderToAdd.uri) && !validatedDistinctWorkspaceFoldersToAdd.some(f => isFolderEqual(f.uri, folderToAdd.uri, this._extHostFileSystemInfo))) {
-					validatedDistinctWorkspaceFoldersToAdd.push({ uri: folderToAdd.uri, name: folderToAdd.name || basenameOrAuthority(folderToAdd.uri) });
+					validatedDistinctWorkspaceFoldersToAdd.push({uri: folderToAdd.uri, name: folderToAdd.name || basenameOrAuthority(folderToAdd.uri)});
 				}
 			});
 		}
 
-		if (!!this._unconfirmedWorkspace) {
+		if (this._unconfirmedWorkspace) {
 			return false; // prevent accumulated calls without a confirmed workspace
 		}
 
@@ -295,7 +295,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 
 		// Simulate the updateWorkspaceFolders method on our data to do more validation
 		const newWorkspaceFolders = currentWorkspaceFolders.slice(0);
-		newWorkspaceFolders.splice(index, deleteCount, ...validatedDistinctWorkspaceFoldersToAdd.map(f => ({ uri: f.uri, name: f.name || basenameOrAuthority(f.uri), index: undefined! /* fixed later */ })));
+		newWorkspaceFolders.splice(index, deleteCount, ...validatedDistinctWorkspaceFoldersToAdd.map(f => ({uri: f.uri, name: f.name || basenameOrAuthority(f.uri), index: undefined! /* fixed later */})));
 
 		for (let i = 0; i < newWorkspaceFolders.length; i++) {
 			const folder = newWorkspaceFolders[i];
@@ -305,7 +305,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		}
 
 		newWorkspaceFolders.forEach((f, index) => f.index = index); // fix index
-		const { added, removed } = delta(currentWorkspaceFolders, newWorkspaceFolders, compareWorkspaceFolderByUriAndNameAndIndex, this._extHostFileSystemInfo);
+		const {added, removed} = delta(currentWorkspaceFolders, newWorkspaceFolders, compareWorkspaceFolderByUriAndNameAndIndex, this._extHostFileSystemInfo);
 		if (added.length === 0 && removed.length === 0) {
 			return false; // nothing actually changed
 		}
@@ -320,7 +320,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 				this._unconfirmedWorkspace = undefined;
 
 				// show error to user
-				const options: MainThreadMessageOptions = { source: { identifier: extension.identifier, label: extension.displayName || extension.name } };
+				const options: MainThreadMessageOptions = {source: {identifier: extension.identifier, label: extension.displayName || extension.name}};
 				this._messageService.$showMessage(Severity.Error, localize('updateerror', "Extension '{0}' failed to update workspace folders: {1}", extName, error.toString()), options, []);
 			});
 		}
@@ -363,7 +363,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 			return undefined;
 		}
 
-		const { folders } = this._actualWorkspace;
+		const {folders} = this._actualWorkspace;
 		if (folders.length === 0) {
 			return undefined;
 		}
@@ -424,7 +424,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 
 	$acceptWorkspaceData(data: IWorkspaceData | null): void {
 
-		const { workspace, added, removed } = ExtHostWorkspaceImpl.toExtHostWorkspace(data, this._confirmedWorkspace, this._unconfirmedWorkspace, this._extHostFileSystemInfo);
+		const {workspace, added, removed} = ExtHostWorkspaceImpl.toExtHostWorkspace(data, this._confirmedWorkspace, this._unconfirmedWorkspace, this._extHostFileSystemInfo);
 
 		// Update our workspace object. We have a confirmed workspace, so we drop our
 		// unconfirmed workspace.
@@ -461,7 +461,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 			return Promise.resolve([]);
 		}
 
-		const { includePattern, folder } = parseSearchInclude(GlobPattern.from(include));
+		const {includePattern, folder} = parseSearchInclude(GlobPattern.from(include));
 		return this._proxy.$startFileSearch(
 			includePattern ?? null,
 			folder ?? null,
@@ -484,7 +484,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 			} :
 			options.previewOptions;
 
-		const { includePattern, folder } = parseSearchInclude(GlobPattern.from(options.include));
+		const {includePattern, folder} = parseSearchInclude(GlobPattern.from(options.include));
 		const excludePattern = (typeof options.exclude === 'string') ? options.exclude :
 			options.exclude ? options.exclude.pattern : undefined;
 		const queryOptions: ITextQueryBuilderOptions = {
@@ -560,13 +560,13 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 	}
 
 	async save(uri: URI): Promise<URI | undefined> {
-		const result = await this._proxy.$save(uri, { saveAs: false });
+		const result = await this._proxy.$save(uri, {saveAs: false});
 
 		return URI.revive(result);
 	}
 
 	async saveAs(uri: URI): Promise<URI | undefined> {
-		const result = await this._proxy.$save(uri, { saveAs: true });
+		const result = await this._proxy.$save(uri, {saveAs: true});
 
 		return URI.revive(result);
 	}
@@ -690,7 +690,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 			throw new Error('Unable to resolve workspace folder');
 		}
 
-		await this._onWillCreateEditSessionIdentityEvent.fireAsync({ workspaceFolder: folder }, token, async (thenable: Promise<unknown>, listener) => {
+		await this._onWillCreateEditSessionIdentityEvent.fireAsync({workspaceFolder: folder}, token, async (thenable: Promise<unknown>, listener) => {
 			const now = Date.now();
 			await Promise.resolve(thenable);
 			if (Date.now() - now > timeout) {
@@ -740,7 +740,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 
 	// called by main thread
 	async $provideCanonicalUri(uri: UriComponents, targetScheme: string, cancellationToken: CancellationToken): Promise<UriComponents | undefined> {
-		return this.provideCanonicalUri(URI.revive(uri), { targetScheme }, cancellationToken);
+		return this.provideCanonicalUri(URI.revive(uri), {targetScheme}, cancellationToken);
 	}
 }
 

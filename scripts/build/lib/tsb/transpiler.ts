@@ -3,6 +3,7 @@ import ts from 'typescript'
 import Vinyl from 'vinyl'
 import * as swc from '@swc/core'
 import {logger} from '../../base/logger';
+import path, {basename} from 'path'
 
 class OutputFileNameOracle {
 
@@ -110,6 +111,18 @@ export class SwcTranspiler {
 			 */                               /* 👇 Frequently failured area */
 			const outPath = this._outputFileNames.getOutputFileName(file.path);
 			
+			
+			// save the map file 
+			if (output.map) {
+				const map = JSON.parse(output.map)
+				map.sources = [file.path];
+				const stred = JSON.stringify(map)
+				fs.mkdirSync(path.dirname(outPath), {recursive: true});
+				fs.writeFileSync(outPath+'.map', stred);
+				
+				// add sourceMappingURL to the end of the file
+				output.code += `\n//# sourceMappingURL=${basename(outPath)}.map`;
+			}
 
 			this.onOutfile!(new Vinyl({
 				path: outPath,
@@ -148,6 +161,7 @@ export class SwcTranspiler {
 			type: 'amd',
 			noInterop: true
 		},
+		sourceMaps: true,
 		minify: false,
 	};
 
