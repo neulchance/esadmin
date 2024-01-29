@@ -28,6 +28,7 @@ export const transpileSrc = task({
   dependencies: [delOut],
   run: async () => {
     await copyfile('src/td/dev/electron-sandbox/workbench/workbench.html', 'out/td/dev/electron-sandbox/workbench/workbench.html'),
+    await copyfile('src/td/base/browser/ui/codicons/codicon/codicon.ttf', 'out/td/base/browser/ui/codicons/codicon/codicon.ttf'),
     (await import('./tasks/facade.mjs')).transpile()
   }
 })
