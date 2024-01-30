@@ -183,6 +183,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 
 	private async _start(): Promise<IMessagePassingProtocol> { 
 		const [extensionHostCreationResult, portNumber, processEnv] = await Promise.all([
+			// @neulchance below starter connected to main-process with channel name `ipcExtensionHostStarterChannelName`
 			this._extensionHostStarter.createExtensionHost(),
 			this._tryFindDebugPort(),
 			this._shellEnvironmentService.getShellEnv(),
