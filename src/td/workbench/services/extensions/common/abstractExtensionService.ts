@@ -426,6 +426,7 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 
 	//#endregion
 
+	// @neulchance Invoked the workbench is running.
 	protected async _initialize(): Promise<void> {
 		perf.mark('code/willLoadExtensions');
 		this._startExtensionHostsIfNecessary(true, []);
