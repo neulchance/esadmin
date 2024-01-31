@@ -67,7 +67,7 @@ export function createCompile(src: string, build: boolean, emitError: boolean, t
       /* '.ts' file converted in compilation() stream process, but '.js' is not. so its path replace 'src' to 'out'. */
       const replace = file.path.replace('src', 'out')
       file.path = replace
-      logger.info(`📁 file.path replced -> ${replace}`)
+      // logger.info(`📁 file.path replced -> ${replace}`)
       this.push(file)
       callback()
     }

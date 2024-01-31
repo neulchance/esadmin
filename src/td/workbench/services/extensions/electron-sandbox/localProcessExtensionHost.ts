@@ -168,6 +168,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 		this._toDispose.dispose();
 	}
 
+	// @neulchance In desktop-env called from ExtensionHostManager._extensionHost.start()
 	public start(): Promise<IMessagePassingProtocol> {
 		if (this._terminating) {
 			// .terminate() was called
@@ -353,6 +354,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 
 	private _establishProtocol(extensionHostProcess: ExtensionHostProcess, opts: IExtensionHostProcessOptions): Promise<IMessagePassingProtocol> {
 
+		// @neulchance env[MessagePortExtHostConnection.ENV_KEY] = '1';
 		writeExtHostConnection(new MessagePortExtHostConnection(), opts.env);
 
 		// Get ready to acquire the message port from the shared process worker

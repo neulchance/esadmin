@@ -33,6 +33,7 @@ import 'td/workbench/services/themes/electron-sandbox/nativeHostColorSchemeServi
 import 'td/platform/extensionResourceLoader/common/extensionResourceLoaderService';
 import 'td/workbench/services/telemetry/electron-sandbox/telemetryService';
 import 'td/workbench/services/title/electron-sandbox/titleService';
+import 'td/workbench/services/extensions/electron-sandbox/extensionHostStarter';
 import 'td/workbench/services/extensions/electron-sandbox/nativeExtensionService';
 import 'td/workbench/services/localization/electron-sandbox/languagePackService';
 import 'td/workbench/services/contextmenu/electron-sandbox/contextmenuService';
@@ -50,7 +51,6 @@ import 'td/workbench/services/tunnel/electron-sandbox/tunnelService';
 import 'td/workbench/services/request/electron-sandbox/requestService';
 import 'td/workbench/services/extensions/electron-sandbox/extensionsScannerService';
 import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementServerService';
-import 'td/workbench/services/extensions/electron-sandbox/extensionHostStarter';
 import 'td/workbench/services/accessibility/electron-sandbox/accessibilityService';
 import 'td/workbench/services/keybinding/electron-sandbox/nativeKeyboardLayout';
 import 'td/workbench/services/userDataSync/browser/userDataSyncEnablementService';

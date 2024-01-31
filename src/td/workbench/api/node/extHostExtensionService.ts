@@ -64,6 +64,7 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 		this._instaService.createInstance(ExtHostConsoleForwarder);
 
 		// initialize API and register actors
+		// @neulchance
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
 
 		// Register Download command
