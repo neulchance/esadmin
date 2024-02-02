@@ -178,7 +178,7 @@ export class ExtensionHostMain {
 		// must call initialize *after* creating the extension service
 		// because `initialize` itself creates instances that depend on it
 		this._extensionService = instaService.invokeFunction(accessor => accessor.get(IExtHostExtensionService));
-		// @neulchance
+		// explain@neulchance 
 		this._extensionService.initialize();
 
 		// install error handler that is extension-aware

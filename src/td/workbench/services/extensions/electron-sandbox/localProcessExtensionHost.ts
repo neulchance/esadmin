@@ -168,7 +168,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 		this._toDispose.dispose();
 	}
 
-	// @neulchance In desktop-env called from ExtensionHostManager._extensionHost.start()
+	// explain@neulchance In desktop-env called from ExtensionHostManager._extensionHost.start()
 	public start(): Promise<IMessagePassingProtocol> {
 		if (this._terminating) {
 			// .terminate() was called
@@ -184,7 +184,9 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 
 	private async _start(): Promise<IMessagePassingProtocol> { 
 		const [extensionHostCreationResult, portNumber, processEnv] = await Promise.all([
-			// @neulchance below starter connected to main-process with channel name `ipcExtensionHostStarterChannelName`
+			// explain@neulchance below hostStarter connected to main-process with channel name `ipcExtensionHostStarterChannelName`
+			// entrypoint to make the extension host(main process) on renderer-process
+			// in here, it will create a new extension host process and return the id of the extension host process
 			this._extensionHostStarter.createExtensionHost(),
 			this._tryFindDebugPort(),
 			this._shellEnvironmentService.getShellEnv(),
@@ -354,7 +356,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 
 	private _establishProtocol(extensionHostProcess: ExtensionHostProcess, opts: IExtensionHostProcessOptions): Promise<IMessagePassingProtocol> {
 
-		// @neulchance env[MessagePortExtHostConnection.ENV_KEY] = '1';
+		// explain@neulchance env[MessagePortExtHostConnection.ENV_KEY] = '1';
 		writeExtHostConnection(new MessagePortExtHostConnection(), opts.env);
 
 		// Get ready to acquire the message port from the shared process worker
@@ -435,6 +437,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 						// Wait 60s for the initialized message
 						installTimeoutCheck();
 
+						// explainexplain@neulchance: renderer process sends data to node process
 						protocol.send(VSBuffer.fromString(JSON.stringify(data)));
 					});
 					return;
@@ -459,6 +462,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 		});
 	}
 
+	// explain@neulchance _createExtHostInitData
 	private async _createExtHostInitData(): Promise<IExtensionHostInitData> {
 		const initData = await this._initDataProvider.getInitData();
 		this.extensions = initData.extensions;

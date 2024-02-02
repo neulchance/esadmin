@@ -127,6 +127,7 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 				// };
 				// this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', successTelemetryEvent);
 
+				// explain@neulchance Error: Missing proxy instance
 				return this._createExtensionHostCustomers(this.kind, protocol);
 			},
 			(err) => {
@@ -261,6 +262,8 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		this._register(this._rpcProtocol.onDidChangeResponsiveState((responsiveState: ResponsiveState) => this._onDidChangeResponsiveState.fire(responsiveState)));
 		let extensionHostProxy: IExtensionHostProxy | null = null as IExtensionHostProxy | null;
 		let mainProxyIdentifiers: ProxyIdentifier<any>[] = [];
+		console.log('------------------- assertRegistered will error')
+		// explain@neulchance 
 		const extHostContext: IInternalExtHostContext = {
 			remoteAuthority: this._extensionHost.remoteAuthority,
 			extensionHostKind: this.kind,
@@ -282,12 +285,16 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		};
 
 		// Named customers
+		// extensionHost.contribution.ts 에서 등록한 
 		const namedCustomers = ExtHostCustomersRegistry.getNamedCustomers();
 		for (let i = 0, len = namedCustomers.length; i < len; i++) {
 			const [id, ctor] = namedCustomers[i];
 			try {
 				const instance = this._instantiationService.createInstance(ctor, extHostContext);
 				this._customers.push(instance);
+				// explain@neulchance call set set set
+				console.log('set set set 111')
+				console.log(this._rpcProtocol)
 				this._rpcProtocol.set(id, instance);
 			} catch (err) {
 				this._logService.error(`Cannot instantiate named customer: '${id.sid}'`);
@@ -313,6 +320,11 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		}
 
 		// Check that no named customers are missing
+		// explain@neulchance
+		console.log('mainProxyIdentifiers')
+		console.log(mainProxyIdentifiers)
+		// mainProxyIdentifiers 리스트는 'extHost.protocol.ts'에서 'MainContext' 아이템들이다.
+		// 'this._rpcProtocol'에는 
 		this._rpcProtocol.assertRegistered(mainProxyIdentifiers);
 
 		return extensionHostProxy;

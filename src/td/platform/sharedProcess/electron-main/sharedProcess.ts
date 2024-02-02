@@ -82,7 +82,7 @@ export class SharedProcess extends Disposable {
 		}
 
 		// send the port back to the requesting window
-		// @neulchance
+		// explain@neulchance
 		e.sender.postMessage(responseChannel, nonce, [port]);
 	}
 

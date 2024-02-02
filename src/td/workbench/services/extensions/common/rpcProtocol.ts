@@ -265,8 +265,10 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 		return new Proxy(Object.create(null), handler);
 	}
 
+	// 
 	public set<T, R extends T>(identifier: ProxyIdentifier<T>, value: R): R {
-		if (!identifier.nid) {
+		console.log('set set set')
+		if (identifier.nid) {
 			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
 			console.log(`${red}FIGUREOUTs identifier${done}`)
 			console.log(identifier)
@@ -275,6 +277,7 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 		return value;
 	}
 
+	// '_locals'에 확실히 'identifiers'의 모든 프록시가 등록되어 있는지 확인합니다.
 	public assertRegistered(identifiers: ProxyIdentifier<any>[]): void {
 		for (let i = 0, len = identifiers.length; i < len; i++) {
 			const identifier = identifiers[i];

@@ -60,12 +60,15 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 	readonly extensionRuntime = ExtensionRuntime.Node;
 
 	protected async _beforeAlmostReadyToRunExtensions(): Promise<void> {
+		console.log('??????????????????????????????')
 		// make sure console.log calls make it to the render
 		this._instaService.createInstance(ExtHostConsoleForwarder);
 
 		// initialize API and register actors
-		// @neulchance
+		// explain@neulchance
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
+		console.log('extensionApiFactory')
+		console.log(extensionApiFactory)
 
 		// Register Download command
 		this._instaService.createInstance(ExtHostDownloadService);
@@ -79,6 +82,9 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 		// Register local file system shortcut
 		this._instaService.createInstance(ExtHostDiskFileSystemProvider);
 
+		// explain@neulchance
+		console.log('this._myRegistry')
+		console.log(this._myRegistry)
 		// Module loading tricks
 		const interceptor = this._instaService.createInstance(NodeModuleRequireInterceptor, extensionApiFactory, {mine: this._myRegistry, all: this._globalRegistry});
 		await interceptor.install();

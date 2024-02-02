@@ -219,6 +219,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 
 	// Check that no named customers are missing
 	const expected = Object.values<ProxyIdentifier<any>>(ExtHostContext);
+	console.log('--rpcProtocol.assertRegistered--')
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances

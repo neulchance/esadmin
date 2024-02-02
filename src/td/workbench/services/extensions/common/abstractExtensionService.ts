@@ -426,7 +426,7 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 
 	//#endregion
 
-	// @neulchance Invoked the workbench is running.
+	// explain@neulchance Invoked the workbench is running.
 	protected async _initialize(): Promise<void> {
 		perf.mark('code/willLoadExtensions');
 		this._startExtensionHostsIfNecessary(true, []);
@@ -744,7 +744,7 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 
 	private _createExtensionHostManager(runningLocation: ExtensionRunningLocation, isInitialStart: boolean, initialActivationEvents: string[]): IExtensionHostManager | null {
 		const extensionHost = this._extensionHostFactory.createExtensionHost(this._runningLocations, runningLocation, isInitialStart);
-		// This is where NativeLocalProcessExtensionHost is created.
+		// This is where NativeLocalProcessExtensionHost is created. (electron-sandbox/localProcessExtensionHost.ts)
 		if (!extensionHost) {
 			return null;
 		}

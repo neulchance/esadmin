@@ -282,6 +282,7 @@ function connectToRenderer(protocol: IMessagePassingProtocol): Promise<IRenderer
 	return new Promise<IRendererConnection>((c) => {
 
 		// Listen init data message
+		// 'renderer'의 정보를 받게 되는 곳? main-process가 rederer에게 정보를 받아서 durl child-process에게 전달하는 과정인듯
 		const first = protocol.onMessage(raw => {
 			first.dispose();
 
