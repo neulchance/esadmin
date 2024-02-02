@@ -24,11 +24,13 @@ export abstract class AbstractExtHostConsoleForwarder {
 		this._logNative = initData.consoleForward.logNative;
 
 		// Pass console logging to the outside so that we have it in the main side if told so
+		console.log('Console forwarding to main side is active1');
 		this._wrapConsoleMethod('info', 'log');
 		this._wrapConsoleMethod('log', 'log');
 		this._wrapConsoleMethod('warn', 'warn');
 		this._wrapConsoleMethod('debug', 'debug');
 		this._wrapConsoleMethod('error', 'error');
+		console.log('Console forwarding to main side is active2');
 	}
 
 	/**

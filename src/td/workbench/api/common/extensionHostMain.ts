@@ -132,6 +132,7 @@ export abstract class ErrorHandler {
 	}
 }
 
+// ExtensionHostMain newed from extensionHostProcess.ts(node-process)
 export class ExtensionHostMain {
 
 	private readonly _hostUtils: IHostUtils;

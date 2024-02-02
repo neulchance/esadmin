@@ -262,7 +262,6 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		this._register(this._rpcProtocol.onDidChangeResponsiveState((responsiveState: ResponsiveState) => this._onDidChangeResponsiveState.fire(responsiveState)));
 		let extensionHostProxy: IExtensionHostProxy | null = null as IExtensionHostProxy | null;
 		let mainProxyIdentifiers: ProxyIdentifier<any>[] = [];
-		console.log('------------------- assertRegistered will error')
 		// explain@neulchance 
 		const extHostContext: IInternalExtHostContext = {
 			remoteAuthority: this._extensionHost.remoteAuthority,
@@ -292,9 +291,7 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 			try {
 				const instance = this._instantiationService.createInstance(ctor, extHostContext);
 				this._customers.push(instance);
-				// explain@neulchance call set set set
-				console.log('set set set 111')
-				console.log(this._rpcProtocol)
+				// explain@neulchance
 				this._rpcProtocol.set(id, instance);
 			} catch (err) {
 				this._logService.error(`Cannot instantiate named customer: '${id.sid}'`);
@@ -320,11 +317,7 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		}
 
 		// Check that no named customers are missing
-		// explain@neulchance
-		console.log('mainProxyIdentifiers')
-		console.log(mainProxyIdentifiers)
-		// mainProxyIdentifiers 리스트는 'extHost.protocol.ts'에서 'MainContext' 아이템들이다.
-		// 'this._rpcProtocol'에는 
+		// explain@neulchance mainProxyIdentifiers 리스트는 'extHost.protocol.ts'에서 'MainContext' 아이템들이다.
 		this._rpcProtocol.assertRegistered(mainProxyIdentifiers);
 
 		return extensionHostProxy;

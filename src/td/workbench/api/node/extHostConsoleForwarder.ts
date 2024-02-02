@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AbstractExtHostConsoleForwarder } from 'td/workbench/api/common/extHostConsoleForwarder';
-import { IExtHostInitDataService } from 'td/workbench/api/common/extHostInitDataService';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { NativeLogMarkers } from 'td/workbench/services/extensions/common/extensionHostProtocol';
+import {AbstractExtHostConsoleForwarder} from 'td/workbench/api/common/extHostConsoleForwarder';
+import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {NativeLogMarkers} from 'td/workbench/services/extensions/common/extensionHostProtocol';
 
 const MAX_STREAM_BUFFER_LENGTH = 1024 * 1024;
 
