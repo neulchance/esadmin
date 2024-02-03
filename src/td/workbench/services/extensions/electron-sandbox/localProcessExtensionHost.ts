@@ -186,7 +186,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 		const [extensionHostCreationResult, portNumber, processEnv] = await Promise.all([
 			// explain@neulchance below hostStarter connected to main-process with channel name `ipcExtensionHostStarterChannelName`
 			// entrypoint to make the extension host(main process) on renderer-process
-			// in here, it will create a new extension host process and return the id of the extension host process
+			// created WindowUtilityProcess and return id which corresponding to that process.
 			this._extensionHostStarter.createExtensionHost(),
 			this._tryFindDebugPort(),
 			this._shellEnvironmentService.getShellEnv(),
@@ -213,6 +213,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 
 		const opts: IExtensionHostProcessOptions = {
 			responseWindowId: this._nativeHostService.windowId,
+			// here here here 
 			responseChannel: 'vscode:startExtensionHostMessagePortResult',
 			responseNonce: generateUuid(),
 			env,
@@ -360,6 +361,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 		writeExtHostConnection(new MessagePortExtHostConnection(), opts.env);
 
 		// Get ready to acquire the message port from the shared process worker
+		// explain@neulchance acquirePort is a function to get message port from main process using preload helper.
 		const portPromise = acquirePort(undefined /* we trigger the request via service call! */, opts.responseChannel, opts.responseNonce);
 
 		return new Promise<IMessagePassingProtocol>((resolve, reject) => {

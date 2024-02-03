@@ -97,6 +97,7 @@ export class ExtensionHostStarter implements IDisposable, IExtensionHostStarter 
 		return {id};
 	}
 
+	// 
 	async start(id: string, opts: IExtensionHostProcessOptions): Promise<{ pid: number | undefined }> {
 		if (this._shutdown) {
 			throw canceled();
