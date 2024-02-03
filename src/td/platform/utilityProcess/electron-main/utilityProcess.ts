@@ -469,6 +469,7 @@ export class WindowUtilityProcess extends UtilityProcess {
 
 		// Establish & exchange message ports
 		const windowPort = this.connect(configuration.payload);
+		// 🍪
 		responseWindow.win.webContents.postMessage(configuration.responseChannel, configuration.responseNonce, [windowPort]);
 
 		return true;

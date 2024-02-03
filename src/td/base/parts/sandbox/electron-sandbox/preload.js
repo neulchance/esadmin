@@ -224,7 +224,7 @@ contextBridge.exposeInMainWorld('versions', {
 						}
 					};
 
-					// handle reply from main // explain@neulchance // here here here 
+					// handle reply from main // explain@neulchance // 🍪
 					ipcRenderer.on(responseChannel, responseListener);
 				}
 			}

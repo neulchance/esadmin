@@ -213,7 +213,8 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 
 		const opts: IExtensionHostProcessOptions = {
 			responseWindowId: this._nativeHostService.windowId,
-			// here here here 
+			// This option is send to the main process
+			// 🍪
 			responseChannel: 'vscode:startExtensionHostMessagePortResult',
 			responseNonce: generateUuid(),
 			env,
@@ -361,7 +362,7 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 		writeExtHostConnection(new MessagePortExtHostConnection(), opts.env);
 
 		// Get ready to acquire the message port from the shared process worker
-		// explain@neulchance acquirePort is a function to get message port from main process using preload helper.
+		// explain@neulchance acquirePort is a function to get message port from main process using preload helper. // 🍪
 		const portPromise = acquirePort(undefined /* we trigger the request via service call! */, opts.responseChannel, opts.responseNonce);
 
 		return new Promise<IMessagePassingProtocol>((resolve, reject) => {

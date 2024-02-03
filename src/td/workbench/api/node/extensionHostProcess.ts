@@ -333,6 +333,7 @@ function connectToRenderer(protocol: IMessagePassingProtocol): Promise<IRenderer
 				}
 			}
 
+			// i guess outside means renderer-process
 			// Tell the outside that we are initialized
 			protocol.send(createMessageOfType(MessageType.Initialized));
 
