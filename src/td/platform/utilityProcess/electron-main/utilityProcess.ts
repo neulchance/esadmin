@@ -368,6 +368,7 @@ export class UtilityProcess extends Disposable {
 			return; // already killed, crashed or never started
 		}
 
+		// 🦑: send to extensionHostProcess.ts
 		this.process.postMessage(message, transfer);
 	}
 
@@ -468,8 +469,13 @@ export class WindowUtilityProcess extends UtilityProcess {
 		this.registerWindowListeners(responseWindow.win, configuration);
 
 		// Establish & exchange message ports
+		// 🦑: starts to make it port pairs and get one of thoes.
 		const windowPort = this.connect(configuration.payload);
+		
 		// 🍪
+		// https://www.electronjs.org/docs/latest/tutorial/message-ports#communicating-directly-between-the-main-process-and-the-main-world-of-a-context-isolated-page
+		// The preload script will receive this IPC message and transfer the port over to the main world.
+		// 🦑: [2] send to preload.js
 		responseWindow.win.webContents.postMessage(configuration.responseChannel, configuration.responseNonce, [windowPort]);
 
 		return true;

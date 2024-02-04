@@ -29,8 +29,10 @@ export async function acquirePort(requestChannel: string | undefined, responseCh
 	// Wait until the main side has returned the `MessagePort`
 	// We need to filter by the `nonce` to ensure we listen
 	// to the right response.
+	// 🦑: [3-2] window.onmessage 
 	const onMessageChannelResult = Event.fromDOMEventEmitter<IMessageChannelResult>(mainWindow, 'message', (e: MessageEvent) => ({nonce: e.data, port: e.ports[0], source: e.source}));
 	const {port} = await Event.toPromise(Event.once(Event.filter(onMessageChannelResult, e => e.nonce === nonce && e.source === mainWindow)));
-
+	
+	// 🦑: [3-3] return to [3-0]
 	return port;
 }

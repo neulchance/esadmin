@@ -362,7 +362,8 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 		writeExtHostConnection(new MessagePortExtHostConnection(), opts.env);
 
 		// Get ready to acquire the message port from the shared process worker
-		// explain@neulchance acquirePort is a function to get message port from main process using preload helper. // 🍪
+		// explain@neulchance sandbox/ipc.mp.ts@acquirePort is a function to get message port from somewhere. // 🍪
+		// 🦑: [3-0]
 		const portPromise = acquirePort(undefined /* we trigger the request via service call! */, opts.responseChannel, opts.responseNonce);
 
 		return new Promise<IMessagePassingProtocol>((resolve, reject) => {
@@ -385,7 +386,9 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 					}
 				});
 				port.start();
-
+				
+				// explain@neulchance resolve the protocol with onMessage event and send function
+				// resolved protocol will be used to communicate between main process and extension host
 				resolve({
 					onMessage: onMessage.event,
 					send: message => port.postMessage(message.buffer),

@@ -220,11 +220,13 @@ contextBridge.exposeInMainWorld('versions', {
 						// isolation is enabled
 						if (nonce === responseNonce) {
 							ipcRenderer.off(responseChannel, responseListener);
+							// 🦑: [3-1] send to page
 							window.postMessage(nonce, '*', e.ports);
 						}
 					};
 
 					// handle reply from main // explain@neulchance // 🍪
+					// 🦑: [2] received from utilityProcess.ts
 					ipcRenderer.on(responseChannel, responseListener);
 				}
 			}

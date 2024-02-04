@@ -150,6 +150,7 @@ function _createExtHostProtocol(): Promise<IMessagePassingProtocol> {
 				});
 			};
 
+			// 🦑: receive from utilityProcess.ts
 			process.parentPort.on('message', (e: Electron.MessageEvent) => withPorts(e.ports));
 		});
 
@@ -285,7 +286,12 @@ function connectToRenderer(protocol: IMessagePassingProtocol): Promise<IRenderer
 		// 'renderer'의 정보를 받게 되는 곳? main-process가 rederer에게 정보를 받아서 durl child-process에게 전달하는 과정인듯
 		const first = protocol.onMessage(raw => {
 			first.dispose();
-
+			
+			// 1. renderer에서 보낸 데이터를 받아서 처리하는 부분
+			//  ┌> 'sandbox'는 'renderer-process'임 -> chromium -> browser
+			//  │'borwser'에서 'protocol'을 이용해서 여기로 데이터를 보낸다.
+			// ─┴──────────────────────────
+			// localProcessExtensionHost.ts :: protocol.send(VSBuffer.fromString(JSON.stringify(data)));
 			const initData = <IExtensionHostInitData>JSON.parse(raw.toString());
 
 			const rendererCommit = initData.commit;
@@ -333,7 +339,8 @@ function connectToRenderer(protocol: IMessagePassingProtocol): Promise<IRenderer
 				}
 			}
 
-			// i guess outside means renderer-process
+			//             ┌> 'outside' means renderer-process
+			//             │
 			// Tell the outside that we are initialized
 			protocol.send(createMessageOfType(MessageType.Initialized));
 
