@@ -290,6 +290,8 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 		const buff = MessageBuffer.read(rawmsg, 0);
 		const messageType = <MessageType>buff.readUInt8();
 		const req = buff.readUInt32();
+		console.log('req reqreqreqreqreqreq req req ')
+		console.log(req)
 
 		switch (messageType) {
 			case MessageType.RequestJSONArgs:
@@ -298,6 +300,7 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 				if (this._uriTransformer) {
 					args = transformIncomingURIs(args, this._uriTransformer);
 				}
+				console.log(';alkdjfl;askdjf')
 				this._receiveRequest(msgLength, req, rpcId, method, args, (messageType === MessageType.RequestJSONArgsWithCancellation));
 				break;
 			}

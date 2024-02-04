@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
-import { ExtHostShareShape, IMainContext, IShareableItemDto, MainContext, MainThreadShareShape } from 'td/workbench/api/common/extHost.protocol';
-import { DocumentSelector, Range } from 'td/workbench/api/common/extHostTypeConverters';
-import { IURITransformer } from 'td/base/common/uriIpc';
-import { CancellationToken } from 'td/base/common/cancellation';
-import { URI, UriComponents } from 'td/base/common/uri';
+import {ExtHostShareShape, IMainContext, IShareableItemDto, MainContext, MainThreadShareShape} from 'td/workbench/api/common/extHost.protocol';
+import {DocumentSelector, Range} from 'td/workbench/api/common/extHostTypeConverters';
+import {IURITransformer} from 'td/base/common/uriIpc';
+import {CancellationToken} from 'td/base/common/cancellation';
+import {URI, UriComponents} from 'td/base/common/uri';
 
 export class ExtHostShare implements ExtHostShareShape {
 	private static handlePool: number = 0;
@@ -25,7 +25,7 @@ export class ExtHostShare implements ExtHostShareShape {
 
 	async $provideShare(handle: number, shareableItem: IShareableItemDto, token: CancellationToken): Promise<UriComponents | string | undefined> {
 		const provider = this.providers.get(handle);
-		const result = await provider?.provideShare({ selection: Range.to(shareableItem.selection), resourceUri: URI.revive(shareableItem.resourceUri) }, token);
+		const result = await provider?.provideShare({selection: Range.to(shareableItem.selection), resourceUri: URI.revive(shareableItem.resourceUri)}, token);
 		return result ?? undefined;
 	}
 

@@ -291,7 +291,7 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 			try {
 				const instance = this._instantiationService.createInstance(ctor, extHostContext);
 				this._customers.push(instance);
-				// explain@neulchance
+				// explain@neulchance rpcProtocol.set
 				this._rpcProtocol.set(id, instance);
 			} catch (err) {
 				this._logService.error(`Cannot instantiate named customer: '${id.sid}'`);

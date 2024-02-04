@@ -20,6 +20,8 @@ export abstract class AbstractExtHostConsoleForwarder {
 		@IExtHostInitDataService initData: IExtHostInitDataService,
 	) {
 		this._mainThreadConsole = extHostRpc.getProxy(MainContext.MainThreadConsole);
+		console.log('this._mainThreadConsole')
+		console.log(this._mainThreadConsole)
 		this._includeStack = initData.consoleForward.includeStack;
 		this._logNative = initData.consoleForward.logNative;
 

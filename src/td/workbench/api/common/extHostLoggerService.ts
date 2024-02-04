@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ILogger, ILoggerOptions, AbstractMessageLogger, LogLevel, AbstractLoggerService } from 'td/platform/log/common/log';
-import { MainThreadLoggerShape, MainContext, ExtHostLogLevelServiceShape as ExtHostLogLevelServiceShape } from 'td/workbench/api/common/extHost.protocol';
-import { IExtHostInitDataService } from 'td/workbench/api/common/extHostInitDataService';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { URI, UriComponents } from 'td/base/common/uri';
-import { revive } from 'td/base/common/marshalling';
+import {ILogger, ILoggerOptions, AbstractMessageLogger, LogLevel, AbstractLoggerService} from 'td/platform/log/common/log';
+import {MainThreadLoggerShape, MainContext, ExtHostLogLevelServiceShape as ExtHostLogLevelServiceShape} from 'td/workbench/api/common/extHost.protocol';
+import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {URI, UriComponents} from 'td/base/common/uri';
+import {revive} from 'td/base/common/marshalling';
 
 export class ExtHostLoggerService extends AbstractLoggerService implements ExtHostLogLevelServiceShape {
 

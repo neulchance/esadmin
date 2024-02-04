@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event, Emitter } from 'td/base/common/event';
-import { ExtHostWindowShape, MainContext, MainThreadWindowShape, IOpenUriOptions } from './extHost.protocol';
-import { WindowState } from 'vscode';
-import { URI } from 'td/base/common/uri';
-import { Schemas } from 'td/base/common/network';
-import { isFalsyOrWhitespace } from 'td/base/common/strings';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { IRelaxedExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { checkProposedApiEnabled } from 'td/workbench/services/extensions/common/extensions';
+import {Event, Emitter} from 'td/base/common/event';
+import {ExtHostWindowShape, MainContext, MainThreadWindowShape, IOpenUriOptions} from './extHost.protocol';
+import {WindowState} from 'vscode';
+import {URI} from 'td/base/common/uri';
+import {Schemas} from 'td/base/common/network';
+import {isFalsyOrWhitespace} from 'td/base/common/strings';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {IRelaxedExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {checkProposedApiEnabled} from 'td/workbench/services/extensions/common/extensions';
 
 export class ExtHostWindow implements ExtHostWindowShape {
 
@@ -45,7 +45,7 @@ export class ExtHostWindow implements ExtHostWindowShape {
 
 	constructor(@IExtHostRpcService extHostRpc: IExtHostRpcService) {
 		this._proxy = extHostRpc.getProxy(MainContext.MainThreadWindow);
-		this._proxy.$getInitialState().then(({ isFocused, isActive }) => {
+		this._proxy.$getInitialState().then(({isFocused, isActive}) => {
 			this.onDidChangeWindowProperty('focused', isFocused);
 			this.onDidChangeWindowProperty('active', isActive);
 		});
@@ -64,7 +64,7 @@ export class ExtHostWindow implements ExtHostWindowShape {
 			return;
 		}
 
-		this._state = { ...this._state, [property]: value };
+		this._state = {...this._state, [property]: value};
 		this._onDidChangeWindowState.fire(this._state);
 	}
 
