@@ -3,26 +3,26 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { exec } from 'child_process';
-import { VSBuffer } from 'td/base/common/buffer';
-import { Emitter } from 'td/base/common/event';
-import { DisposableStore } from 'td/base/common/lifecycle';
-import { MovingAverage } from 'td/base/common/numbers';
-import { isLinux } from 'td/base/common/platform';
+import {exec} from 'child_process';
+import {VSBuffer} from 'td/base/common/buffer';
+import {Emitter} from 'td/base/common/event';
+import {DisposableStore} from 'td/base/common/lifecycle';
+import {MovingAverage} from 'td/base/common/numbers';
+import {isLinux} from 'td/base/common/platform';
 import * as resources from 'td/base/common/resources';
-import { URI } from 'td/base/common/uri';
+import {URI} from 'td/base/common/uri';
 import * as pfs from 'td/base/node/pfs';
-import { ISocket, SocketCloseEventType } from 'td/base/parts/ipc/common/ipc.net';
-import { ILogService } from 'td/platform/log/common/log';
-import { ManagedSocket, RemoteSocketHalf, connectManagedSocket } from 'td/platform/remote/common/managedSocket';
-import { ManagedRemoteConnection } from 'td/platform/remote/common/remoteAuthorityResolver';
-import { ISignService } from 'td/platform/sign/common/sign';
-import { isAllInterfaces, isLocalhost } from 'td/platform/tunnel/common/tunnel';
-import { NodeRemoteTunnel } from 'td/platform/tunnel/node/tunnelService';
-import { IExtHostInitDataService } from 'td/workbench/api/common/extHostInitDataService';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { ExtHostTunnelService } from 'td/workbench/api/common/extHostTunnelService';
-import { CandidatePort, parseAddress } from 'td/workbench/services/remote/common/tunnelModel';
+import {ISocket, SocketCloseEventType} from 'td/base/parts/ipc/common/ipc.net';
+import {ILogService} from 'td/platform/log/common/log';
+import {ManagedSocket, RemoteSocketHalf, connectManagedSocket} from 'td/platform/remote/common/managedSocket';
+import {ManagedRemoteConnection} from 'td/platform/remote/common/remoteAuthorityResolver';
+import {ISignService} from 'td/platform/sign/common/sign';
+import {isAllInterfaces, isLocalhost} from 'td/platform/tunnel/common/tunnel';
+import {NodeRemoteTunnel} from 'td/platform/tunnel/node/tunnelService';
+import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {ExtHostTunnelService} from 'td/workbench/api/common/extHostTunnelService';
+import {CandidatePort, parseAddress} from 'td/workbench/services/remote/common/tunnelModel';
 import * as vscode from 'vscode';
 
 export function getSockets(stdout: string): Record<string, { pid: number; socket: number }> {
@@ -132,11 +132,11 @@ export async function findPorts(connections: { socket: number; ip: string; port:
 	}, {} as Record<string, typeof processes[0]>);
 
 	const ports: CandidatePort[] = [];
-	connections.forEach(({ socket, ip, port }) => {
+	connections.forEach(({socket, ip, port}) => {
 		const pid = socketMap[socket] ? socketMap[socket].pid : undefined;
 		const command: string | undefined = pid ? processMap[pid]?.cmd : undefined;
 		if (pid && command && !knownExcludeCmdline(command)) {
-			ports.push({ host: ip, port, detail: command, pid });
+			ports.push({host: ip, port, detail: command, pid});
 		}
 	});
 	return ports;
@@ -164,9 +164,9 @@ export function tryFindRootPorts(connections: { socket: number; ip: string; port
 					bestMatch = mostChild;
 				}
 			} while (mostChild);
-			ports.set(connection.port, { host: connection.ip, port: connection.port, pid: bestMatch.pid, detail: bestMatch.cmd, ppid: bestMatch.ppid });
+			ports.set(connection.port, {host: connection.ip, port: connection.port, pid: bestMatch.pid, detail: bestMatch.cmd, ppid: bestMatch.ppid});
 		} else {
-			ports.set(connection.port, { host: connection.ip, port: connection.port, ppid: Number.MAX_VALUE });
+			ports.set(connection.port, {host: connection.ip, port: connection.port, ppid: Number.MAX_VALUE});
 		}
 	}
 
@@ -269,7 +269,7 @@ export class NodeExtHostTunnelService extends ExtHostTunnelService {
 				if (childStat.isDirectory() && !isNaN(pid)) {
 					const cwd = await pfs.Promises.readlink(resources.joinPath(childUri, 'cwd').fsPath);
 					const cmd = await pfs.Promises.readFile(resources.joinPath(childUri, 'cmdline').fsPath, 'utf8');
-					processes.push({ pid, cwd, cmd });
+					processes.push({pid, cwd, cmd});
 				}
 			} catch (e) {
 				//
@@ -350,7 +350,7 @@ export class NodeExtHostTunnelService extends ExtHostTunnelService {
 
 			return {
 				localAddress: parseAddress(t.localAddress) ?? t.localAddress,
-				remoteAddress: { port: t.tunnelRemotePort, host: t.tunnelRemoteHost },
+				remoteAddress: {port: t.tunnelRemotePort, host: t.tunnelRemoteHost},
 				onDidDispose: disposeEmitter.event,
 				dispose: () => {
 					t.dispose();

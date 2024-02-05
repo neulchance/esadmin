@@ -94,7 +94,7 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 
 		// Do this when extension service exists, but extensions are not being activated yet.
 		const configProvider = await this._extHostConfiguration.getConfigProvider();
-		await connectProxyResolver(this._extHostWorkspace, configProvider, this, this._logService, this._mainThreadTelemetryProxy, this._initData);
+		await connectProxyResolver(this._extHostWorkspace, configProvider, this, this._logService/* , this._mainThreadTelemetryProxy */, this._initData);
 		performance.mark('code/extHost/didInitProxyResolver');
 	}
 

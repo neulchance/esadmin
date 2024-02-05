@@ -268,6 +268,7 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 	// 
 	public set<T, R extends T>(identifier: ProxyIdentifier<T>, value: R): R {
 		this._locals[identifier.nid] = value;
+		console.log(this._locals)
 		return value;
 	}
 
@@ -449,6 +450,7 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 	}
 
 	private _doInvokeHandler(rpcId: number, methodName: string, args: any[]): any {
+		console.log(this._locals)
 		const actor = this._locals[rpcId];
 		if (!actor) {
 			throw new Error('Unknown actor ' + getStringIdentifierForProxy(rpcId));

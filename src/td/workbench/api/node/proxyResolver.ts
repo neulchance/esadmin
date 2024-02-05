@@ -25,14 +25,14 @@ export function connectProxyResolver(
 	configProvider: ExtHostConfigProvider,
 	extensionService: ExtHostExtensionService,
 	extHostLogService: ILogService,
-	mainThreadTelemetry: MainThreadTelemetryShape,
+	// mainThreadTelemetry: MainThreadTelemetryShape,
 	initData: IExtensionHostInitData,
 ) {
 	const useHostProxy = initData.environment.useHostProxy;
 	const doUseHostProxy = typeof useHostProxy === 'boolean' ? useHostProxy : !initData.remote.isRemote;
 	const params: ProxyAgentParams = {
 		resolveProxy: url => extHostWorkspace.resolveProxy(url),
-		lookupProxyAuthorization: lookupProxyAuthorization.bind(undefined, extHostLogService, mainThreadTelemetry, configProvider, {}, initData.remote.isRemote),
+		lookupProxyAuthorization: lookupProxyAuthorization.bind(undefined, extHostLogService/* , mainThreadTelemetry */, configProvider, {}, initData.remote.isRemote),
 		getProxyURL: () => configProvider.getConfiguration('http').get('proxy'),
 		getProxySupport: () => configProvider.getConfiguration('http').get<ProxySupportSetting>('proxySupport') || 'off',
 		addCertificatesV1: () => certSettingV1(configProvider),
@@ -130,7 +130,7 @@ function configureModuleLoading(extensionService: ExtHostExtensionService, looku
 
 async function lookupProxyAuthorization(
 	extHostLogService: ILogService,
-	mainThreadTelemetry: MainThreadTelemetryShape,
+	// mainThreadTelemetry: MainThreadTelemetryShape,
 	configProvider: ExtHostConfigProvider,
 	proxyAuthenticateCache: Record<string, string | string[] | undefined>,
 	isRemote: boolean,
@@ -145,7 +145,7 @@ async function lookupProxyAuthorization(
 	extHostLogService.trace('ProxyResolver#lookupProxyAuthorization callback', `proxyURL:${proxyURL}`, `proxyAuthenticate:${proxyAuthenticate}`, `proxyAuthenticateCache:${cached}`);
 	const header = proxyAuthenticate || cached;
 	const authenticate = Array.isArray(header) ? header : typeof header === 'string' ? [header] : [];
-	sendTelemetry(mainThreadTelemetry, authenticate, isRemote);
+	// sendTelemetry(mainThreadTelemetry, authenticate, isRemote);
 	if (authenticate.some(a => /^(Negotiate|Kerberos)( |$)/i.test(a)) && !state.kerberosRequested) {
 		try {
 			state.kerberosRequested = true;

@@ -95,12 +95,12 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 	protected readonly _extHostWorkspace: ExtHostWorkspace;
 	protected readonly _extHostConfiguration: ExtHostConfiguration;
 	protected readonly _logService: ILogService;
-	protected readonly _extHostTunnelService: IExtHostTunnelService;
+	// protected readonly _extHostTunnelService: IExtHostTunnelService;
 	protected readonly _extHostTerminalService: IExtHostTerminalService;
 	protected readonly _extHostLocalizationService: IExtHostLocalizationService;
 
 	protected readonly _mainThreadWorkspaceProxy: MainThreadWorkspaceShape;
-	protected readonly _mainThreadTelemetryProxy: MainThreadTelemetryShape;
+	// protected readonly _mainThreadTelemetryProxy: MainThreadTelemetryShape;
 	protected readonly _mainThreadExtensionsProxy: MainThreadExtensionServiceShape;
 
 	private readonly _almostReadyToRunExtensions: Barrier;
@@ -132,10 +132,10 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		@ILogService logService: ILogService,
 		@IExtHostInitDataService initData: IExtHostInitDataService,
 		@IExtensionStoragePaths storagePath: IExtensionStoragePaths,
-		@IExtHostTunnelService extHostTunnelService: IExtHostTunnelService,
+		// @IExtHostTunnelService extHostTunnelService: IExtHostTunnelService,
 		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService,
 		@IExtHostLocalizationService extHostLocalizationService: IExtHostLocalizationService,
-		@IExtHostManagedSockets private readonly _extHostManagedSockets: IExtHostManagedSockets,
+		// @IExtHostManagedSockets private readonly _extHostManagedSockets: IExtHostManagedSockets,
 	) {
 		super();
 		this._hostUtils = hostUtils;
@@ -145,12 +145,12 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		this._extHostWorkspace = extHostWorkspace;
 		this._extHostConfiguration = extHostConfiguration;
 		this._logService = logService;
-		this._extHostTunnelService = extHostTunnelService;
+		// this._extHostTunnelService = extHostTunnelService;
 		this._extHostTerminalService = extHostTerminalService;
 		this._extHostLocalizationService = extHostLocalizationService;
 
 		this._mainThreadWorkspaceProxy = this._extHostContext.getProxy(MainContext.MainThreadWorkspace);
-		this._mainThreadTelemetryProxy = this._extHostContext.getProxy(MainContext.MainThreadTelemetry);
+		// this._mainThreadTelemetryProxy = this._extHostContext.getProxy(MainContext.MainThreadTelemetry);
 		this._mainThreadExtensionsProxy = this._extHostContext.getProxy(MainContext.MainThreadExtensionService);
 
 		this._almostReadyToRunExtensions = new Barrier();
@@ -451,11 +451,11 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 			activateResolvedTime?: number;
 		};
 
-		this._mainThreadTelemetryProxy.$publicLog2<ExtensionActivationTimesEvent, ExtensionActivationTimesClassification>('extensionActivationTimes', {
-			...event,
-			...(activationTimes || {}),
-			outcome
-		});
+		// this._mainThreadTelemetryProxy.$publicLog2<ExtensionActivationTimesEvent, ExtensionActivationTimesClassification>('extensionActivationTimes', {
+		// 	...event,
+		// 	...(activationTimes || {}),
+		// 	outcome
+		// });
 	}
 
 	private _doActivateExtension(extensionDescription: IExtensionDescription, reason: ExtensionActivationReason): Promise<ActivatedExtension> {
@@ -464,7 +464,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 			owner: 'jrieken';
 			comment: 'Data about how/why an extension was activated';
 		} & TelemetryActivationEventFragment;
-		this._mainThreadTelemetryProxy.$publicLog2<TelemetryActivationEvent, ActivatePluginClassification>('activatePlugin', event);
+		// this._mainThreadTelemetryProxy.$publicLog2<TelemetryActivationEvent, ActivatePluginClassification>('activatePlugin', event);
 		const entryPoint = this._getEntryPoint(extensionDescription);
 		if (!entryPoint) {
 			// Treat the extension as being empty => NOT AN ERROR CASE
@@ -884,10 +884,10 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 					result = await resolver.resolve(remoteAuthority, {resolveAttempt, execServer});
 					performance.mark(`code/extHost/didResolveAuthorityOK/${authorityPrefix}`);
 					logInfo(`setting tunnel factory...`);
-					this._register(await this._extHostTunnelService.setTunnelFactory(
-						resolver,
-						ExtHostManagedResolvedAuthority.isManagedResolvedAuthority(result) ? result : undefined
-					));
+					// this._register(await this._extHostTunnelService.setTunnelFactory(
+					// 	resolver,
+					// 	ExtHostManagedResolvedAuthority.isManagedResolvedAuthority(result) ? result : undefined
+					// ));
 				} else {
 					logInfo(`invoking resolveExecServer() for ${remoteAuthority}`);
 					performance.mark(`code/extHost/willResolveExecServer/${authorityPrefix}`);
@@ -933,7 +933,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 			const socketFactoryId = resolveAttempt;
 
 			// There is only on managed socket factory at a time, so we can just overwrite the old one.
-			this._extHostManagedSockets.setFactory(socketFactoryId, result.makeConnection);
+			// this._extHostManagedSockets.setFactory(socketFactoryId, result.makeConnection);
 
 			authority = {
 				authority: remoteAuthorityChain,

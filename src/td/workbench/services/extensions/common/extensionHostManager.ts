@@ -19,7 +19,7 @@ import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation
 import {ILogService} from 'td/platform/log/common/log';
 import {RemoteAuthorityResolverErrorCode, getRemoteAuthorityPrefix} from 'td/platform/remote/common/remoteAuthorityResolver';
 import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
-// import {IEditorService} from 'td/workbench/services/editor/common/editorService';
+import {IEditorService} from 'td/workbench/services/editor/common/editorService';
 import {IWorkbenchEnvironmentService} from 'td/workbench/services/environment/common/environmentService';
 import {ExtHostCustomersRegistry, IInternalExtHostContext} from 'td/workbench/services/extensions/common/extHostCustomers';
 import {ExtensionHostKind, extensionHostKindToString} from 'td/workbench/services/extensions/common/extensionHostKind';
@@ -156,7 +156,6 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 				return null;
 			}
 		);
-		
 		this._proxy.then(() => {
 			initialActivationEvents.forEach((activationEvent) => this.activateByEvent(activationEvent, ActivationKind.Normal));
 			this._register(registerLatencyTestProvider({
@@ -258,7 +257,6 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		this._register(this._rpcProtocol.onDidChangeResponsiveState((responsiveState: ResponsiveState) => this._onDidChangeResponsiveState.fire(responsiveState)));
 		let extensionHostProxy: IExtensionHostProxy | null = null as IExtensionHostProxy | null;
 		let mainProxyIdentifiers: ProxyIdentifier<any>[] = [];
-		// explain@neulchance 
 		const extHostContext: IInternalExtHostContext = {
 			remoteAuthority: this._extensionHost.remoteAuthority,
 			extensionHostKind: this.kind,
@@ -645,10 +643,10 @@ registerAction2(class MeasureExtHostLatencyAction extends Action2 {
 
 	async run(accessor: ServicesAccessor) {
 
-		// const editorService = accessor.get(IEditorService);
+		const editorService = accessor.get(IEditorService);
 
 		const measurements = await Promise.all(getLatencyTestProviders().map(provider => provider.measure()));
-		// editorService.openEditor({resource: undefined, contents: measurements.map(MeasureExtHostLatencyAction._print).join('\n\n'), options: {pinned: true}});
+		editorService.openEditor({resource: undefined, contents: measurements.map(MeasureExtHostLatencyAction._print).join('\n\n'), options: {pinned: true}});
 	}
 
 	private static _print(m: ExtHostLatencyResult | null): string {
