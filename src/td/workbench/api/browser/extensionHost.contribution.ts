@@ -23,6 +23,8 @@ import './mainThreadWindow';
 import './mainThreadErrors';
 import './mainThreadLogService';
 // import './mainThreadShare';
+import './mainThreadWorkspace';
+import './mainThreadMessageService';
 
 export class ExtensionPoints implements IWorkbenchContribution {
 

@@ -30,7 +30,6 @@ import {Dto} from 'td/workbench/services/extensions/common/proxyIdentifier';
 import {IHostService} from 'td/workbench/services/host/browser/host';
 import {ITimerService} from 'td/workbench/services/timer/browser/timerService';
 
-
 // 아래 MainContext.MainThreadExtensionService
 @extHostNamedCustomer(MainContext.MainThreadExtensionService)
 export class MainThreadExtensionService implements MainThreadExtensionServiceShape {
