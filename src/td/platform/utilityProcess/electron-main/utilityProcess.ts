@@ -368,8 +368,8 @@ export class UtilityProcess extends Disposable {
 			return; // already killed, crashed or never started
 		}
 
-		// 🦑: send to extensionHostProcess.ts
-		this.process.postMessage(message, transfer);
+		// 🦑: send to extensionHostProcess.ts:154:65
+		this.process.postMessage('mymessage', transfer);
 	}
 
 	connect(payload?: unknown): Electron.MessagePortMain {

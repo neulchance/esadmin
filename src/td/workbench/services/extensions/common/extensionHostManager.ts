@@ -151,8 +151,6 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 					failureTelemetryEvent.errorStack = err.stack;
 				}
 
-				console.log('failureTelemetryEvent')
-				console.log(failureTelemetryEvent)
 				// this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', failureTelemetryEvent);
 
 				return null;
@@ -160,8 +158,6 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		);
 		
 		this._proxy.then(() => {
-			const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m";
-			console.log(`${red}???????????????????${done}`)
 			initialActivationEvents.forEach((activationEvent) => this.activateByEvent(activationEvent, ActivationKind.Normal));
 			this._register(registerLatencyTestProvider({
 				measure: () => this.measure()

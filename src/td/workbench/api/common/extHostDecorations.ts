@@ -4,18 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
-import { URI } from 'td/base/common/uri';
-import { MainContext, ExtHostDecorationsShape, MainThreadDecorationsShape, DecorationData, DecorationRequest, DecorationReply } from 'td/workbench/api/common/extHost.protocol';
-import { Disposable, FileDecoration } from 'td/workbench/api/common/extHostTypes';
-import { CancellationToken } from 'td/base/common/cancellation';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { ILogService } from 'td/platform/log/common/log';
-import { asArray, groupBy } from 'td/base/common/arrays';
-import { compare, count } from 'td/base/common/strings';
-import { dirname } from 'td/base/common/path';
-import { checkProposedApiEnabled } from 'td/workbench/services/extensions/common/extensions';
+import {URI} from 'td/base/common/uri';
+import {MainContext, ExtHostDecorationsShape, MainThreadDecorationsShape, DecorationData, DecorationRequest, DecorationReply} from 'td/workbench/api/common/extHost.protocol';
+import {Disposable, FileDecoration} from 'td/workbench/api/common/extHostTypes';
+import {CancellationToken} from 'td/base/common/cancellation';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {ILogService} from 'td/platform/log/common/log';
+import {asArray, groupBy} from 'td/base/common/arrays';
+import {compare, count} from 'td/base/common/strings';
+import {dirname} from 'td/base/common/path';
+import {checkProposedApiEnabled} from 'td/workbench/services/extensions/common/extensions';
 
 interface ProviderData {
 	provider: vscode.FileDecorationProvider;
@@ -40,7 +40,7 @@ export class ExtHostDecorations implements ExtHostDecorationsShape {
 
 	registerFileDecorationProvider(provider: vscode.FileDecorationProvider, extensionDescription: IExtensionDescription): vscode.Disposable {
 		const handle = ExtHostDecorations._handlePool++;
-		this._provider.set(handle, { provider, extensionDescription });
+		this._provider.set(handle, {provider, extensionDescription});
 		this._proxy.$registerDecorationProvider(handle, extensionDescription.identifier.value);
 
 		const listener = provider.onDidChangeFileDecorations && provider.onDidChangeFileDecorations(e => {
@@ -57,7 +57,7 @@ export class ExtHostDecorations implements ExtHostDecorationsShape {
 			// too many resources per event. pick one resource per folder, starting
 			// with parent folders
 			this._logService.warn('[Decorations] CAPPING events from decorations provider', extensionDescription.identifier.value, array.length);
-			const mapped = array.map(uri => ({ uri, rank: count(uri.path, '/') }));
+			const mapped = array.map(uri => ({uri, rank: count(uri.path, '/')}));
 			const groups = groupBy(mapped, (a, b) => a.rank - b.rank || compare(a.uri.path, b.uri.path));
 			const picked: URI[] = [];
 			outer: for (const uris of groups) {
@@ -90,11 +90,11 @@ export class ExtHostDecorations implements ExtHostDecorationsShape {
 		}
 
 		const result: DecorationReply = Object.create(null);
-		const { provider, extensionDescription: extensionId } = this._provider.get(handle)!;
+		const {provider, extensionDescription: extensionId} = this._provider.get(handle)!;
 
 		await Promise.all(requests.map(async request => {
 			try {
-				const { uri, id } = request;
+				const {uri, id} = request;
 				const data = await Promise.resolve(provider.provideFileDecoration(URI.revive(uri), token));
 				if (!data) {
 					return;
