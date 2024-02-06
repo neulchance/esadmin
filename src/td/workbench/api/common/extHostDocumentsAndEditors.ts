@@ -5,20 +5,20 @@
 
 import * as assert from 'td/base/common/assert';
 import * as vscode from 'vscode';
-import { Emitter, Event } from 'td/base/common/event';
-import { dispose } from 'td/base/common/lifecycle';
-import { URI } from 'td/base/common/uri';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { ExtHostDocumentsAndEditorsShape, IDocumentsAndEditorsDelta, IModelAddedData, MainContext } from 'td/workbench/api/common/extHost.protocol';
-import { ExtHostDocumentData } from 'td/workbench/api/common/extHostDocumentData';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { ExtHostTextEditor } from 'td/workbench/api/common/extHostTextEditor';
+import {Emitter, Event} from 'td/base/common/event';
+import {dispose} from 'td/base/common/lifecycle';
+import {URI} from 'td/base/common/uri';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {ExtHostDocumentsAndEditorsShape, IDocumentsAndEditorsDelta, IModelAddedData, MainContext} from 'td/workbench/api/common/extHost.protocol';
+import {ExtHostDocumentData} from 'td/workbench/api/common/extHostDocumentData';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {ExtHostTextEditor} from 'td/workbench/api/common/extHostTextEditor';
 import * as typeConverters from 'td/workbench/api/common/extHostTypeConverters';
-import { ILogService } from 'td/platform/log/common/log';
-import { ResourceMap } from 'td/base/common/map';
-import { Schemas } from 'td/base/common/network';
-import { Iterable } from 'td/base/common/iterator';
-import { Lazy } from 'td/base/common/lazy';
+import {ILogService} from 'td/platform/log/common/log';
+import {ResourceMap} from 'td/base/common/map';
+import {Schemas} from 'td/base/common/network';
+import {Iterable} from 'td/base/common/iterator';
+import {Lazy} from 'td/base/common/lazy';
 
 class Reference<T> {
 	private _count = 0;

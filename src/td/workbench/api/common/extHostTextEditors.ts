@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as arrays from 'td/base/common/arrays';
-import { Emitter, Event } from 'td/base/common/event';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { ExtHostEditorsShape, IEditorPropertiesChangeData, IMainContext, ITextDocumentShowOptions, ITextEditorPositionData, MainContext, MainThreadTextEditorsShape } from 'td/workbench/api/common/extHost.protocol';
-import { ExtHostDocumentsAndEditors } from 'td/workbench/api/common/extHostDocumentsAndEditors';
-import { ExtHostTextEditor, TextEditorDecorationType } from 'td/workbench/api/common/extHostTextEditor';
+import {Emitter, Event} from 'td/base/common/event';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {ExtHostEditorsShape, IEditorPropertiesChangeData, IMainContext, ITextDocumentShowOptions, ITextEditorPositionData, MainContext, MainThreadTextEditorsShape} from 'td/workbench/api/common/extHost.protocol';
+import {ExtHostDocumentsAndEditors} from 'td/workbench/api/common/extHostDocumentsAndEditors';
+import {ExtHostTextEditor, TextEditorDecorationType} from 'td/workbench/api/common/extHostTextEditor';
 import * as TypeConverters from 'td/workbench/api/common/extHostTypeConverters';
-import { TextEditorSelectionChangeKind } from 'td/workbench/api/common/extHostTypes';
+import {TextEditorSelectionChangeKind} from 'td/workbench/api/common/extHostTypes';
 import * as vscode from 'vscode';
 
 export class ExtHostEditors implements ExtHostEditorsShape {
@@ -121,7 +121,7 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 		if (data.options) {
 			this._onDidChangeTextEditorOptions.fire({
 				textEditor: textEditor.value,
-				options: { ...data.options, lineNumbers: TypeConverters.TextEditorLineNumbersStyle.to(data.options.lineNumbers) }
+				options: {...data.options, lineNumbers: TypeConverters.TextEditorLineNumbersStyle.to(data.options.lineNumbers)}
 			});
 		}
 		if (data.selections) {
@@ -151,7 +151,7 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 			const viewColumn = TypeConverters.ViewColumn.to(data[id]);
 			if (textEditor.value.viewColumn !== viewColumn) {
 				textEditor._acceptViewColumn(viewColumn);
-				this._onDidChangeTextEditorViewColumn.fire({ textEditor: textEditor.value, viewColumn });
+				this._onDidChangeTextEditorViewColumn.fire({textEditor: textEditor.value, viewColumn});
 			}
 		}
 	}

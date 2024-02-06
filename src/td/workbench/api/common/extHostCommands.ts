@@ -52,7 +52,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 
 	private readonly _commands = new Map<string, CommandHandler>();
 	private readonly _apiCommands = new Map<string, ApiCommand>();
-	#telemetry: MainThreadTelemetryShape;
+	// #telemetry: MainThreadTelemetryShape;
 
 	private readonly _logService: ILogService;
 	readonly #extHostTelemetry: IExtHostTelemetry;
@@ -68,7 +68,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		this.#proxy = extHostRpc.getProxy(MainContext.MainThreadCommands);
 		this._logService = logService;
 		this.#extHostTelemetry = extHostTelemetry;
-		this.#telemetry = extHostRpc.getProxy(MainContext.MainThreadTelemetry);
+		// this.#telemetry = extHostRpc.getProxy(MainContext.MainThreadTelemetry);
 		this.converter = new CommandsConverter(
 			this,
 			id => {
@@ -296,11 +296,11 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			owner: 'digitarald';
 			comment: 'Used to gain insight on the most popular commands used from extensions';
 		};
-		this.#telemetry.$publicLog2<ExtensionActionTelemetry, ExtensionActionTelemetryMeta>('Extension:ActionExecuted', {
-			extensionId: command.extension.identifier.value,
-			id: new TelemetryTrustedValue(id),
-			duration: duration,
-		});
+		// this.#telemetry.$publicLog2<ExtensionActionTelemetry, ExtensionActionTelemetryMeta>('Extension:ActionExecuted', {
+		// 	extensionId: command.extension.identifier.value,
+		// 	id: new TelemetryTrustedValue(id),
+		// 	duration: duration,
+		// });
 	}
 
 	$executeContributedCommand(id: string, ...args: any[]): Promise<unknown> {

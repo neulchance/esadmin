@@ -131,7 +131,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		@IExtHostConfiguration extHostConfiguration: IExtHostConfiguration,
 		@ILogService logService: ILogService,
 		@IExtHostInitDataService initData: IExtHostInitDataService,
-		@IExtensionStoragePaths storagePath: IExtensionStoragePaths,
+		@IExtensionStoragePaths storagePath: IExtensionStoragePaths, // pass
 		// @IExtHostTunnelService extHostTunnelService: IExtHostTunnelService,
 		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService,
 		@IExtHostLocalizationService extHostLocalizationService: IExtHostLocalizationService,
