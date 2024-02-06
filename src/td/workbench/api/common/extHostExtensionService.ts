@@ -135,7 +135,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		@IExtHostTunnelService extHostTunnelService: IExtHostTunnelService,
 		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService,
 		@IExtHostLocalizationService extHostLocalizationService: IExtHostLocalizationService,
-		// @IExtHostManagedSockets private readonly _extHostManagedSockets: IExtHostManagedSockets,
+		@IExtHostManagedSockets private readonly _extHostManagedSockets: IExtHostManagedSockets,
 	) {
 		super();
 		this._hostUtils = hostUtils;
@@ -932,7 +932,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 			const socketFactoryId = resolveAttempt;
 
 			// There is only on managed socket factory at a time, so we can just overwrite the old one.
-			// this._extHostManagedSockets.setFactory(socketFactoryId, result.makeConnection);
+			this._extHostManagedSockets.setFactory(socketFactoryId, result.makeConnection);
 
 			authority = {
 				authority: remoteAuthorityChain,
