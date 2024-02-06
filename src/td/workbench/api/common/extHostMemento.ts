@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
-import { IDisposable } from 'td/base/common/lifecycle';
-import { ExtHostStorage } from 'td/workbench/api/common/extHostStorage';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { DeferredPromise, RunOnceScheduler } from 'td/base/common/async';
+import {IDisposable} from 'td/base/common/lifecycle';
+import {ExtHostStorage} from 'td/workbench/api/common/extHostStorage';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {DeferredPromise, RunOnceScheduler} from 'td/base/common/async';
 
 export class ExtensionMemento implements vscode.Memento {
 
@@ -103,7 +103,7 @@ export class ExtensionGlobalMemento extends ExtensionMemento {
 	private readonly _extension: IExtensionDescription;
 
 	setKeysForSync(keys: string[]): void {
-		this._storage.registerExtensionStorageKeysToSync({ id: this._id, version: this._extension.version }, keys);
+		this._storage.registerExtensionStorageKeysToSync({id: this._id, version: this._extension.version}, keys);
 	}
 
 	constructor(extensionDescription: IExtensionDescription, storage: ExtHostStorage) {

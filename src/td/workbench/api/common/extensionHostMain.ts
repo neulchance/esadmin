@@ -30,6 +30,8 @@ import {IExtHostConsumerFileSystem} from './extHostFileSystemConsumer';
 import {IExtHostFileSystemInfo} from './extHostFileSystemInfo';
 import {IExtHostTerminalService} from './extHostTerminalService';
 import {IExtHostLocalizationService} from './extHostLocalizationService';
+import {IExtHostTunnelService} from './extHostTunnelService';
+import {IExtHostManagedSockets} from './extHostManagedSockets';
 
 export interface IExitFn {
 	(code?: number): any;
@@ -191,6 +193,8 @@ export class ExtensionHostMain {
 			}) */
 			return accessor.get(IExtHostExtensionService)
 		});
+		console.log(`\x1b[32m_beforeAlmostReadyToRunExtensions\x1b[0m`)
+		console.log('???? commmon services 2')
 		// Above IExtHostExtensionService instance is registered in extHost.node.services.ts's registerSingleton().
 		// explain@neulchance 
 		// node/extHostExtensionService.ts

@@ -95,7 +95,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 	protected readonly _extHostWorkspace: ExtHostWorkspace;
 	protected readonly _extHostConfiguration: ExtHostConfiguration;
 	protected readonly _logService: ILogService;
-	// protected readonly _extHostTunnelService: IExtHostTunnelService;
+	protected readonly _extHostTunnelService: IExtHostTunnelService;
 	protected readonly _extHostTerminalService: IExtHostTerminalService;
 	protected readonly _extHostLocalizationService: IExtHostLocalizationService;
 
@@ -132,7 +132,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		@ILogService logService: ILogService,
 		@IExtHostInitDataService initData: IExtHostInitDataService,
 		@IExtensionStoragePaths storagePath: IExtensionStoragePaths, // pass
-		// @IExtHostTunnelService extHostTunnelService: IExtHostTunnelService,
+		@IExtHostTunnelService extHostTunnelService: IExtHostTunnelService,
 		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService,
 		@IExtHostLocalizationService extHostLocalizationService: IExtHostLocalizationService,
 		// @IExtHostManagedSockets private readonly _extHostManagedSockets: IExtHostManagedSockets,
@@ -145,7 +145,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		this._extHostWorkspace = extHostWorkspace;
 		this._extHostConfiguration = extHostConfiguration;
 		this._logService = logService;
-		// this._extHostTunnelService = extHostTunnelService;
+		this._extHostTunnelService = extHostTunnelService;
 		this._extHostTerminalService = extHostTerminalService;
 		this._extHostLocalizationService = extHostLocalizationService;
 
@@ -883,10 +883,10 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 					result = await resolver.resolve(remoteAuthority, {resolveAttempt, execServer});
 					performance.mark(`code/extHost/didResolveAuthorityOK/${authorityPrefix}`);
 					logInfo(`setting tunnel factory...`);
-					// this._register(await this._extHostTunnelService.setTunnelFactory(
-					// 	resolver,
-					// 	ExtHostManagedResolvedAuthority.isManagedResolvedAuthority(result) ? result : undefined
-					// ));
+					this._register(await this._extHostTunnelService.setTunnelFactory(
+						resolver,
+						ExtHostManagedResolvedAuthority.isManagedResolvedAuthority(result) ? result : undefined
+					));
 				} else {
 					logInfo(`invoking resolveExecServer() for ${remoteAuthority}`);
 					performance.mark(`code/extHost/willResolveExecServer/${authorityPrefix}`);

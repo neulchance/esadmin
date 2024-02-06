@@ -39,7 +39,7 @@ registerSingleton(IExtHostConsumerFileSystem, ExtHostConsumerFileSystem, Instant
 registerSingleton(IExtHostDebugService, WorkerExtHostDebugService, InstantiationType.Eager);
 registerSingleton(IExtHostDecorations, ExtHostDecorations, InstantiationType.Eager);
 registerSingleton(IExtHostDocumentsAndEditors, ExtHostDocumentsAndEditors, InstantiationType.Eager);
-// registerSingleton(IExtHostManagedSockets, ExtHostManagedSockets, InstantiationType.Eager);
+registerSingleton(IExtHostManagedSockets, ExtHostManagedSockets, InstantiationType.Eager);
 registerSingleton(IExtHostFileSystemInfo, ExtHostFileSystemInfo, InstantiationType.Eager);
 registerSingleton(IExtHostOutputService, ExtHostOutputService, InstantiationType.Delayed);
 registerSingleton(IExtHostSearch, ExtHostSearch, InstantiationType.Eager);

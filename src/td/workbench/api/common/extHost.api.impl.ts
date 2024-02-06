@@ -138,7 +138,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const rpcProtocol = accessor.get(IExtHostRpcService);
 	console.log('createApiFactoryAndRegisterActors 10')
 	const extHostStorage = accessor.get(IExtHostStorage);
-	console.log('createApiFactoryAndRegisterActors 10')
+	console.log('createApiFactoryAndRegisterActors 11')
 	const extensionStoragePaths = accessor.get(IExtensionStoragePaths);
 	const extHostLoggerService = accessor.get(ILoggerService);
 	const extHostLogService = accessor.get(ILogService);

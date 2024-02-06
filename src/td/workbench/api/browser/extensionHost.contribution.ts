@@ -18,18 +18,20 @@ import {JSONValidationExtensionPoint} from 'td/workbench/api/common/jsonValidati
 
 // --- mainThread participants
 import './mainThreadLocalization';
-// import './mainThreadBulkEdits';
 import './mainThreadConsole';
 import './mainThreadExtensionService';
 import './mainThreadWindow';
 import './mainThreadErrors';
 import './mainThreadLogService';
-// import './mainThreadShare';
 import './mainThreadWorkspace';
 import './mainThreadMessageService';
 import './mainThreadConfiguration';
 import './mainThreadFileSystem';
 import './mainThreadDocuments';
+import './mainThreadStatusBar';
+import './mainThreadStorage';
+import './mainThreadTunnelService';
+import './mainThreadManagedSockets';
 
 export class ExtensionPoints implements IWorkbenchContribution {
 
