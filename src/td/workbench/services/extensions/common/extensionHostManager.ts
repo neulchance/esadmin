@@ -260,8 +260,18 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		const extHostContext: IInternalExtHostContext = {
 			remoteAuthority: this._extensionHost.remoteAuthority,
 			extensionHostKind: this.kind,
-			getProxy: <T>(identifier: ProxyIdentifier<T>): Proxied<T> => this._rpcProtocol!.getProxy(identifier),
-			set: <T, R extends T>(identifier: ProxyIdentifier<T>, instance: R): R => this._rpcProtocol!.set(identifier, instance),
+			getProxy: <T>(identifier: ProxyIdentifier<T>): Proxied<T> => {
+			if (identifier) {
+					console.log(`\x1b[32mIDENTIFIER exists\x1b[0m \x1b[31m${identifier.sid}\x1b[0m`)
+				} else {
+					console.log(`\x1b[32mIDENTIFIER does not exist\x1b[0m`)
+				}
+				return this._rpcProtocol!.getProxy(identifier)
+			},
+			set: <T, R extends T>(identifier: ProxyIdentifier<T>, instance: R): R => {
+				console.log(`\x1b[32m  set set set set set set set \x1b[0m`)
+				return this._rpcProtocol!.set(identifier, instance)
+			},
 			dispose: (): void => this._rpcProtocol!.dispose(),
 			assertRegistered: (identifiers: ProxyIdentifier<any>[]): void => this._rpcProtocol!.assertRegistered(identifiers),
 			drain: (): Promise<void> => this._rpcProtocol!.drain(),
@@ -283,10 +293,13 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		for (let i = 0, len = namedCustomers.length; i < len; i++) {
 			const [id, ctor] = namedCustomers[i];
 			try {
+				// When create ctor:MainThreadExtensionService then its inside call getProxy(ExtHostContext.ExtHostExtensionService)
+				console.log(`\x1b[32m ----------\x1b[0m\x1b[34m GOGO \x1b[0m\x1b[32m---------- \x1b[0m`)
+				console.log(`\x1b[32m ExtensionHostManager: \x1b[0m \x1b[34m[ctor.name]:\x1b[0m \x1b[33m${ctor.name} \x1b[0m`)
 				const instance = this._instantiationService.createInstance(ctor, extHostContext);
 				this._customers.push(instance);
 				// explain@neulchance rpcProtocol.set
-				this._rpcProtocol.set(id, instance);
+				this._rpcProtocol.set(id, instance); // this._locals[identifier.nid] = value;
 			} catch (err) {
 				this._logService.error(`Cannot instantiate named customer: '${id.sid}'`);
 				this._logService.error(err);

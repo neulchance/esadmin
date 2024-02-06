@@ -25,6 +25,8 @@ import './mainThreadLogService';
 // import './mainThreadShare';
 import './mainThreadWorkspace';
 import './mainThreadMessageService';
+import './mainThreadConfiguration';
+// import './mainThreadFileSystem';
 
 export class ExtensionPoints implements IWorkbenchContribution {
 

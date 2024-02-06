@@ -1731,6 +1731,7 @@ export interface ExtHostTreeViewsShape {
 }
 
 export interface ExtHostWorkspaceShape {
+	$checkWorking(data?: any): void;
 	$initializeWorkspace(workspace: IWorkspaceData | null, trusted: boolean): void;
 	$acceptWorkspaceData(workspace: IWorkspaceData | null): void;
 	$handleTextSearchResult(result: search.IRawFileMatch2, requestId: number): void;
@@ -2743,7 +2744,7 @@ export const MainContext = {
 	// MainThreadClipboard: createProxyIdentifier<MainThreadClipboardShape>('MainThreadClipboard'),
 	// MainThreadCommands: createProxyIdentifier<MainThreadCommandsShape>('MainThreadCommands'),
 	// MainThreadComments: createProxyIdentifier<MainThreadCommentsShape>('MainThreadComments'),
-	// MainThreadConfiguration: createProxyIdentifier<MainThreadConfigurationShape>('MainThreadConfiguration'),
+	MainThreadConfiguration: createProxyIdentifier<MainThreadConfigurationShape>('MainThreadConfiguration'),
 	// MainThreadConsole: createProxyIdentifier<MainThreadConsoleShape>('MainThreadConsole'),
 	// MainThreadDebugService: createProxyIdentifier<MainThreadDebugServiceShape>('MainThreadDebugService'),
 	// MainThreadDecorations: createProxyIdentifier<MainThreadDecorationsShape>('MainThreadDecorations'),

@@ -201,6 +201,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		@ILogService logService: ILogService,
 		@IURITransformerService uriTransformerService: IURITransformerService,
 	) {
+		// console.log(extHostRpc, initData, extHostFileSystemInfo, logService, uriTransformerService)
 		this._logService = logService;
 		this._extHostFileSystemInfo = extHostFileSystemInfo;
 		this._uriTransformerService = uriTransformerService;
@@ -211,6 +212,10 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		this._messageService = extHostRpc.getProxy(MainContext.MainThreadMessageService);
 		const data = initData.workspace;
 		this._confirmedWorkspace = data ? new ExtHostWorkspaceImpl(data.id, data.name, [], !!data.transient, data.configuration ? URI.revive(data.configuration) : null, !!data.isUntitled, uri => ignorePathCasing(uri, extHostFileSystemInfo)) : undefined;
+	}
+
+	$checkWorking(data?: any): void {
+		console.log(`Working? Working? ${data}`)
 	}
 
 	$initializeWorkspace(data: IWorkspaceData | null, trusted: boolean): void {

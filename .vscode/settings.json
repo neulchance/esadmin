@@ -12,6 +12,9 @@
   "editor.minimap.enabled": false,
   "workbench.sideBar.location": "right",
   "explorer.compactFolders": false,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.indentSize": "tabSize",
   /* https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight */
   "todohighlight.keywords": [
     "DEFAULT WORKS LIKE THIS",
@@ -22,5 +25,42 @@
       "backgroundColor": "#132C44",
       "borderRadius": "2px",
     },
+    {
+      "text": "\\x1b[33m",
+      "color": "white",
+      "backgroundColor": "orange",
+      "borderRadius": "2px",
+    },
+    {
+      "text": "\\x1b[35m",
+      "color": "white",
+      "backgroundColor": "purple",
+      "borderRadius": "2px",
+    },
+    {
+      "text": "\\x1b[34m",
+      "color": "white",
+      "backgroundColor": "blue",
+      "borderRadius": "2px",
+    },
+    {
+      "text": "\\x1b[32m",
+      "color": "white",
+      "backgroundColor": "green",
+      "borderRadius": "2px",
+    },
+    {
+      "text": "\\x1b[31m",
+      "color": "white",
+      "backgroundColor": "red",
+      "borderRadius": "2px",
+    },
+    {
+      "text": "\\x1b[0m",
+      "color": "white",
+      "backgroundColor": "#132C44",
+      "borderRadius": "2px",
+    },
+    // 35d4c7
   ],
 }

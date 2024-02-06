@@ -127,7 +127,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// services
 	const initData = accessor.get(IExtHostInitDataService);
 	const extHostFileSystemInfo = accessor.get(IExtHostFileSystemInfo);
-	const extHostConsumerFileSystem = accessor.get(IExtHostConsumerFileSystem);
+	// 🤤
+	// const extHostConsumerFileSystem = accessor.get(IExtHostConsumerFileSystem);
 	const extensionService = accessor.get(IExtHostExtensionService);
 	const extHostWorkspace = accessor.get(IExtHostWorkspace);
 	const extHostTelemetry = accessor.get(IExtHostTelemetry);

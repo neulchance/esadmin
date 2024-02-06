@@ -5,13 +5,13 @@
 
 import * as fs from 'fs';
 import * as path from 'td/base/common/path';
-import { URI } from 'td/base/common/uri';
-import { ExtensionStoragePaths as CommonExtensionStoragePaths } from 'td/workbench/api/common/extHostStoragePaths';
-import { Disposable } from 'td/base/common/lifecycle';
-import { Schemas } from 'td/base/common/network';
-import { IntervalTimer, timeout } from 'td/base/common/async';
-import { ILogService } from 'td/platform/log/common/log';
-import { Promises } from 'td/base/node/pfs';
+import {URI} from 'td/base/common/uri';
+import {ExtensionStoragePaths as CommonExtensionStoragePaths} from 'td/workbench/api/common/extHostStoragePaths';
+import {Disposable} from 'td/base/common/lifecycle';
+import {Schemas} from 'td/base/common/network';
+import {IntervalTimer, timeout} from 'td/base/common/async';
+import {ILogService} from 'td/platform/log/common/log';
+import {Promises} from 'td/base/node/pfs';
 
 export class ExtensionStoragePaths extends CommonExtensionStoragePaths {
 
@@ -76,7 +76,7 @@ async function mkdir(dir: string): Promise<void> {
 	}
 
 	try {
-		await Promises.mkdir(dir, { recursive: true });
+		await Promises.mkdir(dir, {recursive: true});
 	} catch {
 	}
 }
@@ -123,7 +123,7 @@ class Lock extends Disposable {
 				pid: process.pid,
 				willReleaseAt: Date.now() + timeUntilReleaseMs
 			};
-			await Promises.writeFile(this.filename, JSON.stringify(contents), { flag: 'w' });
+			await Promises.writeFile(this.filename, JSON.stringify(contents), {flag: 'w'});
 		} catch (err) {
 			this.logService.error(err);
 		}
@@ -141,7 +141,7 @@ async function tryAcquireLock(logService: ILogService, filename: string, isSecon
 			pid: process.pid,
 			willReleaseAt: 0
 		};
-		await Promises.writeFile(filename, JSON.stringify(contents), { flag: 'wx' });
+		await Promises.writeFile(filename, JSON.stringify(contents), {flag: 'wx'});
 	} catch (err) {
 		logService.error(err);
 	}

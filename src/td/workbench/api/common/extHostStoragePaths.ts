@@ -34,7 +34,7 @@ export class ExtensionStoragePaths implements IExtensionStoragePaths {
 	constructor(
 		@IExtHostInitDataService initData: IExtHostInitDataService,
 		@ILogService protected readonly _logService: ILogService,
-		@IExtHostConsumerFileSystem private readonly _extHostFileSystem: IExtHostConsumerFileSystem
+		@IExtHostConsumerFileSystem private readonly _extHostFileSystem: IExtHostConsumerFileSystem // not prepared
 	) {
 		this._workspace = initData.workspace ?? undefined;
 		this._environment = initData.environment;

@@ -15,7 +15,7 @@ import {MarshalledId} from 'td/base/common/marshallingIds';
 import {IURITransformer, transformIncomingURIs} from 'td/base/common/uriIpc';
 import {IMessagePassingProtocol} from 'td/base/parts/ipc/common/ipc';
 import {CanceledLazyPromise, LazyPromise} from 'td/workbench/services/extensions/common/lazyPromise';
-import {getStringIdentifierForProxy, IRPCProtocol, Proxied, ProxyIdentifier, SerializableObjectWithBuffers} from 'td/workbench/services/extensions/common/proxyIdentifier';
+import {getStringIdentifierFor, getStringIdentifierForProxy, IRPCProtocol, Proxied, ProxyIdentifier, SerializableObjectWithBuffers} from 'td/workbench/services/extensions/common/proxyIdentifier';
 
 export interface JSONStringifyReplacer {
 	(key: string, value: any): any;
@@ -147,6 +147,8 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 		this._isDisposed = false;
 		this._locals = [];
 		this._proxies = [];
+		
+		// RPCProtocol은 extensionHostMain, extensionHostManager 두곳에서 초기화를 진행합니다.
 		for (let i = 0, len = ProxyIdentifier.count; i < len; i++) {
 			this._locals[i] = null;
 			this._proxies[i] = null;
@@ -262,13 +264,21 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 				return target[name];
 			}
 		};
+		/* 
+			Object.create(null)로 생성된 객체는 프로토타입이 없습니다. 따라서, 이것은 프록시 객체에 대한 프로토타입 체인이 없다는 것을 의미합니다.
+			프로토타입 체인이 없는 객체는 프록시 객체로 사용하기에 적합합니다.
+			이 proxy 인스턴스는 모든 prop에 대해 handler를 수행합니다.
+		*/
 		return new Proxy(Object.create(null), handler);
 	}
 
-	// 
+	// [extHostRpcService.ts] this.set = rpcProtocol.set.bind(rpcProtocol);
+	// extHost.api.impl.ts's rpcProtocol is an instance of RPCProtocol
+	// extHost.api.impl.ts's rpcProtocol.set function means RPCProtocol.set
 	public set<T, R extends T>(identifier: ProxyIdentifier<T>, value: R): R {
+		console.log(`\x1b[31mset: ${identifier.sid}\x1b[0m`)
+		// set: ExtHostWindow
 		this._locals[identifier.nid] = value;
-		console.log(this._locals)
 		return value;
 	}
 
@@ -299,6 +309,8 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 				if (this._uriTransformer) {
 					args = transformIncomingURIs(args, this._uriTransformer);
 				}
+
+				console.log(`\x1b[31m_receiveOneMessage: ${rpcId} ${getStringIdentifierForProxy(rpcId)} method: \x1b[0m\x1b[33m ${method} \x1b[0m why? 1 ${messageType}`)
 				this._receiveRequest(msgLength, req, rpcId, method, args, (messageType === MessageType.RequestJSONArgsWithCancellation));
 				break;
 			}
@@ -308,6 +320,8 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 				if (this._uriTransformer) {
 					args = transformIncomingURIs(args, this._uriTransformer);
 				}
+				
+				console.log(`\x1b[31m_receiveOneMessage: ${rpcId} ${getStringIdentifierForProxy(rpcId)} method: \x1b[0m\x1b[33m ${method} \x1b[0m why? 2 ${messageType}`)
 				this._receiveRequest(msgLength, req, rpcId, method, args, (messageType === MessageType.RequestMixedArgsWithCancellation));
 				break;
 			}
@@ -450,9 +464,9 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 	}
 
 	private _doInvokeHandler(rpcId: number, methodName: string, args: any[]): any {
-		console.log(this._locals)
 		const actor = this._locals[rpcId];
 		if (!actor) {
+			// console.log(getStringIdentifierFor(rpcId))
 			throw new Error('Unknown actor ' + getStringIdentifierForProxy(rpcId));
 		}
 		const method = actor[methodName];
@@ -463,6 +477,12 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 	}
 
 	private _remoteCall(rpcId: number, methodName: string, args: any[]): Promise<any> {
+		// console.log('rpcId, methodName, args')
+		// console.log(rpcId, getStringIdentifierForProxy(rpcId), methodName, args)
+		/*
+			12 '$onDidChangeWindowFocus' [true]
+			12번 rpcId의 actor에 $onDidChangeWindowFocus 메소드를 호출합니다.
+		*/
 		if (this._isDisposed) {
 			return new CanceledLazyPromise();
 		}

@@ -3,23 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MainContext, MainThreadOutputServiceShape, ExtHostOutputServiceShape } from './extHost.protocol';
+import {MainContext, MainThreadOutputServiceShape, ExtHostOutputServiceShape} from './extHost.protocol';
 import type * as vscode from 'vscode';
-import { URI } from 'td/base/common/uri';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { ExtensionIdentifier, IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { AbstractMessageLogger, ILogger, ILoggerService, ILogService, log, LogLevel, parseLogLevel } from 'td/platform/log/common/log';
-import { OutputChannelUpdateMode } from 'td/workbench/services/output/common/output';
-import { IExtHostConsumerFileSystem } from 'td/workbench/api/common/extHostFileSystemConsumer';
-import { IExtHostInitDataService } from 'td/workbench/api/common/extHostInitDataService';
-import { IExtHostFileSystemInfo } from 'td/workbench/api/common/extHostFileSystemInfo';
-import { toLocalISOString } from 'td/base/common/date';
-import { VSBuffer } from 'td/base/common/buffer';
-import { isString } from 'td/base/common/types';
-import { FileSystemProviderErrorCode, toFileSystemProviderErrorCode } from 'td/platform/files/common/files';
-import { Emitter } from 'td/base/common/event';
-import { DisposableStore } from 'td/base/common/lifecycle';
+import {URI} from 'td/base/common/uri';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {ExtensionIdentifier, IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {AbstractMessageLogger, ILogger, ILoggerService, ILogService, log, LogLevel, parseLogLevel} from 'td/platform/log/common/log';
+import {OutputChannelUpdateMode} from 'td/workbench/services/output/common/output';
+import {IExtHostConsumerFileSystem} from 'td/workbench/api/common/extHostFileSystemConsumer';
+import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
+import {IExtHostFileSystemInfo} from 'td/workbench/api/common/extHostFileSystemInfo';
+import {toLocalISOString} from 'td/base/common/date';
+import {VSBuffer} from 'td/base/common/buffer';
+import {isString} from 'td/base/common/types';
+import {FileSystemProviderErrorCode, toFileSystemProviderErrorCode} from 'td/platform/files/common/files';
+import {Emitter} from 'td/base/common/event';
+import {DisposableStore} from 'td/base/common/lifecycle';
 
 class ExtHostOutputChannel extends AbstractMessageLogger implements vscode.LogOutputChannel {
 
@@ -167,7 +167,7 @@ export class ExtHostOutputService implements ExtHostOutputServiceShape {
 		}
 		const outputDir = await this.outputDirectoryPromise;
 		const file = this.extHostFileSystemInfo.extUri.joinPath(outputDir, `${this.namePool++}-${name.replace(/[\\/:\*\?"<>\|]/g, '')}.log`);
-		const logger = this.loggerService.createLogger(file, { logLevel: 'always', donotRotate: true, donotUseFormatters: true, hidden: true });
+		const logger = this.loggerService.createLogger(file, {logLevel: 'always', donotRotate: true, donotUseFormatters: true, hidden: true});
 		const id = await this.proxy.$register(name, file, languageId, extension.identifier.value);
 		return new ExtHostOutputChannel(id, name, logger, this.proxy, extension);
 	}
@@ -177,7 +177,7 @@ export class ExtHostOutputService implements ExtHostOutputServiceShape {
 		const fileName = name.replace(/[\\/:\*\?"<>\|]/g, '');
 		const file = this.extHostFileSystemInfo.extUri.joinPath(extensionLogDir, `${fileName}.log`);
 		const id = `${extension.identifier.value}.${fileName}`;
-		const logger = this.loggerService.createLogger(file, { id, name, logLevel, extensionId: extension.identifier.value });
+		const logger = this.loggerService.createLogger(file, {id, name, logLevel, extensionId: extension.identifier.value});
 		return new ExtHostLogOutputChannel(id, name, logger, this.proxy, extension);
 	}
 

@@ -17,12 +17,16 @@ import {getSingletonServiceDescriptors} from 'td/platform/instantiation/common/e
 import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
 import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
 import {InstantiationService} from 'td/platform/instantiation/common/instantiationService';
-import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
+import {IInstantiationService, ServicesAccessor, _util} from 'td/platform/instantiation/common/instantiation';
 import {IExtHostRpcService, ExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
 import {IURITransformerService, URITransformerService} from 'td/workbench/api/common/extHostUriTransformerService';
 import {IExtHostExtensionService, IHostUtils} from 'td/workbench/api/common/extHostExtensionService';
 import {IExtHostTelemetry} from 'td/workbench/api/common/extHostTelemetry';
 import {Mutable} from 'td/base/common/types';
+import {IExtHostWorkspace} from './extHostWorkspace';
+import {IExtHostConfiguration} from './extHostConfiguration';
+import {IExtensionStoragePaths} from './extHostStoragePaths';
+import {IExtHostConsumerFileSystem} from './extHostFileSystemConsumer';
 
 export interface IExitFn {
 	(code?: number): any;
@@ -43,12 +47,12 @@ export abstract class ErrorHandler {
 		// to the log service and main thread errors
 		const logService = accessor.get(ILogService);
 		const rpcService = accessor.get(IExtHostRpcService);
-		const mainThreadErrors = rpcService.getProxy(MainContext.MainThreadErrors);
+		// const mainThreadErrors = rpcService.getProxy(MainContext.MainThreadErrors);
 
 		errors.setUnexpectedErrorHandler(err => {
 			logService.error(err);
 			const data = errors.transformErrorForSerialization(err);
-			mainThreadErrors.$onUnexpectedError(data);
+			// mainThreadErrors.$onUnexpectedError(data);
 		});
 	}
 
@@ -178,8 +182,21 @@ export class ExtensionHostMain {
 		// ugly self - inject
 		// must call initialize *after* creating the extension service
 		// because `initialize` itself creates instances that depend on it
-		this._extensionService = instaService.invokeFunction(accessor => accessor.get(IExtHostExtensionService));
+		console.log('have to call this._extensionService11')
+		this._extensionService = instaService.invokeFunction(accessor => {
+			/* _util.serviceIds.forEach((id, key) => {
+				console.log(id, key)
+			}) */
+			const ttt = accessor.get(IExtensionStoragePaths)
+			console.log('tttttttttttttttttttttIExtensionStoragePaths')
+			console.log(ttt)
+			return accessor.get(IExtHostExtensionService)
+		});
+		// Above IExtHostExtensionService instance is registered in extHost.node.services.ts's registerSingleton().
 		// explain@neulchance 
+		console.log('여기까지 진입을 하질 못한다.')
+		// node/extHostExtensionService.ts
+		// common/extHostExtensionService.ts initialize()
 		this._extensionService.initialize();
 
 		// install error handler that is extension-aware

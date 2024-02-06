@@ -71,6 +71,10 @@ export type Proxied<T> = { [K in keyof T]: T[K] extends (...args: infer A) => in
 	: never
 };
 
+export function getStringIdentifierFor(nid: number): any {
+	return identifiers[nid];
+}
+
 export function getStringIdentifierForProxy(nid: number): string {
 	return identifiers[nid].sid;
 }
