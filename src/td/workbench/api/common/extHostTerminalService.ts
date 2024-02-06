@@ -4,29 +4,29 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
-import { Event, Emitter } from 'td/base/common/event';
-import { ExtHostTerminalServiceShape, MainContext, MainThreadTerminalServiceShape, ITerminalDimensionsDto, ITerminalLinkDto, ExtHostTerminalIdentifier, ICommandDto, ITerminalQuickFixOpenerDto, ITerminalQuickFixTerminalCommandDto, TerminalCommandMatchResultDto, ITerminalCommandDto } from 'td/workbench/api/common/extHost.protocol';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { URI } from 'td/base/common/uri';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { IDisposable, DisposableStore, Disposable, MutableDisposable } from 'td/base/common/lifecycle';
-import { Disposable as VSCodeDisposable, EnvironmentVariableMutatorType, TerminalExitReason } from './extHostTypes';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { localize } from 'td/nls';
-import { NotSupportedError } from 'td/base/common/errors';
-import { serializeEnvironmentDescriptionMap, serializeEnvironmentVariableCollection } from 'td/platform/terminal/common/environmentVariableShared';
-import { CancellationTokenSource } from 'td/base/common/cancellation';
-import { generateUuid } from 'td/base/common/uuid';
-import { IEnvironmentVariableCollectionDescription, IEnvironmentVariableMutator, ISerializableEnvironmentVariableCollection } from 'td/platform/terminal/common/environmentVariable';
-import { ICreateContributedTerminalProfileOptions, IProcessReadyEvent, IShellLaunchConfigDto, ITerminalChildProcess, ITerminalLaunchError, ITerminalProfile, TerminalIcon, TerminalLocation, IProcessProperty, ProcessPropertyType, IProcessPropertyMap } from 'td/platform/terminal/common/terminal';
-import { TerminalDataBufferer } from 'td/platform/terminal/common/terminalDataBuffering';
-import { ThemeColor } from 'td/base/common/themables';
-import { Promises } from 'td/base/common/async';
-import { EditorGroupColumn } from 'td/workbench/services/editor/common/editorGroupColumn';
-import { TerminalQuickFix, ViewColumn } from 'td/workbench/api/common/extHostTypeConverters';
-import { IExtHostCommands } from 'td/workbench/api/common/extHostCommands';
-import { MarshalledId } from 'td/base/common/marshallingIds';
-import { ISerializedTerminalInstanceContext } from 'td/workbench/contrib/terminal/common/terminal';
+import {Event, Emitter} from 'td/base/common/event';
+import {ExtHostTerminalServiceShape, MainContext, MainThreadTerminalServiceShape, ITerminalDimensionsDto, ITerminalLinkDto, ExtHostTerminalIdentifier, ICommandDto, ITerminalQuickFixOpenerDto, ITerminalQuickFixTerminalCommandDto, TerminalCommandMatchResultDto, ITerminalCommandDto} from 'td/workbench/api/common/extHost.protocol';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {URI} from 'td/base/common/uri';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {IDisposable, DisposableStore, Disposable, MutableDisposable} from 'td/base/common/lifecycle';
+import {Disposable as VSCodeDisposable, EnvironmentVariableMutatorType, TerminalExitReason} from './extHostTypes';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {localize} from 'td/nls';
+import {NotSupportedError} from 'td/base/common/errors';
+import {serializeEnvironmentDescriptionMap, serializeEnvironmentVariableCollection} from 'td/platform/terminal/common/environmentVariableShared';
+import {CancellationTokenSource} from 'td/base/common/cancellation';
+import {generateUuid} from 'td/base/common/uuid';
+import {IEnvironmentVariableCollectionDescription, IEnvironmentVariableMutator, ISerializableEnvironmentVariableCollection} from 'td/platform/terminal/common/environmentVariable';
+import {ICreateContributedTerminalProfileOptions, IProcessReadyEvent, IShellLaunchConfigDto, ITerminalChildProcess, ITerminalLaunchError, ITerminalProfile, TerminalIcon, TerminalLocation, IProcessProperty, ProcessPropertyType, IProcessPropertyMap} from 'td/platform/terminal/common/terminal';
+import {TerminalDataBufferer} from 'td/platform/terminal/common/terminalDataBuffering';
+import {ThemeColor} from 'td/base/common/themables';
+import {Promises} from 'td/base/common/async';
+import {EditorGroupColumn} from 'td/workbench/services/editor/common/editorGroupColumn';
+import {TerminalQuickFix, ViewColumn} from 'td/workbench/api/common/extHostTypeConverters';
+import {IExtHostCommands} from 'td/workbench/api/common/extHostCommands';
+import {MarshalledId} from 'td/base/common/marshallingIds';
+import {ISerializedTerminalInstanceContext} from 'td/workbench/contrib/terminal/common/terminal';
 
 export interface IExtHostTerminalService extends ExtHostTerminalServiceShape, IDisposable {
 
@@ -81,7 +81,7 @@ export class ExtHostTerminal {
 	private _pidPromiseComplete: ((value: number | undefined) => any) | undefined;
 	private _rows: number | undefined;
 	private _exitStatus: vscode.TerminalExitStatus | undefined;
-	private _state: vscode.TerminalState = { isInteractedWith: false };
+	private _state: vscode.TerminalState = {isInteractedWith: false};
 	private _selection: string | undefined;
 
 	public isOpen: boolean = false;
@@ -196,11 +196,11 @@ export class ExtHostTerminal {
 	private _serializeParentTerminal(location?: TerminalLocation | vscode.TerminalEditorLocationOptions | vscode.TerminalSplitLocationOptions, parentTerminal?: ExtHostTerminalIdentifier): TerminalLocation | { viewColumn: EditorGroupColumn; preserveFocus?: boolean } | { parentTerminal: ExtHostTerminalIdentifier } | undefined {
 		if (typeof location === 'object') {
 			if ('parentTerminal' in location && location.parentTerminal && parentTerminal) {
-				return { parentTerminal };
+				return {parentTerminal};
 			}
 
 			if ('viewColumn' in location) {
-				return { viewColumn: ViewColumn.from(location.viewColumn), preserveFocus: location.preserveFocus };
+				return {viewColumn: ViewColumn.from(location.viewColumn), preserveFocus: location.preserveFocus};
 			}
 
 			return undefined;
@@ -220,7 +220,7 @@ export class ExtHostTerminal {
 	}
 
 	public setExitStatus(code: number | undefined, reason: TerminalExitReason) {
-		this._exitStatus = Object.freeze({ code, reason });
+		this._exitStatus = Object.freeze({code, reason});
 	}
 
 	public setDimensions(cols: number, rows: number): boolean {
@@ -238,7 +238,7 @@ export class ExtHostTerminal {
 
 	public setInteractedWith(): boolean {
 		if (!this._state.isInteractedWith) {
-			this._state = { isInteractedWith: true };
+			this._state = {isInteractedWith: true};
 			return true;
 		}
 		return false;
@@ -300,7 +300,7 @@ class ExtHostPseudoterminal implements ITerminalChildProcess {
 	}
 
 	resize(cols: number, rows: number): void {
-		this._pty.setDimensions?.({ columns: cols, rows });
+		this._pty.setDimensions?.({columns: cols, rows});
 	}
 
 	clearBuffer(): void | Promise<void> {
@@ -336,11 +336,11 @@ class ExtHostPseudoterminal implements ITerminalChildProcess {
 		});
 		this._pty.onDidOverrideDimensions?.(e => {
 			if (e) {
-				this._onDidChangeProperty.fire({ type: ProcessPropertyType.OverrideDimensions, value: { cols: e.columns, rows: e.rows } });
+				this._onDidChangeProperty.fire({type: ProcessPropertyType.OverrideDimensions, value: {cols: e.columns, rows: e.rows}});
 			}
 		});
 		this._pty.onDidChangeName?.(title => {
-			this._onDidChangeProperty.fire({ type: ProcessPropertyType.Title, value: title });
+			this._onDidChangeProperty.fire({type: ProcessPropertyType.Title, value: title});
 		});
 
 		this._pty.open(initialDimensions ? initialDimensions : undefined);
@@ -349,7 +349,7 @@ class ExtHostPseudoterminal implements ITerminalChildProcess {
 			this._pty.setDimensions?.(initialDimensions);
 		}
 
-		this._onProcessReady.fire({ pid: -1, cwd: '', windowsPty: undefined });
+		this._onProcessReady.fire({pid: -1, cwd: '', windowsPty: undefined});
 	}
 }
 
@@ -490,7 +490,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 		} else if (options.location && typeof options.location !== 'object') {
 			internalOptions.location = options.location;
 		} else if (internalOptions.location && typeof internalOptions.location === 'object' && 'splitActiveTerminal' in internalOptions.location) {
-			internalOptions.location = { splitActiveTerminal: true };
+			internalOptions.location = {splitActiveTerminal: true};
 		}
 		return internalOptions;
 	}
@@ -526,7 +526,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 	public async $acceptTerminalProcessData(id: number, data: string): Promise<void> {
 		const terminal = this._getTerminalById(id);
 		if (terminal) {
-			this._onDidWriteTerminalData.fire({ terminal: terminal.value, data });
+			this._onDidWriteTerminalData.fire({terminal: terminal.value, data});
 		}
 	}
 
@@ -545,7 +545,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 	public async $acceptDidExecuteCommand(id: number, command: ITerminalCommandDto): Promise<void> {
 		const terminal = this._getTerminalById(id);
 		if (terminal) {
-			this._onDidExecuteCommand.fire({ terminal: terminal.value, ...command });
+			this._onDidExecuteCommand.fire({terminal: terminal.value, ...command});
 		}
 	}
 
@@ -608,7 +608,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 		// Pseudoterminal.start
 		const terminal = this._getTerminalById(id);
 		if (!terminal) {
-			return { message: localize('launchFail.idMissingOnExtHost', "Could not find the terminal with id {0} on the extension host", id) };
+			return {message: localize('launchFail.idMissingOnExtHost', "Could not find the terminal with id {0} on the extension host", id)};
 		}
 
 		// Wait for onDidOpenTerminal to fire
@@ -629,7 +629,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 			(terminalProcess as ExtHostPseudoterminal).startSendingEvents(initialDimensions);
 		} else {
 			// Defer startSendingEvents call to when _setupExtHostProcessListeners is called
-			this._extensionTerminalAwaitingStart[id] = { initialDimensions };
+			this._extensionTerminalAwaitingStart[id] = {initialDimensions};
 		}
 
 		return undefined;
@@ -689,11 +689,11 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 	}
 
 	public $acceptProcessRequestInitialCwd(id: number): void {
-		this._terminalProcesses.get(id)?.getInitialCwd().then(initialCwd => this._proxy.$sendProcessProperty(id, { type: ProcessPropertyType.InitialCwd, value: initialCwd }));
+		this._terminalProcesses.get(id)?.getInitialCwd().then(initialCwd => this._proxy.$sendProcessProperty(id, {type: ProcessPropertyType.InitialCwd, value: initialCwd}));
 	}
 
 	public $acceptProcessRequestCwd(id: number): void {
-		this._terminalProcesses.get(id)?.getCwd().then(cwd => this._proxy.$sendProcessProperty(id, { type: ProcessPropertyType.Cwd, value: cwd }));
+		this._terminalProcesses.get(id)?.getCwd().then(cwd => this._proxy.$sendProcessProperty(id, {type: ProcessPropertyType.Cwd, value: cwd}));
 	}
 
 	public $acceptProcessRequestLatency(id: number): Promise<number> {
@@ -778,7 +778,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 			return;
 		}
 		if (profile && !('options' in profile)) {
-			profile = { options: profile };
+			profile = {options: profile};
 		}
 
 		if (!profile || !('options' in profile)) {
@@ -808,15 +808,15 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 		this._terminalLinkCancellationSource.set(terminalId, cancellationSource);
 
 		const result: ITerminalLinkDto[] = [];
-		const context: vscode.TerminalLinkContext = { terminal: terminal.value, line };
+		const context: vscode.TerminalLinkContext = {terminal: terminal.value, line};
 		const promises: vscode.ProviderResult<{ provider: vscode.TerminalLinkProvider; links: vscode.TerminalLink[] }>[] = [];
 
 		for (const provider of this._linkProviders) {
 			promises.push(Promises.withAsyncBody(async r => {
-				cancellationSource.token.onCancellationRequested(() => r({ provider, links: [] }));
+				cancellationSource.token.onCancellationRequested(() => r({provider, links: []}));
 				const links = (await provider.provideTerminalLinks(context, cancellationSource.token)) || [];
 				if (!cancellationSource.token.isCancellationRequested) {
-					r({ provider, links });
+					r({provider, links});
 				}
 			}));
 		}
@@ -975,15 +975,15 @@ class UnifiedEnvironmentVariableCollection {
 	}
 
 	replace(variable: string, value: string, options: vscode.EnvironmentVariableMutatorOptions | undefined, scope: vscode.EnvironmentVariableScope | undefined): void {
-		this._setIfDiffers(variable, { value, type: EnvironmentVariableMutatorType.Replace, options: options ?? { applyAtProcessCreation: true }, scope });
+		this._setIfDiffers(variable, {value, type: EnvironmentVariableMutatorType.Replace, options: options ?? {applyAtProcessCreation: true}, scope});
 	}
 
 	append(variable: string, value: string, options: vscode.EnvironmentVariableMutatorOptions | undefined, scope: vscode.EnvironmentVariableScope | undefined): void {
-		this._setIfDiffers(variable, { value, type: EnvironmentVariableMutatorType.Append, options: options ?? { applyAtProcessCreation: true }, scope });
+		this._setIfDiffers(variable, {value, type: EnvironmentVariableMutatorType.Append, options: options ?? {applyAtProcessCreation: true}, scope});
 	}
 
 	prepend(variable: string, value: string, options: vscode.EnvironmentVariableMutatorOptions | undefined, scope: vscode.EnvironmentVariableScope | undefined): void {
-		this._setIfDiffers(variable, { value, type: EnvironmentVariableMutatorType.Prepend, options: options ?? { applyAtProcessCreation: true }, scope });
+		this._setIfDiffers(variable, {value, type: EnvironmentVariableMutatorType.Prepend, options: options ?? {applyAtProcessCreation: true}, scope});
 	}
 
 	private _setIfDiffers(variable: string, mutator: vscode.EnvironmentVariableMutator & { scope: vscode.EnvironmentVariableScope | undefined }): void {
@@ -1079,7 +1079,7 @@ class UnifiedEnvironmentVariableCollection {
 				// Only take the description before the first `\n\n`, so that the description doesn't mess up the UI
 				descriptionStr = description?.value.split('\n\n')[0];
 			}
-			const value: IEnvironmentVariableCollectionDescription = { description: descriptionStr, scope };
+			const value: IEnvironmentVariableCollectionDescription = {description: descriptionStr, scope};
 			this.descriptionMap.set(key, value);
 			this._onDidChangeCollection.fire();
 		}
@@ -1194,7 +1194,7 @@ function asTerminalColor(color?: vscode.ThemeColor): ThemeColor | undefined {
 }
 
 function convertMutator(mutator: IEnvironmentVariableMutator): vscode.EnvironmentVariableMutator {
-	const newMutator = { ...mutator };
+	const newMutator = {...mutator};
 	delete newMutator.scope;
 	newMutator.options = newMutator.options ?? undefined;
 	delete (newMutator as any).variable;

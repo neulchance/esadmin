@@ -27,6 +27,8 @@ import {IExtHostWorkspace} from './extHostWorkspace';
 import {IExtHostConfiguration} from './extHostConfiguration';
 import {IExtensionStoragePaths} from './extHostStoragePaths';
 import {IExtHostConsumerFileSystem} from './extHostFileSystemConsumer';
+import {IExtHostFileSystemInfo} from './extHostFileSystemInfo';
+import {IExtHostTerminalService} from './extHostTerminalService';
 
 export interface IExitFn {
 	(code?: number): any;
@@ -187,8 +189,8 @@ export class ExtensionHostMain {
 			/* _util.serviceIds.forEach((id, key) => {
 				console.log(id, key)
 			}) */
-			const ttt = accessor.get(IExtensionStoragePaths)
-			console.log('tttttttttttttttttttttIExtensionStoragePaths')
+			const ttt = accessor.get(IExtHostTerminalService)
+			console.log('ttttttttttttttttttttt IExtHostTerminalService')
 			console.log(ttt)
 			return accessor.get(IExtHostExtensionService)
 		});
