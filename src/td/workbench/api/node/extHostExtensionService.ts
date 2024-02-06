@@ -61,15 +61,14 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 	readonly extensionRuntime = ExtensionRuntime.Node;
 
 	protected async _beforeAlmostReadyToRunExtensions(): Promise<void> {
-		console.log('??????????????????????????????1')
 		// make sure console.log calls make it to the render
-		// this._instaService.createInstance(ExtHostConsoleForwarder);
-		console.log('??????????????????????????????2')
+		this._instaService.createInstance(ExtHostConsoleForwarder);
 
 		// initialize API and register actors
 		// explain@neulchance
+		console.log('extensionApiFactory1')
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
-		console.log('extensionApiFactory')
+		console.log('extensionApiFactory2')
 		console.log(extensionApiFactory)
 
 		// Register Download command

@@ -137,7 +137,6 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		@IExtHostLocalizationService extHostLocalizationService: IExtHostLocalizationService,
 		// @IExtHostManagedSockets private readonly _extHostManagedSockets: IExtHostManagedSockets,
 	) {
-		console.log('ctor AbstractExtHostExtensionService')
 		super();
 		this._hostUtils = hostUtils;
 		this._extHostContext = extHostContext;
@@ -211,7 +210,6 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 
 	public async initialize(): Promise<void> {
 		try {
-			console.log('have to call _beforeAlmostReadyToRunExtensions')
 			await this._beforeAlmostReadyToRunExtensions();
 			this._almostReadyToRunExtensions.open();
 

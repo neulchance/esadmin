@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { LANGUAGE_DEFAULT } from 'td/base/common/platform';
-import { format2 } from 'td/base/common/strings';
-import { URI } from 'td/base/common/uri';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { ILogService } from 'td/platform/log/common/log';
-import { ExtHostLocalizationShape, IStringDetails, MainContext, MainThreadLocalizationShape } from 'td/workbench/api/common/extHost.protocol';
-import { IExtHostInitDataService } from 'td/workbench/api/common/extHostInitDataService';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
+import {LANGUAGE_DEFAULT} from 'td/base/common/platform';
+import {format2} from 'td/base/common/strings';
+import {URI} from 'td/base/common/uri';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {ILogService} from 'td/platform/log/common/log';
+import {ExtHostLocalizationShape, IStringDetails, MainContext, MainThreadLocalizationShape} from 'td/workbench/api/common/extHost.protocol';
+import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
 
 export class ExtHostLocalizationService implements ExtHostLocalizationShape {
 	readonly _serviceBrand: undefined;
@@ -33,7 +33,7 @@ export class ExtHostLocalizationService implements ExtHostLocalizationShape {
 	}
 
 	getMessage(extensionId: string, details: IStringDetails): string {
-		const { message, args, comment } = details;
+		const {message, args, comment} = details;
 		if (this.isDefaultLanguage) {
 			return format2(message, (args ?? {}));
 		}

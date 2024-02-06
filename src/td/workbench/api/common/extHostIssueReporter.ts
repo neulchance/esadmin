@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationToken } from 'td/base/common/cancellation';
-import { UriComponents } from 'td/base/common/uri';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { ExtHostIssueReporterShape, IMainContext, MainContext, MainThreadIssueReporterShape } from 'td/workbench/api/common/extHost.protocol';
-import { Disposable } from 'td/workbench/api/common/extHostTypes';
-import type { IssueDataProvider, IssueUriRequestHandler } from 'vscode';
+import {CancellationToken} from 'td/base/common/cancellation';
+import {UriComponents} from 'td/base/common/uri';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {ExtHostIssueReporterShape, IMainContext, MainContext, MainThreadIssueReporterShape} from 'td/workbench/api/common/extHost.protocol';
+import {Disposable} from 'td/workbench/api/common/extHostTypes';
+import type {IssueDataProvider, IssueUriRequestHandler} from 'vscode';
 
 export class ExtHostIssueReporter implements ExtHostIssueReporterShape {
 	private _IssueUriRequestHandlers: Map<string, IssueUriRequestHandler> = new Map();

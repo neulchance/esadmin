@@ -64,7 +64,7 @@ import {ICellRange} from 'td/workbench/contrib/notebook/common/notebookRange';
 // import {InputValidationType} from 'td/workbench/contrib/scm/common/scm';
 // import {IWorkspaceSymbol, NotebookPriorityInfo} from 'td/workbench/contrib/search/common/search';
 import {IRawClosedNotebookFileMatch} from 'td/workbench/contrib/search/common/searchNotebookHelpers';
-// import {IKeywordRecognitionEvent, ISpeechProviderMetadata, ISpeechToTextEvent} from 'td/workbench/contrib/speech/common/speechService';
+import {IKeywordRecognitionEvent, ISpeechProviderMetadata, ISpeechToTextEvent} from 'td/workbench/contrib/speech/common/speechService';
 import {CoverageDetails, ExtensionRunTestsRequest, ICallProfileRunHandler, IFileCoverage, ISerializedTestResults, IStartControllerTests, ITestItem, ITestMessage, ITestRunProfile, ITestRunTask, ResolvedTestRunRequest, TestResultState, TestsDiffOp} from 'td/workbench/contrib/testing/common/testTypes';
 // import {Timeline, TimelineChangeEvent, TimelineOptions, TimelineProviderDescriptor} from 'td/workbench/contrib/timeline/common/timeline';
 // import {TypeHierarchyItem} from 'td/workbench/contrib/typeHierarchy/common/typeHierarchy';
@@ -1155,11 +1155,11 @@ export interface MainThreadInteractiveShape extends IDisposable {
 }
 
 export interface MainThreadSpeechShape extends IDisposable {
-	// $registerProvider(handle: number, identifier: string, metadata: ISpeechProviderMetadata): void;
+	$registerProvider(handle: number, identifier: string, metadata: ISpeechProviderMetadata): void;
 	$unregisterProvider(handle: number): void;
 
-	// $emitSpeechToTextEvent(session: number, event: ISpeechToTextEvent): void;
-	// $emitKeywordRecognitionEvent(session: number, event: IKeywordRecognitionEvent): void;
+	$emitSpeechToTextEvent(session: number, event: ISpeechToTextEvent): void;
+	$emitKeywordRecognitionEvent(session: number, event: IKeywordRecognitionEvent): void;
 }
 
 export interface ExtHostSpeechShape {
@@ -2745,7 +2745,7 @@ export const MainContext = {
 	MainThreadCommands: createProxyIdentifier<MainThreadCommandsShape>('MainThreadCommands'),
 	// MainThreadComments: createProxyIdentifier<MainThreadCommentsShape>('MainThreadComments'),
 	MainThreadConfiguration: createProxyIdentifier<MainThreadConfigurationShape>('MainThreadConfiguration'),
-	// MainThreadConsole: createProxyIdentifier<MainThreadConsoleShape>('MainThreadConsole'),
+	MainThreadConsole: createProxyIdentifier<MainThreadConsoleShape>('MainThreadConsole'),
 	// MainThreadDebugService: createProxyIdentifier<MainThreadDebugServiceShape>('MainThreadDebugService'),
 	// MainThreadDecorations: createProxyIdentifier<MainThreadDecorationsShape>('MainThreadDecorations'),
 	// MainThreadDiagnostics: createProxyIdentifier<MainThreadDiagnosticsShape>('MainThreadDiagnostics'),
@@ -2766,10 +2766,10 @@ export const MainContext = {
 	// MainThreadProgress: createProxyIdentifier<MainThreadProgressShape>('MainThreadProgress'),
 	// MainThreadQuickDiff: createProxyIdentifier<MainThreadQuickDiffShape>('MainThreadQuickDiff'),
 	// MainThreadQuickOpen: createProxyIdentifier<MainThreadQuickOpenShape>('MainThreadQuickOpen'),
-	// MainThreadStatusBar: createProxyIdentifier<MainThreadStatusBarShape>('MainThreadStatusBar'),
+	MainThreadStatusBar: createProxyIdentifier<MainThreadStatusBarShape>('MainThreadStatusBar'),
 	// MainThreadSecretState: createProxyIdentifier<MainThreadSecretStateShape>('MainThreadSecretState'),
 	// MainThreadStorage: createProxyIdentifier<MainThreadStorageShape>('MainThreadStorage'),
-	// MainThreadSpeech: createProxyIdentifier<MainThreadSpeechShape>('MainThreadSpeechProvider'),
+	MainThreadSpeech: createProxyIdentifier<MainThreadSpeechShape>('MainThreadSpeechProvider'),
 	// MainThreadTelemetry: createProxyIdentifier<MainThreadTelemetryShape>('MainThreadTelemetry'),
 	MainThreadTerminalService: createProxyIdentifier<MainThreadTerminalServiceShape>('MainThreadTerminalService'),
 	// MainThreadWebviews: createProxyIdentifier<MainThreadWebviewsShape>('MainThreadWebviews'),
@@ -2802,10 +2802,10 @@ export const MainContext = {
 	// MainThreadManagedSockets: createProxyIdentifier<MainThreadManagedSocketsShape>('MainThreadManagedSockets'),
 	// MainThreadTimeline: createProxyIdentifier<MainThreadTimelineShape>('MainThreadTimeline'),
 	// MainThreadTesting: createProxyIdentifier<MainThreadTestingShape>('MainThreadTesting'),
-	// MainThreadLocalization: createProxyIdentifier<MainThreadLocalizationShape>('MainThreadLocalizationShape'),
+	MainThreadLocalization: createProxyIdentifier<MainThreadLocalizationShape>('MainThreadLocalizationShape'),
 	// MainThreadAiRelatedInformation: createProxyIdentifier<MainThreadAiRelatedInformationShape>('MainThreadAiRelatedInformation'),
 	// MainThreadAiEmbeddingVector: createProxyIdentifier<MainThreadAiEmbeddingVectorShape>('MainThreadAiEmbeddingVector'),
-	// MainThreadIssueReporter: createProxyIdentifier<MainThreadIssueReporterShape>('MainThreadIssueReporter'),
+	MainThreadIssueReporter: createProxyIdentifier<MainThreadIssueReporterShape>('MainThreadIssueReporter'),
 };
 
 export const ExtHostContext = {
@@ -2816,7 +2816,7 @@ export const ExtHostContext = {
 	// ExtHostDecorations: createProxyIdentifier<ExtHostDecorationsShape>('ExtHostDecorations'),
 	ExtHostDocumentsAndEditors: createProxyIdentifier<ExtHostDocumentsAndEditorsShape>('ExtHostDocumentsAndEditors'),
 	ExtHostDocuments: createProxyIdentifier<ExtHostDocumentsShape>('ExtHostDocuments'),
-	// ExtHostDocumentContentProviders: createProxyIdentifier<ExtHostDocumentContentProvidersShape>('ExtHostDocumentContentProviders'),
+	ExtHostDocumentContentProviders: createProxyIdentifier<ExtHostDocumentContentProvidersShape>('ExtHostDocumentContentProviders'),
 	// ExtHostDocumentSaveParticipant: createProxyIdentifier<ExtHostDocumentSaveParticipantShape>('ExtHostDocumentSaveParticipant'),
 	ExtHostEditors: createProxyIdentifier<ExtHostEditorsShape>('ExtHostEditors'),
 	// ExtHostTreeViews: createProxyIdentifier<ExtHostTreeViewsShape>('ExtHostTreeViews'),
@@ -2827,7 +2827,7 @@ export const ExtHostContext = {
 	ExtHostLanguageFeatures: createProxyIdentifier<ExtHostLanguageFeaturesShape>('ExtHostLanguageFeatures'),
 	// ExtHostQuickOpen: createProxyIdentifier<ExtHostQuickOpenShape>('ExtHostQuickOpen'),
 	// ExtHostQuickDiff: createProxyIdentifier<ExtHostQuickDiffShape>('ExtHostQuickDiff'),
-	// ExtHostStatusBar: createProxyIdentifier<ExtHostStatusBarShape>('ExtHostStatusBar'),
+	ExtHostStatusBar: createProxyIdentifier<ExtHostStatusBarShape>('ExtHostStatusBar'),
 	// ExtHostShare: createProxyIdentifier<ExtHostShareShape>('ExtHostShare'),
 	ExtHostExtensionService: createProxyIdentifier<ExtHostExtensionServiceShape>('ExtHostExtensionService'),
 	ExtHostLogLevelServiceShape: createProxyIdentifier<ExtHostLogLevelServiceShape>('ExtHostLogLevelServiceShape'),
@@ -2847,7 +2847,7 @@ export const ExtHostContext = {
 	// ExtHostComments: createProxyIdentifier<ExtHostCommentsShape>('ExtHostComments'),
 	ExtHostSecretState: createProxyIdentifier<ExtHostSecretStateShape>('ExtHostSecretState'),
 	ExtHostStorage: createProxyIdentifier<ExtHostStorageShape>('ExtHostStorage'),
-	// ExtHostUrls: createProxyIdentifier<ExtHostUrlsShape>('ExtHostUrls'),
+	ExtHostUrls: createProxyIdentifier<ExtHostUrlsShape>('ExtHostUrls'),
 	// ExtHostUriOpeners: createProxyIdentifier<ExtHostUriOpenersShape>('ExtHostUriOpeners'),
 	// ExtHostProfileContentHandlers: createProxyIdentifier<ExtHostProfileContentHandlersShape>('ExtHostProfileContentHandlers'),
 	// ExtHostOutputService: createProxyIdentifier<ExtHostOutputServiceShape>('ExtHostOutputService'),
@@ -2864,7 +2864,7 @@ export const ExtHostContext = {
 	// ExtHostChatAgents2: createProxyIdentifier<ExtHostChatAgentsShape2>('ExtHostChatAgents'),
 	// ExtHostChatVariables: createProxyIdentifier<ExtHostChatVariablesShape>('ExtHostChatVariables'),
 	// ExtHostChatProvider: createProxyIdentifier<ExtHostChatProviderShape>('ExtHostChatProvider'),
-	// ExtHostSpeech: createProxyIdentifier<ExtHostSpeechShape>('ExtHostSpeech'),
+	ExtHostSpeech: createProxyIdentifier<ExtHostSpeechShape>('ExtHostSpeech'),
 	// ExtHostAiRelatedInformation: createProxyIdentifier<ExtHostAiRelatedInformationShape>('ExtHostAiRelatedInformation'),
 	// ExtHostAiEmbeddingVector: createProxyIdentifier<ExtHostAiEmbeddingVectorShape>('ExtHostAiEmbeddingVector'),
 	// ExtHostTheming: createProxyIdentifier<ExtHostThemingShape>('ExtHostTheming'),
@@ -2875,5 +2875,5 @@ export const ExtHostContext = {
 	// ExtHostTesting: createProxyIdentifier<ExtHostTestingShape>('ExtHostTesting'),
 	// ExtHostTelemetry: createProxyIdentifier<ExtHostTelemetryShape>('ExtHostTelemetry'),
 	// ExtHostLocalization: createProxyIdentifier<ExtHostLocalizationShape>('ExtHostLocalization'),
-	// ExtHostIssueReporter: createProxyIdentifier<ExtHostIssueReporterShape>('ExtHostIssueReporter'),
+	ExtHostIssueReporter: createProxyIdentifier<ExtHostIssueReporterShape>('ExtHostIssueReporter'),
 };

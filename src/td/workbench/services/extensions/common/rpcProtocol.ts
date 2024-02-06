@@ -310,7 +310,7 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 					args = transformIncomingURIs(args, this._uriTransformer);
 				}
 
-				console.log(`\x1b[31m_receiveOneMessage: ${rpcId} ${getStringIdentifierForProxy(rpcId)} method: \x1b[0m\x1b[33m ${method} \x1b[0m why? 1 ${messageType}`)
+				// console.log(`\x1b[31m_receiveOneMessage: ${rpcId} ${getStringIdentifierForProxy(rpcId)} method: \x1b[0m\x1b[33m ${method} \x1b[0m why? 1 ${messageType}`)
 				this._receiveRequest(msgLength, req, rpcId, method, args, (messageType === MessageType.RequestJSONArgsWithCancellation));
 				break;
 			}
@@ -321,7 +321,7 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 					args = transformIncomingURIs(args, this._uriTransformer);
 				}
 				
-				console.log(`\x1b[31m_receiveOneMessage: ${rpcId} ${getStringIdentifierForProxy(rpcId)} method: \x1b[0m\x1b[33m ${method} \x1b[0m why? 2 ${messageType}`)
+				// console.log(`\x1b[31m_receiveOneMessage: ${rpcId} ${getStringIdentifierForProxy(rpcId)} method: \x1b[0m\x1b[33m ${method} \x1b[0m why? 2 ${messageType}`)
 				this._receiveRequest(msgLength, req, rpcId, method, args, (messageType === MessageType.RequestMixedArgsWithCancellation));
 				break;
 			}

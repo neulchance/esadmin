@@ -17,7 +17,9 @@ import {JSONValidationExtensionPoint} from 'td/workbench/api/common/jsonValidati
 // import {StatusBarItemsExtensionPoint} from 'td/workbench/api/browser/statusBarExtensionPoint';
 
 // --- mainThread participants
+import './mainThreadLocalization';
 // import './mainThreadBulkEdits';
+import './mainThreadConsole';
 import './mainThreadExtensionService';
 import './mainThreadWindow';
 import './mainThreadErrors';

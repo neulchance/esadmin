@@ -201,7 +201,6 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		@ILogService logService: ILogService,
 		@IURITransformerService uriTransformerService: IURITransformerService,
 	) {
-		// console.log(extHostRpc, initData, extHostFileSystemInfo, logService, uriTransformerService)
 		this._logService = logService;
 		this._extHostFileSystemInfo = extHostFileSystemInfo;
 		this._uriTransformerService = uriTransformerService;

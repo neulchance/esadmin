@@ -29,6 +29,7 @@ import {IExtensionStoragePaths} from './extHostStoragePaths';
 import {IExtHostConsumerFileSystem} from './extHostFileSystemConsumer';
 import {IExtHostFileSystemInfo} from './extHostFileSystemInfo';
 import {IExtHostTerminalService} from './extHostTerminalService';
+import {IExtHostLocalizationService} from './extHostLocalizationService';
 
 export interface IExitFn {
 	(code?: number): any;
@@ -184,19 +185,14 @@ export class ExtensionHostMain {
 		// ugly self - inject
 		// must call initialize *after* creating the extension service
 		// because `initialize` itself creates instances that depend on it
-		console.log('have to call this._extensionService11')
 		this._extensionService = instaService.invokeFunction(accessor => {
 			/* _util.serviceIds.forEach((id, key) => {
 				console.log(id, key)
 			}) */
-			const ttt = accessor.get(IExtHostTerminalService)
-			console.log('ttttttttttttttttttttt IExtHostTerminalService')
-			console.log(ttt)
 			return accessor.get(IExtHostExtensionService)
 		});
 		// Above IExtHostExtensionService instance is registered in extHost.node.services.ts's registerSingleton().
 		// explain@neulchance 
-		console.log('여기까지 진입을 하질 못한다.')
 		// node/extHostExtensionService.ts
 		// common/extHostExtensionService.ts initialize()
 		this._extensionService.initialize();
