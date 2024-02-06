@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtHostSecretStateShape, MainContext, MainThreadSecretStateShape } from 'td/workbench/api/common/extHost.protocol';
-import { Emitter } from 'td/base/common/event';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
+import {ExtHostSecretStateShape, MainContext, MainThreadSecretStateShape} from 'td/workbench/api/common/extHost.protocol';
+import {Emitter} from 'td/base/common/event';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
 
 export class ExtHostSecretState implements ExtHostSecretStateShape {
 	private _proxy: MainThreadSecretStateShape;

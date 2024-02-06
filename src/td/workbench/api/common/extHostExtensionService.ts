@@ -111,8 +111,8 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 	private readonly _activationEventsReader: SyncedActivationEventsReader;
 	protected readonly _myRegistry: ExtensionDescriptionRegistry;
 	protected readonly _globalRegistry: ExtensionDescriptionRegistry;
-	// private readonly _storage: ExtHostStorage;
-	// private readonly _secretState: ExtHostSecretState;
+	private readonly _storage: ExtHostStorage;
+	private readonly _secretState: ExtHostSecretState;
 	private readonly _storagePath: IExtensionStoragePaths;
 	private readonly _activator: ExtensionsActivator;
 	private _extensionPathIndex: Promise<ExtensionPaths> | null;
@@ -170,13 +170,13 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 			this._logService.info(`Creating extension host with the following local extensions: ${printExtIds(this._myRegistry)}`);
 		}
 
-		// this._storage = new ExtHostStorage(this._extHostContext, this._logService);
-		// this._secretState = new ExtHostSecretState(this._extHostContext);
+		this._storage = new ExtHostStorage(this._extHostContext, this._logService);
+		this._secretState = new ExtHostSecretState(this._extHostContext);
 		this._storagePath = storagePath;
 
 		this._instaService = instaService.createChild(new ServiceCollection(
-			// [IExtHostStorage, this._storage],
-			// [IExtHostSecretState, this._secretState]
+			[IExtHostStorage, this._storage],
+			[IExtHostSecretState, this._secretState]
 		));
 
 		this._activator = this._register(new ExtensionsActivator(
@@ -488,9 +488,9 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 
 	private _loadExtensionContext(extensionDescription: IExtensionDescription): Promise<vscode.ExtensionContext> {
 
-		// const globalState = new ExtensionGlobalMemento(extensionDescription, this._storage);
-		// const workspaceState = new ExtensionMemento(extensionDescription.identifier.value, false, this._storage);
-		// const secrets = new ExtensionSecrets(extensionDescription, this._secretState);
+		const globalState = new ExtensionGlobalMemento(extensionDescription, this._storage);
+		const workspaceState = new ExtensionMemento(extensionDescription.identifier.value, false, this._storage);
+		const secrets = new ExtensionSecrets(extensionDescription, this._secretState);
 		const extensionMode = extensionDescription.isUnderDevelopment
 			? (this._initData.environment.extensionTestsLocationURI ? ExtensionMode.Test : ExtensionMode.Development)
 			: ExtensionMode.Production;
@@ -499,8 +499,8 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		this._logService.trace(`ExtensionService#loadExtensionContext ${extensionDescription.identifier.value}`);
 
 		return Promise.all([
-			// globalState.whenReady,
-			// workspaceState.whenReady,
+			globalState.whenReady,
+			workspaceState.whenReady,
 			this._storagePath.whenReady
 		]).then(() => {
 			const that = this;
@@ -512,9 +512,9 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 				: undefined;
 
 			return Object.freeze<any>({
-				// globalState,
-				// workspaceState,
-				// secrets,
+				globalState,
+				workspaceState,
+				secrets,
 				subscriptions: [],
 				get extensionUri() { return extensionDescription.extensionLocation; },
 				get extensionPath() { return extensionDescription.extensionLocation.fsPath; },
