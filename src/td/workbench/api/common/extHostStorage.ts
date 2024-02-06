@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MainContext, MainThreadStorageShape, ExtHostStorageShape } from './extHost.protocol';
-import { Emitter } from 'td/base/common/event';
-import { IExtHostRpcService } from 'td/workbench/api/common/extHostRpcService';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { IExtensionIdWithVersion } from 'td/platform/extensionManagement/common/extensionStorage';
-import { ILogService } from 'td/platform/log/common/log';
+import {MainContext, MainThreadStorageShape, ExtHostStorageShape} from './extHost.protocol';
+import {Emitter} from 'td/base/common/event';
+import {IExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {IExtensionIdWithVersion} from 'td/platform/extensionManagement/common/extensionStorage';
+import {ILogService} from 'td/platform/log/common/log';
 
 export interface IStorageChangeEvent {
 	shared: boolean;
@@ -54,7 +54,7 @@ export class ExtHostStorage implements ExtHostStorageShape {
 	$acceptValue(shared: boolean, key: string, value: string): void {
 		const parsedValue = this.safeParseValue(shared, key, value);
 		if (parsedValue) {
-			this._onDidChangeStorage.fire({ shared, key, value: parsedValue });
+			this._onDidChangeStorage.fire({shared, key, value: parsedValue});
 		}
 	}
 

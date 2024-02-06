@@ -213,9 +213,9 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		this._confirmedWorkspace = data ? new ExtHostWorkspaceImpl(data.id, data.name, [], !!data.transient, data.configuration ? URI.revive(data.configuration) : null, !!data.isUntitled, uri => ignorePathCasing(uri, extHostFileSystemInfo)) : undefined;
 	}
 
-	$checkWorking(data?: any): void {
-		console.log(`Working? Working? ${data}`)
-	}
+	// $checkWorking(data?: any): void {
+	// 	console.log(`Working? Working? ${data}`)
+	// }
 
 	$initializeWorkspace(data: IWorkspaceData | null, trusted: boolean): void {
 		this._trusted = trusted;

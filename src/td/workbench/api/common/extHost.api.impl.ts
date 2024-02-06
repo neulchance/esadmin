@@ -115,7 +115,7 @@ export interface IExtensionRegistries {
 }
 
 export interface IExtensionApiFactory {
-	(extension: IExtensionDescription, extensionInfo: IExtensionRegistries, configProvider: ExtHostConfigProvider): typeof vscode;
+	(extension: IExtensionDescription, extensionInfo: IExtensionRegistries, configProvider: ExtHostConfigProvider): /* typeof vscode */any;
 }
 
 /**
@@ -123,11 +123,11 @@ export interface IExtensionApiFactory {
  * node-process
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
+	console.log('createApiFactoryAndRegisterActors 1')
 
 	// services
 	const initData = accessor.get(IExtHostInitDataService);
 	const extHostFileSystemInfo = accessor.get(IExtHostFileSystemInfo);
-	// 🤤
 	// const extHostConsumerFileSystem = accessor.get(IExtHostConsumerFileSystem);
 	const extensionService = accessor.get(IExtHostExtensionService);
 	const extHostWorkspace = accessor.get(IExtHostWorkspace);
@@ -136,7 +136,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const uriTransformer = accessor.get(IURITransformerService);
 	// 'ExtensionHostMain'이 초기회 될때 constructor에서 함께 초기화 됩니다.
 	const rpcProtocol = accessor.get(IExtHostRpcService);
+	console.log('createApiFactoryAndRegisterActors 10')
 	const extHostStorage = accessor.get(IExtHostStorage);
+	console.log('createApiFactoryAndRegisterActors 10')
 	const extensionStoragePaths = accessor.get(IExtensionStoragePaths);
 	const extHostLoggerService = accessor.get(ILoggerService);
 	const extHostLogService = accessor.get(ILogService);
@@ -147,6 +149,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostEditorTabs = accessor.get(IExtHostEditorTabs);
 	// const extHostManagedSockets = accessor.get(IExtHostManagedSockets);
 	
+	console.log('createApiFactoryAndRegisterActors 1-2')
 
 	// register addressable instances
 	rpcProtocol.set(ExtHostContext.ExtHostFileSystemInfo, extHostFileSystemInfo);
@@ -162,6 +165,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	rpcProtocol.set(ExtHostContext.ExtHostEditorTabs, extHostEditorTabs);
 	// rpcProtocol.set(ExtHostContext.ExtHostManagedSockets, extHostManagedSockets);
 
+	console.log('createApiFactoryAndRegisterActors 1-3')
+
 	// automatically create and register addressable instances
 	// const extHostDecorations = rpcProtocol.set(ExtHostContext.ExtHostDecorations, accessor.get(IExtHostDecorations));
 	const extHostDocumentsAndEditors = rpcProtocol.set(ExtHostContext.ExtHostDocumentsAndEditors, accessor.get(IExtHostDocumentsAndEditors));
@@ -173,6 +178,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, accessor.get(IExtHostOutputService));
 	// const extHostLocalization = rpcProtocol.set(ExtHostContext.ExtHostLocalization, accessor.get(IExtHostLocalizationService));
 
+	console.log('createApiFactoryAndRegisterActors 1-4')
 	// manually create and register addressable instances
 	const extHostUrls = rpcProtocol.set(ExtHostContext.ExtHostUrls, new ExtHostUrls(rpcProtocol));
 	const extHostDocuments = rpcProtocol.set(ExtHostContext.ExtHostDocuments, new ExtHostDocuments(rpcProtocol, extHostDocumentsAndEditors));
@@ -1389,7 +1395,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			}
 		};
 
-		return <typeof vscode>{
+		console.log('createApiFactoryAndRegisterActors 2')
+
+		return /* <typeof vscode> */{
 			version: initData.version,
 			// namespaces
 			ai,
@@ -1439,7 +1447,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			CompletionItem: extHostTypes.CompletionItem,
 			CompletionItemKind: extHostTypes.CompletionItemKind,
 			CompletionItemTag: extHostTypes.CompletionItemTag,
-			CompletionList: extHostTypes.CompletionList,
+			// CompletionList: extHostTypes.CompletionList,
 			CompletionTriggerKind: extHostTypes.CompletionTriggerKind,
 			ConfigurationTarget: extHostTypes.ConfigurationTarget,
 			CustomExecution: extHostTypes.CustomExecution,
@@ -1472,11 +1480,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			ExtensionMode: extHostTypes.ExtensionMode,
 			ExternalUriOpenerPriority: extHostTypes.ExternalUriOpenerPriority,
 			FileChangeType: extHostTypes.FileChangeType,
-			FileDecoration: extHostTypes.FileDecoration,
+			// FileDecoration: extHostTypes.FileDecoration,
 			FileDecoration2: extHostTypes.FileDecoration,
 			FileSystemError: extHostTypes.FileSystemError,
 			FileType: files.FileType,
-			FilePermission: files.FilePermission,
+			// FilePermission: files.FilePermission,
 			FoldingRange: extHostTypes.FoldingRange,
 			FoldingRangeKind: extHostTypes.FoldingRangeKind,
 			FunctionBreakpoint: extHostTypes.FunctionBreakpoint,
@@ -1488,7 +1496,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			MarkdownString: extHostTypes.MarkdownString,
 			OverviewRulerLane: OverviewRulerLane,
 			ParameterInformation: extHostTypes.ParameterInformation,
-			PortAutoForwardAction: extHostTypes.PortAutoForwardAction,
+			// PortAutoForwardAction: extHostTypes.PortAutoForwardAction,
 			Position: extHostTypes.Position,
 			ProcessExecution: extHostTypes.ProcessExecution,
 			ProgressLocation: extHostTypes.ProgressLocation,
@@ -1511,10 +1519,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			SourceBreakpoint: extHostTypes.SourceBreakpoint,
 			StandardTokenType: extHostTypes.StandardTokenType,
 			StatusBarAlignment: extHostTypes.StatusBarAlignment,
-			SymbolInformation: extHostTypes.SymbolInformation,
+			// SymbolInformation: extHostTypes.SymbolInformation,
 			SymbolKind: extHostTypes.SymbolKind,
 			SymbolTag: extHostTypes.SymbolTag,
-			Task: extHostTypes.Task,
+			// Task: extHostTypes.Task,
 			TaskGroup: extHostTypes.TaskGroup,
 			TaskPanelKind: extHostTypes.TaskPanelKind,
 			TaskRevealKind: extHostTypes.TaskRevealKind,
@@ -1552,7 +1560,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			InlayHintKind: extHostTypes.InlayHintKind,
 			RemoteAuthorityResolverError: extHostTypes.RemoteAuthorityResolverError,
 			ResolvedAuthority: extHostTypes.ResolvedAuthority,
-			ManagedResolvedAuthority: extHostTypes.ManagedResolvedAuthority,
+			// ManagedResolvedAuthority: extHostTypes.ManagedResolvedAuthority,
 			SourceControlInputBoxValidationType: extHostTypes.SourceControlInputBoxValidationType,
 			ExtensionRuntime: extHostTypes.ExtensionRuntime,
 			TimelineItem: extHostTypes.TimelineItem,
@@ -1570,14 +1578,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			NotebookControllerAffinity: extHostTypes.NotebookControllerAffinity,
 			NotebookControllerAffinity2: extHostTypes.NotebookControllerAffinity2,
 			NotebookEdit: extHostTypes.NotebookEdit,
-			NotebookKernelSourceAction: extHostTypes.NotebookKernelSourceAction,
+			// NotebookKernelSourceAction: extHostTypes.NotebookKernelSourceAction,
 			NotebookVariablesRequestKind: extHostTypes.NotebookVariablesRequestKind,
-			PortAttributes: extHostTypes.PortAttributes,
-			LinkedEditingRanges: extHostTypes.LinkedEditingRanges,
+			// PortAttributes: extHostTypes.PortAttributes,
+			// LinkedEditingRanges: extHostTypes.LinkedEditingRanges,
 			TestResultState: extHostTypes.TestResultState,
 			TestRunRequest: extHostTypes.TestRunRequest,
 			TestMessage: extHostTypes.TestMessage,
-			TestMessage2: extHostTypes.TestMessage, // back compat for Oct 2023
+			// TestMessage2: extHostTypes.TestMessage, // back compat for Oct 2023
 			TestTag: extHostTypes.TestTag,
 			TestRunProfileKind: extHostTypes.TestRunProfileKind,
 			TextSearchCompleteMessageType: TextSearchCompleteMessageType,
@@ -1588,7 +1596,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			StatementCoverage: extHostTypes.StatementCoverage,
 			BranchCoverage: extHostTypes.BranchCoverage,
 			FunctionCoverage: extHostTypes.FunctionCoverage,
-			WorkspaceTrustState: extHostTypes.WorkspaceTrustState,
+			// WorkspaceTrustState: extHostTypes.WorkspaceTrustState,
 			LanguageStatusSeverity: extHostTypes.LanguageStatusSeverity,
 			QuickPickItemKind: extHostTypes.QuickPickItemKind,
 			InputBoxValidationSeverity: extHostTypes.InputBoxValidationSeverity,
@@ -1605,11 +1613,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			TelemetryTrustedValue: TelemetryTrustedValue,
 			LogLevel: LogLevel,
 			EditSessionIdentityMatch: EditSessionIdentityMatch,
-			InteractiveSessionVoteDirection: extHostTypes.InteractiveSessionVoteDirection,
+			// InteractiveSessionVoteDirection: extHostTypes.InteractiveSessionVoteDirection,
 			ChatAgentCopyKind: extHostTypes.ChatAgentCopyKind,
 			InteractiveEditorResponseFeedbackKind: extHostTypes.InteractiveEditorResponseFeedbackKind,
-			StackFrameFocus: extHostTypes.StackFrameFocus,
-			ThreadFocus: extHostTypes.ThreadFocus,
+			// StackFrameFocus: extHostTypes.StackFrameFocus,
+			// ThreadFocus: extHostTypes.ThreadFocus,
 			RelatedInformationType: extHostTypes.RelatedInformationType,
 			SpeechToTextStatus: extHostTypes.SpeechToTextStatus
 		};

@@ -1731,7 +1731,7 @@ export interface ExtHostTreeViewsShape {
 }
 
 export interface ExtHostWorkspaceShape {
-	$checkWorking(data?: any): void;
+	// $checkWorking(data?: any): void;
 	$initializeWorkspace(workspace: IWorkspaceData | null, trusted: boolean): void;
 	$acceptWorkspaceData(workspace: IWorkspaceData | null): void;
 	$handleTextSearchResult(result: search.IRawFileMatch2, requestId: number): void;

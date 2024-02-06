@@ -10,7 +10,7 @@ import {ICommandMetadata} from 'td/platform/commands/common/commands';
 import * as extHostTypes from 'td/workbench/api/common/extHostTypes';
 import * as extHostTypeConverter from 'td/workbench/api/common/extHostTypeConverters';
 import {cloneAndChange} from 'td/base/common/objects';
-import {MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ICommandDto, ICommandMetadataDto, MainThreadTelemetryShape} from './extHost.protocol';
+import {MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ICommandDto, ICommandMetadataDto} from './extHost.protocol';
 import {isNonEmptyArray} from 'td/base/common/arrays';
 import * as languages from 'td/editor/common/languages';
 import type * as vscode from 'vscode';

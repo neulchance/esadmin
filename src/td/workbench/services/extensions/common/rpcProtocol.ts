@@ -468,6 +468,8 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 		if (!actor) {
 			// console.log(getStringIdentifierFor(rpcId))
 			throw new Error('Unknown actor ' + getStringIdentifierForProxy(rpcId));
+		} else {
+			console.log(`\x1b[31mSetted actor ${getStringIdentifierForProxy(rpcId)}\x1b[0m`)
 		}
 		const method = actor[methodName];
 		if (typeof method !== 'function') {
