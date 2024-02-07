@@ -211,18 +211,17 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 	public async initialize(): Promise<void> {
 		try {
 			await this._beforeAlmostReadyToRunExtensions();
-			console.log('_beforeAlmostReadyToRunExtensions done')
+			if (false/* Coloring Flow Check */) console.log(`\x1b[32m_beforeAlmostReadyToRunExtensions done\x1b[0m`)
 			this._almostReadyToRunExtensions.open();
-			console.log('this._almostReadyToRunExtensions.open() done')
+			if (false/* Coloring Flow Check */) console.log(`\x1b[32mthis._almostReadyToRunExtensions.open() done\x1b[0m`)
 
 			await this._extHostWorkspace.waitForInitializeCall();
 			performance.mark('code/extHost/ready');
 			this._readyToStartExtensionHost.open();
-			console.log('this._readyToStartExtensionHost.open()')
+			if (false/* Coloring Flow Check */) console.log(`\x1b[32mthis._readyToStartExtensionHost.open()\x1b[0m`)
 			
 			if (this._initData.autoStart) {
-				const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
-				console.log(`${blue}this._initData.autoStart${done}`)
+				if (false/* Coloring Flow Check */) console.log(`\x1b[32mthis._initData.autoStart\x1b[0m`)
 				this._startExtensionHost();
 			}
 		} catch (err) {

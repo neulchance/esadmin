@@ -190,8 +190,8 @@ export class ExtensionHostMain {
 		// because `initialize` itself creates instances that depend on it
 		this._extensionService = instaService.invokeFunction(accessor => {
 			// Check preluded DI services
-			accessor.get(IExtHostCommands);
-			console.log('\x1b[34maccessor.get(IExtHostCommands) done\x1b[0m')
+			// accessor.get(IExtHostCommands);
+			// console.log('\x1b[34maccessor.get(IExtHostCommands) done\x1b[0m')
 			/* _util.serviceIds.forEach((id, key) => {
 				console.log(id, key)
 			}) */

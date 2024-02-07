@@ -68,14 +68,12 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 
 		// initialize API and register actors
 		// explain@neulchance
-		console.log(`\x1b[32mextensionApiFactory before\x1b[0m`)
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
-		console.log(`\x1b[32mextensionApiFactory after\x1b[0m`)
+		// console.log(`\x1b[32mextensionApiFactory done\x1b[0m`)
 		// console.log()
 
 		// Register Download command
 		this._instaService.createInstance(ExtHostDownloadService);
-		console.log(`\x1b[32mExtHostDownloadService\x1b[0m`)
 
 		// Register CLI Server for ipc
 		if (this._initData.remote.isRemote && this._initData.remote.authority) {
@@ -86,9 +84,6 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 		// Register local file system shortcut
 		this._instaService.createInstance(ExtHostDiskFileSystemProvider);
 
-		// explain@neulchance
-		console.log('this._myRegistry')
-		console.log(this._myRegistry)
 		// Module loading tricks
 		const interceptor = this._instaService.createInstance(NodeModuleRequireInterceptor, extensionApiFactory, {mine: this._myRegistry, all: this._globalRegistry});
 		await interceptor.install();

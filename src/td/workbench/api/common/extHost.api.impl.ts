@@ -123,7 +123,7 @@ export interface IExtensionApiFactory {
  * node-process
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	console.log(`\x1b[32mcreateApiFactoryAndRegisterActors started\x1b[0m`)
+	if (false/* Coloring Flow Check */) console.log(`\x1b[32mcreateApiFactoryAndRegisterActors started\x1b[0m`)
 
 	// services
 	const initData = accessor.get(IExtHostInitDataService);
@@ -161,7 +161,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// rpcProtocol.set(ExtHostContext.ExtHostEditorTabs, extHostEditorTabs);
 	rpcProtocol.set(ExtHostContext.ExtHostManagedSockets, extHostManagedSockets);
 
-	console.log(`\x1b[32mcreateApiFactoryAndRegisterActors middle 1\x1b[0m`)
+	if (false /* Coloring Flow Check */) console.log(`\x1b[32mcreateApiFactoryAndRegisterActors middle 1\x1b[0m`)
 	// automatically create and register addressable instances
 	// const extHostDecorations = rpcProtocol.set(ExtHostContext.ExtHostDecorations, accessor.get(IExtHostDecorations));
 	const extHostDocumentsAndEditors = rpcProtocol.set(ExtHostContext.ExtHostDocumentsAndEditors, accessor.get(IExtHostDocumentsAndEditors));
@@ -220,22 +220,19 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// const extHostIssueReporter = rpcProtocol.set(ExtHostContext.ExtHostIssueReporter, new ExtHostIssueReporter(rpcProtocol));
 	const extHostStatusBar = rpcProtocol.set(ExtHostContext.ExtHostStatusBar, new ExtHostStatusBar(rpcProtocol, extHostCommands.converter));
 	// const extHostSpeech = rpcProtocol.set(ExtHostContext.ExtHostSpeech, new ExtHostSpeech(rpcProtocol));
-	console.log(`\x1b[32mcreateApiFactoryAndRegisterActors rpc setting done\x1b[0m`)
+	if (false/* Coloring Flow Check */) console.log(`\x1b[32mcreateApiFactoryAndRegisterActors rpc setting done\x1b[0m`)
 
 	// Check that no named customers are missing
 	const expected = Object.values<ProxyIdentifier<any>>(ExtHostContext);
-	console.log(`\x1b[32mrpcProtocol.assertRegistered started\x1b[0m`)
 	rpcProtocol.assertRegistered(expected);
-	console.log(`\x1b[32mrpcProtocol.assertRegistered done\x1b[0m`)
+	// console.log(`\x1b[32mrpcProtocol.assertRegistered done\x1b[0m`)
 
 	// Other instances
 	// const extHostBulkEdits = new ExtHostBulkEdits(rpcProtocol, extHostDocumentsAndEditors);
 	const extHostClipboard = new ExtHostClipboard(rpcProtocol);
-	console.log(`\x1b[32mextHostClipboard\x1b[0m`)
 	const extHostMessageService = new ExtHostMessageService(rpcProtocol, extHostLogService);
-	console.log(`\x1b[32mextHostMessageService\x1b[0m`)
 	const extHostDialogs = new ExtHostDialogs(rpcProtocol);
-	console.log(`\x1b[32mextHostDialogs\x1b[0m`)
+	// console.log(`\x1b[32mOther instances done\x1b[0m`)
 
 	// Register API-ish commands
 	ExtHostApiCommands.register(extHostCommands);

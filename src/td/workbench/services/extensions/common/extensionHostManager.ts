@@ -300,8 +300,8 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		this._instantiationService.invokeFunction((accessor: ServicesAccessor) => {
 			// Check that no named customers are missing
 			// accessor.get(ILogService);
-			accessor.get(ILoggerService);
-			console.log('\x1b[31maccessor.get(ILoggerService) done\x1b[0m')
+			// accessor.get(ILoggerService);
+			// console.log('\x1b[31maccessor.get(ILoggerService) done\x1b[0m')
 			// accessor.get(IWorkbenchIssueService);
 			// console.log('accessor.get(IWorkbenchIssueService) done')
 		})
