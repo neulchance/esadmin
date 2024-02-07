@@ -21,6 +21,7 @@ import {Registry} from 'td/platform/registry/common/platform';
 import {diffInserted, diffRemoved, editorHoverHighlight, editorWidgetBackground, editorWidgetBorder, focusBorder, inputBackground, inputPlaceholderForeground, registerColor, transparent, widgetShadow} from 'td/platform/theme/common/colorRegistry';
 import {Extensions as ExtensionsMigration, IConfigurationMigrationRegistry} from 'td/workbench/common/configuration';
 import {IChatFollowup} from 'td/workbench/contrib/chat/common/chatService';
+import {URI} from 'td/base/common/uri';
 
 export interface IInlineChatSlashCommand {
 	command: string;
@@ -45,6 +46,7 @@ export interface IInlineChatRequest {
 	attempt: number;
 	requestId: string;
 	live: boolean;
+	previewDocument: URI;
 	withIntentDetection: boolean;
 }
 
@@ -150,7 +152,7 @@ export const CTX_INLINE_CHAT_EDIT_MODE = new RawContextKey<EditMode>('config.inl
 
 // --- (select) action identifier
 
-export const ACTION_ACCEPT_CHANGES = 'interactive.acceptChanges';
+export const ACTION_ACCEPT_CHANGES = 'inlineChat.acceptChanges';
 export const ACTION_REGENERATE_RESPONSE = 'inlineChat.regenerate';
 export const ACTION_VIEW_IN_CHAT = 'inlineChat.viewInChat';
 

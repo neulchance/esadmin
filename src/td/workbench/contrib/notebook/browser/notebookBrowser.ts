@@ -378,7 +378,7 @@ export interface INotebookEditorCreationOptions {
 		cellExecutePrimary?: MenuId;
 	};
 	readonly options?: NotebookOptions;
-	readonly DevWindow?: DevWindow;
+	readonly devWindow?: DevWindow;
 }
 
 export interface INotebookWebviewMessage {

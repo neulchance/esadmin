@@ -5,6 +5,7 @@
 
 import {Dimension} from 'td/base/browser/dom';
 import {IMouseWheelEvent} from 'td/base/browser/mouseEvent';
+import {DevWindow} from 'td/base/browser/window';
 import {equals} from 'td/base/common/arrays';
 import {Event} from 'td/base/common/event';
 import {IDisposable} from 'td/base/common/lifecycle';
@@ -77,6 +78,7 @@ export interface WebviewInitInfo {
 	readonly contentOptions: WebviewContentOptions;
 
 	readonly extension: WebviewExtensionDescription | undefined;
+	readonly codeWindow?: DevWindow;
 }
 
 export const enum WebviewContentPurpose {

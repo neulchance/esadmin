@@ -18,6 +18,7 @@
     "@types/graceful-fs": "^4.1.9",
     "@types/minimist": "^1.2.5",
     "@types/trusted-types": "^1.0.6",
+    "@types/vscode-notebook-renderer": "^1.72.3",
     "@types/which": "^3.0.3",
     "@types/wicg-file-system-access": "^2023.10.4",
     "@types/yazl": "^2.4.5",
