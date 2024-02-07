@@ -3,34 +3,34 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IntervalTimer, timeout } from 'td/base/common/async';
-import { Disposable, IDisposable, dispose, toDisposable, DisposableStore } from 'td/base/common/lifecycle';
-import { URI } from 'td/base/common/uri';
-import { SimpleWorkerClient, logOnceWebWorkerWarning, IWorkerClient } from 'td/base/common/worker/simpleWorker';
-import { DefaultWorkerFactory } from 'td/base/browser/defaultWorkerFactory';
-import { Position } from 'td/editor/common/core/position';
-import { IRange, Range } from 'td/editor/common/core/range';
-import { ITextModel } from 'td/editor/common/model';
+import {IntervalTimer, timeout} from 'td/base/common/async';
+import {Disposable, IDisposable, dispose, toDisposable, DisposableStore} from 'td/base/common/lifecycle';
+import {URI} from 'td/base/common/uri';
+import {SimpleWorkerClient, logOnceWebWorkerWarning, IWorkerClient} from 'td/base/common/worker/simpleWorker';
+import {DefaultWorkerFactory} from 'td/base/browser/defaultWorkerFactory';
+import {Position} from 'td/editor/common/core/position';
+import {IRange, Range} from 'td/editor/common/core/range';
+import {ITextModel} from 'td/editor/common/model';
 import * as languages from 'td/editor/common/languages';
-import { ILanguageConfigurationService } from 'td/editor/common/languages/languageConfigurationRegistry';
-import { EditorSimpleWorker } from 'td/editor/common/services/editorSimpleWorker';
-import { DiffAlgorithmName, IDiffComputationResult, IEditorWorkerService, ILineChange, IUnicodeHighlightsResult } from 'td/editor/common/services/editorWorker';
-import { IModelService } from 'td/editor/common/services/model';
-import { ITextResourceConfigurationService } from 'td/editor/common/services/textResourceConfiguration';
-import { isNonEmptyArray } from 'td/base/common/arrays';
-import { ILogService } from 'td/platform/log/common/log';
-import { StopWatch } from 'td/base/common/stopwatch';
-import { canceled, onUnexpectedError } from 'td/base/common/errors';
-import { UnicodeHighlighterOptions } from 'td/editor/common/services/unicodeTextModelHighlighter';
-import { IEditorWorkerHost } from 'td/editor/common/services/editorWorkerHost';
-import { ILanguageFeaturesService } from 'td/editor/common/services/languageFeatures';
-import { IChange } from 'td/editor/common/diff/legacyLinesDiffComputer';
-import { IDocumentDiff, IDocumentDiffProviderOptions } from 'td/editor/common/diff/documentDiffProvider';
-import { ILinesDiffComputerOptions, MovedText } from 'td/editor/common/diff/linesDiffComputer';
-import { DetailedLineRangeMapping, RangeMapping, LineRangeMapping } from 'td/editor/common/diff/rangeMapping';
-import { LineRange } from 'td/editor/common/core/lineRange';
-import { $window } from 'td/base/browser/window';
-import { WindowIntervalTimer } from 'td/base/browser/dom';
+import {ILanguageConfigurationService} from 'td/editor/common/languages/languageConfigurationRegistry';
+import {EditorSimpleWorker} from 'td/editor/common/services/editorSimpleWorker';
+import {DiffAlgorithmName, IDiffComputationResult, IEditorWorkerService, ILineChange, IUnicodeHighlightsResult} from 'td/editor/common/services/editorWorker';
+import {IModelService} from 'td/editor/common/services/model';
+import {ITextResourceConfigurationService} from 'td/editor/common/services/textResourceConfiguration';
+import {isNonEmptyArray} from 'td/base/common/arrays';
+import {ILogService} from 'td/platform/log/common/log';
+import {StopWatch} from 'td/base/common/stopwatch';
+import {canceled, onUnexpectedError} from 'td/base/common/errors';
+import {UnicodeHighlighterOptions} from 'td/editor/common/services/unicodeTextModelHighlighter';
+import {IEditorWorkerHost} from 'td/editor/common/services/editorWorkerHost';
+import {ILanguageFeaturesService} from 'td/editor/common/services/languageFeatures';
+import {IChange} from 'td/editor/common/diff/legacyLinesDiffComputer';
+import {IDocumentDiff, IDocumentDiffProviderOptions} from 'td/editor/common/diff/documentDiffProvider';
+import {ILinesDiffComputerOptions, MovedText} from 'td/editor/common/diff/linesDiffComputer';
+import {DetailedLineRangeMapping, RangeMapping, LineRangeMapping} from 'td/editor/common/diff/rangeMapping';
+import {LineRange} from 'td/editor/common/core/lineRange';
+import {$window} from 'td/base/browser/window';
+import {WindowIntervalTimer} from 'td/base/browser/dom';
 
 /**
  * Stop syncing a model to the worker if it was not needed for 1 min.
@@ -74,13 +74,13 @@ export class EditorWorkerService extends Disposable implements IEditorWorkerServ
 		this._logService = logService;
 
 		// register default link-provider and default completions-provider
-		this._register(languageFeaturesService.linkProvider.register({ language: '*', hasAccessToAllModels: true }, {
+		this._register(languageFeaturesService.linkProvider.register({language: '*', hasAccessToAllModels: true}, {
 			provideLinks: (model, token) => {
 				if (!canSyncModel(this._modelService, model.uri)) {
-					return Promise.resolve({ links: [] }); // File too large
+					return Promise.resolve({links: []}); // File too large
 				}
 				return this._workerManager.withWorker().then(client => client.computeLinks(model.uri)).then(links => {
-					return links && { links };
+					return links && {links};
 				});
 			}
 		}));
@@ -162,7 +162,7 @@ export class EditorWorkerService extends Disposable implements IEditorWorkerServ
 			}
 			const sw = StopWatch.create();
 			const result = this._workerManager.withWorker().then(client => client.computeHumanReadableDiff(resource, edits,
-				{ ignoreTrimWhitespace: false, maxComputationTimeMs: 1000, computeMoves: false, })).catch((err) => {
+				{ignoreTrimWhitespace: false, maxComputationTimeMs: 1000, computeMoves: false,})).catch((err) => {
 					onUnexpectedError(err);
 					// In case of an exception, fall back to computeMoreMinimalEdits
 					return this.computeMoreMinimalEdits(resource, edits, true);
@@ -263,7 +263,7 @@ class WordBasedCompletionItemProvider implements languages.CompletionItemProvide
 					kind: languages.CompletionItemKind.Text,
 					label: word,
 					insertText: word,
-					range: { insert, replace }
+					range: {insert, replace}
 				};
 			}),
 		};

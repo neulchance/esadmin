@@ -191,8 +191,8 @@ export class ExtensionHostMain {
 			/* _util.serviceIds.forEach((id, key) => {
 				console.log(id, key)
 			}) */
-			accessor.get(IURITransformerService)
-			console.log('ret IURITransformerService')
+			accessor.get(IExtHostTelemetry)
+			console.log('ret IExtHostTelemetry')
 			return accessor.get(IExtHostExtensionService)
 		});
 		// Above IExtHostExtensionService instance is registered in extHost.node.services.ts's registerSingleton().

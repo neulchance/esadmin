@@ -276,7 +276,7 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 	// extHost.api.impl.ts's rpcProtocol is an instance of RPCProtocol
 	// extHost.api.impl.ts's rpcProtocol.set function means RPCProtocol.set
 	public set<T, R extends T>(identifier: ProxyIdentifier<T>, value: R): R {
-		console.log(`\x1b[31mset: ${identifier.sid}\x1b[0m`)
+		console.log(`\x1b[31m set: ${identifier.sid}\x1b[0m`)
 		// set: ExtHostWindow
 		this._locals[identifier.nid] = value;
 		return value;
@@ -284,10 +284,13 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 
 	// '_locals'에 확실히 'identifiers'의 모든 프록시가 등록되어 있는지 확인합니다.
 	public assertRegistered(identifiers: ProxyIdentifier<any>[]): void {
+		console.log('그때그때 달라요')
+		console.log(identifiers)
+		console.log('this._locals', this._locals)
 		for (let i = 0, len = identifiers.length; i < len; i++) {
 			const identifier = identifiers[i];
 			if (!this._locals[identifier.nid]) {
-				throw new Error(`Missing proxy instance ${identifier.sid}`);
+				throw new Error(`Missing proxy instance ${identifier.sid} ${identifier.nid}`);
 			}
 		}
 	}

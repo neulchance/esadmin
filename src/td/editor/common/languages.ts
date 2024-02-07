@@ -2096,7 +2096,7 @@ export interface DocumentOnDropEditProvider {
 	readonly id?: string;
 	readonly dropMimeTypes?: readonly string[];
 
-	provideDocumentOnDropEdits(model: model.ITextModel, position: IPosition, dataTransfer: IReadonlyVSDataTransfer, token: CancellationToken): ProviderResult<DocumentOnDropEdit>;
+	// provideDocumentOnDropEdits(model: model.ITextModel, position: IPosition, dataTransfer: IReadonlyVSDataTransfer, token: CancellationToken): ProviderResult<DocumentOnDropEdit>;
 }
 
 export interface DocumentContextItem {
@@ -2122,10 +2122,10 @@ export interface MappedEditsProvider {
 	 * @param token A cancellation token.
 	 * @returns A provider result of text edits.
 	 */
-	provideMappedEdits(
-		document: model.ITextModel,
-		codeBlocks: string[],
-		context: MappedEditsContext,
-		token: CancellationToken
-	): Promise<WorkspaceEdit | null>;
+	// provideMappedEdits(
+	// 	document: model.ITextModel,
+	// 	codeBlocks: string[],
+	// 	context: MappedEditsContext,
+	// 	token: CancellationToken
+	// ): Promise<WorkspaceEdit | null>;
 }

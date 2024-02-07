@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/* eslint-disable local/code-no-native-private */
+// /* eslint-disable local/code-no-native-private */
 
 import {validateConstraint} from 'td/base/common/types';
 import {ICommandMetadata} from 'td/platform/commands/common/commands';
@@ -55,7 +55,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	// #telemetry: MainThreadTelemetryShape;
 
 	private readonly _logService: ILogService;
-	readonly #extHostTelemetry: IExtHostTelemetry;
+	// readonly #extHostTelemetry: IExtHostTelemetry;
 	private readonly _argumentProcessors: ArgumentProcessor[];
 
 	readonly converter: CommandsConverter;
@@ -63,11 +63,11 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	constructor(
 		@IExtHostRpcService extHostRpc: IExtHostRpcService,
 		@ILogService logService: ILogService,
-		@IExtHostTelemetry extHostTelemetry: IExtHostTelemetry
+		// @IExtHostTelemetry extHostTelemetry: IExtHostTelemetry
 	) {
 		this.#proxy = extHostRpc.getProxy(MainContext.MainThreadCommands);
 		this._logService = logService;
-		this.#extHostTelemetry = extHostTelemetry;
+		// this.#extHostTelemetry = extHostTelemetry;
 		// this.#telemetry = extHostRpc.getProxy(MainContext.MainThreadTelemetry);
 		this.converter = new CommandsConverter(
 			this,
@@ -263,8 +263,8 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			}
 
 			if (command.extension?.identifier) {
-				const reported = this.#extHostTelemetry.onExtensionError(command.extension.identifier, err);
-				this._logService.trace('forwarded error to extension?', reported, command.extension?.identifier);
+				// const reported = this.#extHostTelemetry.onExtensionError(command.extension.identifier, err);
+				// this._logService.trace('forwarded error to extension?', reported, command.extension?.identifier);
 			}
 
 			throw new class CommandError extends Error {

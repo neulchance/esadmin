@@ -3,40 +3,40 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { URI, UriComponents } from 'td/base/common/uri';
-import { equals, mixin } from 'td/base/common/objects';
+import {URI, UriComponents} from 'td/base/common/uri';
+import {equals, mixin} from 'td/base/common/objects';
 import type * as vscode from 'vscode';
 import * as typeConvert from 'td/workbench/api/common/extHostTypeConverters';
-import { Range, Disposable, CompletionList, SnippetString, CodeActionKind, SymbolInformation, DocumentSymbol, SemanticTokensEdits, SemanticTokens, SemanticTokensEdit, Location, InlineCompletionTriggerKind, InternalDataTransferItem, SyntaxTokenType } from 'td/workbench/api/common/extHostTypes';
-import { ISingleEditOperation } from 'td/editor/common/core/editOperation';
+import {Range, Disposable, CompletionList, SnippetString, CodeActionKind, SymbolInformation, DocumentSymbol, SemanticTokensEdits, SemanticTokens, SemanticTokensEdit, Location, InlineCompletionTriggerKind, InternalDataTransferItem, SyntaxTokenType} from 'td/workbench/api/common/extHostTypes';
+import {ISingleEditOperation} from 'td/editor/common/core/editOperation';
 import * as languages from 'td/editor/common/languages';
-import { ExtHostDocuments } from 'td/workbench/api/common/extHostDocuments';
-import { ExtHostCommands, CommandsConverter } from 'td/workbench/api/common/extHostCommands';
-import { ExtHostDiagnostics } from 'td/workbench/api/common/extHostDiagnostics';
+import {ExtHostDocuments} from 'td/workbench/api/common/extHostDocuments';
+import {ExtHostCommands, CommandsConverter} from 'td/workbench/api/common/extHostCommands';
+import {ExtHostDiagnostics} from 'td/workbench/api/common/extHostDiagnostics';
 import * as extHostProtocol from './extHost.protocol';
-import { regExpLeadsToEndlessLoop } from 'td/base/common/strings';
-import { IPosition } from 'td/editor/common/core/position';
-import { IRange, Range as EditorRange } from 'td/editor/common/core/range';
-import { isFalsyOrEmpty, isNonEmptyArray, coalesce } from 'td/base/common/arrays';
-import { assertType, isObject } from 'td/base/common/types';
-import { ISelection, Selection } from 'td/editor/common/core/selection';
-import { ILogService } from 'td/platform/log/common/log';
-import { CancellationToken } from 'td/base/common/cancellation';
-import { ExtensionIdentifier, IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { IURITransformer } from 'td/base/common/uriIpc';
-import { DisposableStore } from 'td/base/common/lifecycle';
-import { VSBuffer } from 'td/base/common/buffer';
-import { encodeSemanticTokensDto } from 'td/editor/common/services/semanticTokensDto';
-import { IdGenerator } from 'td/base/common/idGenerator';
-import { IExtHostApiDeprecationService } from 'td/workbench/api/common/extHostApiDeprecationService';
-import { Cache } from './cache';
-import { StopWatch } from 'td/base/common/stopwatch';
-import { isCancellationError, NotImplementedError } from 'td/base/common/errors';
-import { raceCancellationError } from 'td/base/common/async';
-import { isProposedApiEnabled } from 'td/workbench/services/extensions/common/extensions';
-import { ExtHostTelemetry, IExtHostTelemetry } from 'td/workbench/api/common/extHostTelemetry';
-import { localize } from 'td/nls';
-import { IAutoClosingPairConditional } from 'td/editor/common/languages/languageConfiguration';
+import {regExpLeadsToEndlessLoop} from 'td/base/common/strings';
+import {IPosition} from 'td/editor/common/core/position';
+import {IRange, Range as EditorRange} from 'td/editor/common/core/range';
+import {isFalsyOrEmpty, isNonEmptyArray, coalesce} from 'td/base/common/arrays';
+import {assertType, isObject} from 'td/base/common/types';
+import {ISelection, Selection} from 'td/editor/common/core/selection';
+import {ILogService} from 'td/platform/log/common/log';
+import {CancellationToken} from 'td/base/common/cancellation';
+import {ExtensionIdentifier, IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {IURITransformer} from 'td/base/common/uriIpc';
+import {DisposableStore} from 'td/base/common/lifecycle';
+import {VSBuffer} from 'td/base/common/buffer';
+import {encodeSemanticTokensDto} from 'td/editor/common/services/semanticTokensDto';
+import {IdGenerator} from 'td/base/common/idGenerator';
+import {IExtHostApiDeprecationService} from 'td/workbench/api/common/extHostApiDeprecationService';
+import {Cache} from './cache';
+import {StopWatch} from 'td/base/common/stopwatch';
+import {isCancellationError, NotImplementedError} from 'td/base/common/errors';
+import {raceCancellationError} from 'td/base/common/async';
+import {isProposedApiEnabled} from 'td/workbench/services/extensions/common/extensions';
+import {ExtHostTelemetry, IExtHostTelemetry} from 'td/workbench/api/common/extHostTelemetry';
+import {localize} from 'td/nls';
+import {IAutoClosingPairConditional} from 'td/editor/common/languages/languageConfiguration';
 
 // --- adapter
 
@@ -492,7 +492,7 @@ class CodeActionAdapter {
 				});
 			}
 		}
-		return { cacheId, actions };
+		return {cacheId, actions};
 	}
 
 	async resolveCodeAction(id: extHostProtocol.ChainedCacheId, token: CancellationToken): Promise<{ edit?: extHostProtocol.IWorkspaceEditDto; command?: extHostProtocol.ICommandDto }> {
@@ -521,7 +521,7 @@ class CodeActionAdapter {
 			}
 		}
 
-		return { edit: resolvedEdit, command: resolvedCommand };
+		return {edit: resolvedEdit, command: resolvedCommand};
 	}
 
 	releaseCodeActions(cachedId: number): void {
@@ -591,9 +591,9 @@ class DocumentPasteEditProvider {
 			label: edit.label ?? localize('defaultPasteLabel', "Paste using '{0}' extension", this._extension.displayName || this._extension.name),
 			detail: this._extension.displayName || this._extension.name,
 			yieldTo: edit.yieldTo?.map(yTo => {
-				return 'mimeType' in yTo ? yTo : { providerId: DocumentPasteEditProvider.toInternalProviderId(yTo.extensionId, yTo.providerId) };
+				return 'mimeType' in yTo ? yTo : {providerId: DocumentPasteEditProvider.toInternalProviderId(yTo.extensionId, yTo.providerId)};
 			}),
-			insertText: typeof edit.insertText === 'string' ? edit.insertText : { snippet: edit.insertText.value },
+			insertText: typeof edit.insertText === 'string' ? edit.insertText : {snippet: edit.insertText.value},
 			additionalEdit: edit.additionalEdit ? typeConvert.WorkspaceEdit.from(edit.additionalEdit, undefined) : undefined,
 		};
 	}
@@ -685,7 +685,7 @@ class NavigateTypeAdapter {
 		const value = await this._provider.provideWorkspaceSymbols(search, token);
 
 		if (!isNonEmptyArray(value)) {
-			return { symbols: [] };
+			return {symbols: []};
 		}
 
 		const sid = this._cache.add(value);
@@ -756,7 +756,7 @@ class RenameAdapter {
 		} catch (err) {
 			const rejectReason = RenameAdapter._asMessage(err);
 			if (rejectReason) {
-				return <extHostProtocol.IWorkspaceEditDto>{ rejectReason, edits: undefined! };
+				return <extHostProtocol.IWorkspaceEditDto>{rejectReason, edits: undefined!};
 			} else {
 				// generic error
 				return Promise.reject<extHostProtocol.IWorkspaceEditDto>(err);
@@ -793,12 +793,12 @@ class RenameAdapter {
 				this._logService.warn('INVALID rename location: position line must be within range start/end lines');
 				return undefined;
 			}
-			return { range: typeConvert.Range.from(range), text };
+			return {range: typeConvert.Range.from(range), text};
 
 		} catch (err) {
 			const rejectReason = RenameAdapter._asMessage(err);
 			if (rejectReason) {
-				return <languages.RenameLocation & languages.Rejection>{ rejectReason, range: undefined!, text: undefined! };
+				return <languages.RenameLocation & languages.Rejection>{rejectReason, range: undefined!, text: undefined!};
 			} else {
 				return Promise.reject<any>(err);
 			}
@@ -957,7 +957,7 @@ class DocumentSemanticTokensAdapter {
 			return encodeSemanticTokensDto({
 				id: myId,
 				type: 'delta',
-				deltas: (value.edits || []).map(edit => ({ start: edit.start, deleteCount: edit.deleteCount, data: edit.data }))
+				deltas: (value.edits || []).map(edit => ({start: edit.start, deleteCount: edit.deleteCount, data: edit.data}))
 			});
 		}
 
@@ -1016,7 +1016,7 @@ class CompletionsAdapter {
 		// before asynchronously asking the provider for its results. See
 		// https://github.com/microsoft/vscode/issues/83400#issuecomment-546851421
 		const replaceRange = doc.getWordRangeAtPosition(pos) || new Range(pos, pos);
-		const insertRange = replaceRange.with({ end: pos });
+		const insertRange = replaceRange.with({end: pos});
 
 		const sw = new StopWatch();
 		const itemsOrList = await this._provider.provideCompletionItems(doc, pos, token, typeConvert.CompletionContext.to(context));
@@ -1043,7 +1043,7 @@ class CompletionsAdapter {
 		const result: extHostProtocol.ISuggestResultDto = {
 			x: pid,
 			[extHostProtocol.ISuggestResultDtoField.completions]: completions,
-			[extHostProtocol.ISuggestResultDtoField.defaultRanges]: { replace: typeConvert.Range.from(replaceRange), insert: typeConvert.Range.from(insertRange) },
+			[extHostProtocol.ISuggestResultDtoField.defaultRanges]: {replace: typeConvert.Range.from(replaceRange), insert: typeConvert.Range.from(insertRange)},
 			[extHostProtocol.ISuggestResultDtoField.isIncomplete]: list.isIncomplete || undefined,
 			[extHostProtocol.ISuggestResultDtoField.duration]: sw.elapsed()
 		};
@@ -1271,7 +1271,7 @@ class InlineCompletionAdapter extends InlineCompletionAdapterBase {
 
 				const insertText = item.insertText;
 				return ({
-					insertText: typeof insertText === 'string' ? insertText : { snippet: insertText.value },
+					insertText: typeof insertText === 'string' ? insertText : {snippet: insertText.value},
 					filterText: item.filterText,
 					range: item.range ? typeConvert.Range.from(item.range) : undefined,
 					command,
@@ -1352,7 +1352,7 @@ class SignatureHelpAdapter {
 		const value = await this._provider.provideSignatureHelp(doc, pos, token, vscodeContext);
 		if (value) {
 			const id = this._cache.add([value]);
-			return { ...typeConvert.SignatureHelp.from(value), id };
+			return {...typeConvert.SignatureHelp.from(value), id};
 		}
 		return undefined;
 	}
@@ -1370,7 +1370,7 @@ class SignatureHelpAdapter {
 				activeSignatureHelp = revivedSignatureHelp;
 			}
 		}
-		return { ...context, activeSignatureHelp };
+		return {...context, activeSignatureHelp};
 	}
 
 	releaseSignatureHelp(id: number): any {
@@ -1408,7 +1408,7 @@ class InlayHintsAdapter {
 		}
 		const pid = this._cache.add(hints);
 		this._disposables.set(pid, new DisposableStore());
-		const result: extHostProtocol.IInlayHintsDto = { hints: [], cacheId: pid };
+		const result: extHostProtocol.IInlayHintsDto = {hints: [], cacheId: pid};
 		for (let i = 0; i < hints.length; i++) {
 			if (this._isValidInlayHint(hints[i], range)) {
 				result.hints.push(this._convertInlayHint(hints[i], [pid, i]));
@@ -1524,12 +1524,12 @@ class LinkProviderAdapter {
 		}
 		if (typeof this._provider.resolveDocumentLink !== 'function') {
 			// no resolve -> no caching
-			return { links: links.filter(LinkProviderAdapter._validateLink).map(typeConvert.DocumentLink.from) };
+			return {links: links.filter(LinkProviderAdapter._validateLink).map(typeConvert.DocumentLink.from)};
 
 		} else {
 			// cache links for future resolving
 			const pid = this._cache.add(links);
-			const result: extHostProtocol.ILinksListDto = { links: [], cacheId: pid };
+			const result: extHostProtocol.ILinksListDto = {links: [], cacheId: pid};
 			for (let i = 0; i < links.length; i++) {
 
 				if (!LinkProviderAdapter._validateLink(links[i])) {
@@ -1598,7 +1598,7 @@ class ColorProviderAdapter {
 		const document = this._documents.getDocument(resource);
 		const range = typeConvert.Range.to(raw.range);
 		const color = typeConvert.Color.to(raw.color);
-		const value = await this._provider.provideColorPresentations(color, { document, range }, token);
+		const value = await this._provider.provideColorPresentations(color, {document, range}, token);
 		if (!Array.isArray(value)) {
 			return undefined;
 		}
@@ -1849,9 +1849,9 @@ class DocumentOnDropEditAdapter {
 		return {
 			label: edit.label ?? localize('defaultDropLabel', "Drop using '{0}' extension", this._extension.displayName || this._extension.name),
 			yieldTo: edit.yieldTo?.map(yTo => {
-				return 'mimeType' in yTo ? yTo : { providerId: DocumentOnDropEditAdapter.toInternalProviderId(yTo.extensionId, yTo.providerId) };
+				return 'mimeType' in yTo ? yTo : {providerId: DocumentOnDropEditAdapter.toInternalProviderId(yTo.extensionId, yTo.providerId)};
 			}),
-			insertText: typeof edit.insertText === 'string' ? edit.insertText : { snippet: edit.insertText.value },
+			insertText: typeof edit.insertText === 'string' ? edit.insertText : {snippet: edit.insertText.value},
 			additionalEdit: edit.additionalEdit ? typeConvert.WorkspaceEdit.from(edit.additionalEdit, undefined) : undefined,
 		};
 	}
@@ -2260,7 +2260,7 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 	}
 
 	$provideWorkspaceSymbols(handle: number, search: string, token: CancellationToken): Promise<extHostProtocol.IWorkspaceSymbolsDto> {
-		return this._withAdapter(handle, NavigateTypeAdapter, adapter => adapter.provideWorkspaceSymbols(search, token), { symbols: [] }, token);
+		return this._withAdapter(handle, NavigateTypeAdapter, adapter => adapter.provideWorkspaceSymbols(search, token), {symbols: []}, token);
 	}
 
 	$resolveWorkspaceSymbol(handle: number, symbol: extHostProtocol.IWorkspaceSymbolDto, token: CancellationToken): Promise<extHostProtocol.IWorkspaceSymbolDto | undefined> {
@@ -2377,7 +2377,7 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 
 	registerSignatureHelpProvider(extension: IExtensionDescription, selector: vscode.DocumentSelector, provider: vscode.SignatureHelpProvider, metadataOrTriggerChars: string[] | vscode.SignatureHelpProviderMetadata): vscode.Disposable {
 		const metadata: extHostProtocol.ISignatureHelpProviderMetadataDto | undefined = Array.isArray(metadataOrTriggerChars)
-			? { triggerCharacters: metadataOrTriggerChars, retriggerCharacters: [] }
+			? {triggerCharacters: metadataOrTriggerChars, retriggerCharacters: []}
 			: metadataOrTriggerChars;
 
 		const handle = this._addNewAdapter(new SignatureHelpAdapter(this._documents, provider), extension);
@@ -2639,7 +2639,7 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 	}
 
 	setLanguageConfiguration(extension: IExtensionDescription, languageId: string, configuration: vscode.LanguageConfiguration): vscode.Disposable {
-		const { wordPattern } = configuration;
+		const {wordPattern} = configuration;
 
 		// check for a valid word pattern
 		if (wordPattern && regExpLeadsToEndlessLoop(wordPattern)) {

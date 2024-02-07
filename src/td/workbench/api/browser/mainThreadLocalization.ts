@@ -18,6 +18,7 @@ export class MainThreadLocalization extends Disposable implements MainThreadLoca
 		@IFileService private readonly fileService: IFileService,
 		@ILanguagePackService private readonly languagePackService: ILanguagePackService
 	) {
+		console.log('MainThreadLocalization#constructor');
 		super();
 	}
 

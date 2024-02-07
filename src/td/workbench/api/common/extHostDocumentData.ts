@@ -42,7 +42,7 @@ export class ExtHostDocumentData extends MirrorTextModel {
 		super(uri, lines, eol, versionId);
 	}
 
-	// eslint-disable-next-line local/code-must-use-super-dispose
+	// // eslint-disable-next-line local/code-must-use-super-dispose
 	override dispose(): void {
 		// we don't really dispose documents but let
 		// extensions still read from them. some

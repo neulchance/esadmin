@@ -4,27 +4,27 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'td/nls';
-import { URI } from 'td/base/common/uri';
-import { ICodeEditor, IDiffEditor } from 'td/editor/browser/editorBrowser';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { Position } from 'td/editor/common/core/position';
-import { IEditorContribution, IDiffEditorContribution } from 'td/editor/common/editorCommon';
-import { ITextModel } from 'td/editor/common/model';
-import { IModelService } from 'td/editor/common/services/model';
-import { ITextModelService } from 'td/editor/common/services/resolverService';
-import { MenuId, MenuRegistry, Action2 } from 'td/platform/actions/common/actions';
-import { CommandsRegistry, ICommandMetadata } from 'td/platform/commands/common/commands';
-import { ContextKeyExpr, IContextKeyService, ContextKeyExpression } from 'td/platform/contextkey/common/contextkey';
-import { ServicesAccessor as InstantiationServicesAccessor, BrandedService, IInstantiationService, IConstructorSignature } from 'td/platform/instantiation/common/instantiation';
-import { IKeybindings, KeybindingsRegistry, KeybindingWeight } from 'td/platform/keybinding/common/keybindingsRegistry';
-import { Registry } from 'td/platform/registry/common/platform';
-import { ITelemetryService } from 'td/platform/telemetry/common/telemetry';
-import { assertType } from 'td/base/common/types';
-import { ThemeIcon } from 'td/base/common/themables';
-import { IDisposable } from 'td/base/common/lifecycle';
-import { KeyMod, KeyCode } from 'td/base/common/keyCodes';
-import { ILogService } from 'td/platform/log/common/log';
-import { getActiveElement } from 'td/base/browser/dom';
+import {URI} from 'td/base/common/uri';
+import {ICodeEditor, IDiffEditor} from 'td/editor/browser/editorBrowser';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {Position} from 'td/editor/common/core/position';
+import {IEditorContribution, IDiffEditorContribution} from 'td/editor/common/editorCommon';
+import {ITextModel} from 'td/editor/common/model';
+import {IModelService} from 'td/editor/common/services/model';
+import {ITextModelService} from 'td/editor/common/services/resolverService';
+import {MenuId, MenuRegistry, Action2} from 'td/platform/actions/common/actions';
+import {CommandsRegistry, ICommandMetadata} from 'td/platform/commands/common/commands';
+import {ContextKeyExpr, IContextKeyService, ContextKeyExpression} from 'td/platform/contextkey/common/contextkey';
+import {ServicesAccessor as InstantiationServicesAccessor, BrandedService, IInstantiationService, IConstructorSignature} from 'td/platform/instantiation/common/instantiation';
+import {IKeybindings, KeybindingsRegistry, KeybindingWeight} from 'td/platform/keybinding/common/keybindingsRegistry';
+import {Registry} from 'td/platform/registry/common/platform';
+import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
+import {assertType} from 'td/base/common/types';
+import {ThemeIcon} from 'td/base/common/themables';
+import {IDisposable} from 'td/base/common/lifecycle';
+import {KeyMod, KeyCode} from 'td/base/common/keyCodes';
+import {ILogService} from 'td/platform/log/common/log';
+import {getActiveElement} from 'td/base/browser/dom';
 
 export type ServicesAccessor = InstantiationServicesAccessor;
 export type EditorContributionCtor = IConstructorSignature<IEditorContribution, [ICodeEditor]>;
@@ -200,7 +200,7 @@ export class MultiCommand extends Command {
 	 * A higher priority gets to be looked at first
 	 */
 	public addImplementation(priority: number, name: string, implementation: CommandImplementation, when?: ContextKeyExpression): IDisposable {
-		this._implementations.push({ priority, name, implementation, when });
+		this._implementations.push({priority, name, implementation, when});
 		this._implementations.sort((a, b) => b.priority - a.priority);
 		return {
 			dispose: () => {
@@ -399,7 +399,7 @@ export abstract class EditorAction extends EditorCommand {
 			name: string;
 			id: string;
 		};
-		accessor.get(ITelemetryService).publicLog2<EditorActionInvokedEvent, EditorActionInvokedClassification>('editorActionInvoked', { name: this.label, id: this.id });
+		accessor.get(ITelemetryService).publicLog2<EditorActionInvokedEvent, EditorActionInvokedClassification>('editorActionInvoked', {name: this.label, id: this.id});
 	}
 
 	public abstract run(accessor: ServicesAccessor, editor: ICodeEditor, args: any): void | Promise<void>;
@@ -585,7 +585,7 @@ class EditorContributionRegistry {
 	}
 
 	public registerEditorContribution<Services extends BrandedService[]>(id: string, ctor: { new(editor: ICodeEditor, ...services: Services): IEditorContribution }, instantiation: EditorContributionInstantiation): void {
-		this.editorContributions.push({ id, ctor: ctor as EditorContributionCtor, instantiation });
+		this.editorContributions.push({id, ctor: ctor as EditorContributionCtor, instantiation});
 	}
 
 	public getEditorContributions(): IEditorContributionDescription[] {
@@ -593,7 +593,7 @@ class EditorContributionRegistry {
 	}
 
 	public registerDiffEditorContribution<Services extends BrandedService[]>(id: string, ctor: { new(editor: IDiffEditor, ...services: Services): IEditorContribution }): void {
-		this.diffEditorContributions.push({ id, ctor: ctor as DiffEditorContributionCtor });
+		this.diffEditorContributions.push({id, ctor: ctor as DiffEditorContributionCtor});
 	}
 
 	public getDiffEditorContributions(): IDiffEditorContributionDescription[] {
@@ -636,7 +636,7 @@ export const UndoCommand = registerCommand(new MultiCommand({
 	menuOpts: [{
 		menuId: MenuId.MenubarEditMenu,
 		group: '1_do',
-		title: nls.localize({ key: 'miUndo', comment: ['&& denotes a mnemonic'] }, "&&Undo"),
+		title: nls.localize({key: 'miUndo', comment: ['&& denotes a mnemonic']}, "&&Undo"),
 		order: 1
 	}, {
 		menuId: MenuId.CommandPalette,
@@ -646,7 +646,7 @@ export const UndoCommand = registerCommand(new MultiCommand({
 	}]
 }));
 
-registerCommand(new ProxyCommand(UndoCommand, { id: 'default:undo', precondition: undefined }));
+registerCommand(new ProxyCommand(UndoCommand, {id: 'default:undo', precondition: undefined}));
 
 export const RedoCommand = registerCommand(new MultiCommand({
 	id: 'redo',
@@ -655,12 +655,12 @@ export const RedoCommand = registerCommand(new MultiCommand({
 		weight: KeybindingWeight.EditorCore,
 		primary: KeyMod.CtrlCmd | KeyCode.KeyY,
 		secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyZ],
-		mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyZ }
+		mac: {primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyZ}
 	},
 	menuOpts: [{
 		menuId: MenuId.MenubarEditMenu,
 		group: '1_do',
-		title: nls.localize({ key: 'miRedo', comment: ['&& denotes a mnemonic'] }, "&&Redo"),
+		title: nls.localize({key: 'miRedo', comment: ['&& denotes a mnemonic']}, "&&Redo"),
 		order: 2
 	}, {
 		menuId: MenuId.CommandPalette,
@@ -670,7 +670,7 @@ export const RedoCommand = registerCommand(new MultiCommand({
 	}]
 }));
 
-registerCommand(new ProxyCommand(RedoCommand, { id: 'default:redo', precondition: undefined }));
+registerCommand(new ProxyCommand(RedoCommand, {id: 'default:redo', precondition: undefined}));
 
 export const SelectAllCommand = registerCommand(new MultiCommand({
 	id: 'editor.action.selectAll',
@@ -683,7 +683,7 @@ export const SelectAllCommand = registerCommand(new MultiCommand({
 	menuOpts: [{
 		menuId: MenuId.MenubarSelectionMenu,
 		group: '1_basic',
-		title: nls.localize({ key: 'miSelectAll', comment: ['&& denotes a mnemonic'] }, "&&Select All"),
+		title: nls.localize({key: 'miSelectAll', comment: ['&& denotes a mnemonic']}, "&&Select All"),
 		order: 1
 	}, {
 		menuId: MenuId.CommandPalette,

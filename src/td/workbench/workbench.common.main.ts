@@ -46,6 +46,7 @@ import 'td/workbench/services/filesConfiguration/common/filesConfigurationServic
 import 'td/workbench/services/views/browser/viewDescriptorService';
 import 'td/workbench/services/views/browser/viewsService';
 import 'td/editor/browser/services/hoverService';
+import 'td/editor/common/services/languageFeaturesService';
 import 'td/workbench/services/keybinding/browser/keybindingService';
 import 'td/workbench/services/editor/browser/editorService';
 import 'td/workbench/services/editor/browser/editorResolverService';
@@ -79,6 +80,8 @@ import {IUserDataSyncLogService} from 'td/platform/userDataSync/common/userDataS
 import {UserDataSyncLogService} from 'td/platform/userDataSync/common/userDataSyncLog';
 import {IDownloadService} from 'td/platform/download/common/download';
 import {DownloadService} from 'td/platform/download/common/downloadService';
+import {IEditorWorkerService} from 'td/editor/common/services/editorWorker';
+import {EditorWorkerService} from 'td/editor/browser/services/editorWorkerService';
 
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, InstantiationType.Delayed);
 registerSingleton(IUserDataSyncLogService, UserDataSyncLogService, InstantiationType.Delayed);
@@ -87,6 +90,7 @@ registerSingleton(IIgnoredExtensionsManagementService, IgnoredExtensionsManageme
 registerSingleton(IContextViewService, ContextViewService, InstantiationType.Delayed);
 registerSingleton(IMarkerService, MarkerService, InstantiationType.Delayed);
 registerSingleton(IExtensionStorageService, ExtensionStorageService, InstantiationType.Delayed);
+registerSingleton(IEditorWorkerService, EditorWorkerService, InstantiationType.Eager /* registers link detection and word based suggestions for any document */);
 registerSingleton(IContextKeyService, ContextKeyService, InstantiationType.Delayed);
 registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService, InstantiationType.Delayed);
 registerSingleton(IOpenerService, OpenerService, InstantiationType.Delayed);
@@ -112,10 +116,10 @@ import 'td/workbench/contrib/themes/browser/themes.contribution';
 import 'td/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 
 // Output View
-// import 'vs/workbench/contrib/output/common/outputChannelModelService';
+// import 'td/workbench/contrib/output/common/outputChannelModelService';
 import 'td/workbench/contrib/output/browser/output.contribution';
 
-// import 'vs/workbench/contrib/output/browser/outputView';
+// import 'td/workbench/contrib/output/browser/outputView';
 
 // Bulk Edit
 // import 'td/workbench/contrib/bulkEdit/browser/bulkEditService';

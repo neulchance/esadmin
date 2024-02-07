@@ -23,6 +23,7 @@ export class WorkbenchModelService extends ModelService {
 		@ILanguageService languageService: ILanguageService,
 		@IPathService private readonly _pathService: IPathService,
 	) {
+		console.log('WorkbenchModelService#constructor pass')
 		super(configurationService, resourcePropertiesService, undoRedoService, languageService, languageConfigurationService);
 	}
 

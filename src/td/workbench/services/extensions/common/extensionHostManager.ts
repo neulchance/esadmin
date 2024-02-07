@@ -11,6 +11,7 @@ import {Disposable, IDisposable} from 'td/base/common/lifecycle';
 import {StopWatch} from 'td/base/common/stopwatch';
 import {URI} from 'td/base/common/uri';
 import {IMessagePassingProtocol} from 'td/base/parts/ipc/common/ipc';
+import {ITextModelService} from 'td/editor/common/services/resolverService';
 import * as nls from 'td/nls';
 import {Categories} from 'td/platform/action/common/actionCommonCategories';
 import {Action2, registerAction2} from 'td/platform/actions/common/actions';
@@ -30,6 +31,9 @@ import {ExtensionRunningLocation} from 'td/workbench/services/extensions/common/
 import {ActivationKind, ExtensionActivationReason, ExtensionHostStartup, IExtensionHost, IInternalExtensionService} from 'td/workbench/services/extensions/common/extensions';
 import {Proxied, ProxyIdentifier} from 'td/workbench/services/extensions/common/proxyIdentifier';
 import {IRPCProtocolLogger, RPCProtocol, RequestInitiator, ResponsiveState} from 'td/workbench/services/extensions/common/rpcProtocol';
+import {IWorkingCopyFileService} from '../../workingCopy/common/workingCopyFileService';
+import {IPathService} from '../../path/common/pathService';
+import {IModelService} from 'td/editor/common/services/model';
 
 // Enable to see detailed message communication between window and extension host
 const LOG_EXTENSION_HOST_COMMUNICATION = false;
@@ -269,11 +273,15 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 				return this._rpcProtocol!.getProxy(identifier)
 			},
 			set: <T, R extends T>(identifier: ProxyIdentifier<T>, instance: R): R => {
-				console.log(`\x1b[32m  set set set set set set set \x1b[0m`)
+				console.log(`\x1b[32m set set set set set set set \x1b[0m`)
 				return this._rpcProtocol!.set(identifier, instance)
 			},
 			dispose: (): void => this._rpcProtocol!.dispose(),
-			assertRegistered: (identifiers: ProxyIdentifier<any>[]): void => this._rpcProtocol!.assertRegistered(identifiers),
+			assertRegistered: (identifiers: ProxyIdentifier<any>[]): void => {
+				console.log('identifiersidentifiersidentifiersidentifiersidentifiersidentifiersidentifiers')
+				console.log(identifiers)
+				return this._rpcProtocol!.assertRegistered(identifiers)
+			},
 			drain: (): Promise<void> => this._rpcProtocol!.drain(),
 
 			//#region internal
@@ -289,18 +297,23 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 
 		// Named customers
 		// extensionHost.contribution.ts 에서 등록한 
+		this._instantiationService.invokeFunction((accessor: ServicesAccessor) => {
+			accessor.get(IModelService);
+			console.log('accessor.get(IModelService) done')
+		})
 		const namedCustomers = ExtHostCustomersRegistry.getNamedCustomers();
 		for (let i = 0, len = namedCustomers.length; i < len; i++) {
 			const [id, ctor] = namedCustomers[i];
 			try {
 				// When create ctor:MainThreadExtensionService then its inside call getProxy(ExtHostContext.ExtHostExtensionService)
 				console.log(`\x1b[32m ----------\x1b[0m\x1b[34m GOGO \x1b[0m\x1b[32m---------- \x1b[0m`)
-				console.log(`\x1b[32m ExtensionHostManager: \x1b[0m \x1b[34m[ctor.name]:\x1b[0m \x1b[33m${ctor.name} \x1b[0m`)
+				console.log(`\x1b[32mExtensionHostManager: \x1b[0m\x1b[34m[ctor.name]:\x1b[0m \x1b[33m${ctor.name} \x1b[0m`)
 				const instance = this._instantiationService.createInstance(ctor, extHostContext);
 				this._customers.push(instance);
 				// explain@neulchance rpcProtocol.set
 				this._rpcProtocol.set(id, instance); // this._locals[identifier.nid] = value;
 			} catch (err) {
+				this._logService.error(`Will print Error message soon.`);
 				this._logService.error(`Cannot instantiate named customer: '${id.sid}'`);
 				this._logService.error(err);
 				errors.onUnexpectedError(err);
