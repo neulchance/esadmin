@@ -32,6 +32,7 @@ import 'td/workbench/services/update/electron-sandbox/updateService';
 import 'td/workbench/services/themes/electron-sandbox/nativeHostColorSchemeService';
 import 'td/platform/extensionResourceLoader/common/extensionResourceLoaderService';
 import 'td/workbench/services/telemetry/electron-sandbox/telemetryService';
+import 'td/workbench/services/configurationResolver/electron-sandbox/configurationResolverService';
 import 'td/workbench/services/title/electron-sandbox/titleService';
 import 'td/workbench/services/extensions/electron-sandbox/extensionHostStarter';
 import 'td/workbench/services/extensions/electron-sandbox/nativeExtensionService';
@@ -76,6 +77,9 @@ registerSingleton(IExtensionsProfileScannerService, ExtensionsProfileScannerServ
 
 // Debug
 import 'td/workbench/contrib/debug/electron-sandbox/extensionHostDebugService';
+
+// Terminal
+import 'td/workbench/contrib/terminal/electron-sandbox/terminal.contribution';
 
 //#endregion
 
