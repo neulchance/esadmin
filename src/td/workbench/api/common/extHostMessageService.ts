@@ -5,10 +5,10 @@
 
 import Severity from 'td/base/common/severity';
 import type * as vscode from 'vscode';
-import { MainContext, MainThreadMessageServiceShape, MainThreadMessageOptions, IMainContext } from './extHost.protocol';
-import { IExtensionDescription } from 'td/platform/extensions/common/extensions';
-import { ILogService } from 'td/platform/log/common/log';
-import { checkProposedApiEnabled } from 'td/workbench/services/extensions/common/extensions';
+import {MainContext, MainThreadMessageServiceShape, MainThreadMessageOptions, IMainContext} from './extHost.protocol';
+import {IExtensionDescription} from 'td/platform/extensions/common/extensions';
+import {ILogService} from 'td/platform/log/common/log';
+import {checkProposedApiEnabled} from 'td/workbench/services/extensions/common/extensions';
 
 function isMessageItem(item: any): item is vscode.MessageItem {
 	return item && item.title;
@@ -32,7 +32,7 @@ export class ExtHostMessageService {
 	showMessage(extension: IExtensionDescription, severity: Severity, message: string, optionsOrFirstItem: vscode.MessageOptions | string | vscode.MessageItem | undefined, rest: Array<string | vscode.MessageItem>): Promise<string | vscode.MessageItem | undefined> {
 
 		const options: MainThreadMessageOptions = {
-			source: { identifier: extension.identifier, label: extension.displayName || extension.name }
+			source: {identifier: extension.identifier, label: extension.displayName || extension.name}
 		};
 		let items: (string | vscode.MessageItem)[];
 
@@ -55,10 +55,10 @@ export class ExtHostMessageService {
 		for (let handle = 0; handle < items.length; handle++) {
 			const command = items[handle];
 			if (typeof command === 'string') {
-				commands.push({ title: command, handle, isCloseAffordance: false });
+				commands.push({title: command, handle, isCloseAffordance: false});
 			} else if (typeof command === 'object') {
-				const { title, isCloseAffordance } = command;
-				commands.push({ title, isCloseAffordance: !!isCloseAffordance, handle });
+				const {title, isCloseAffordance} = command;
+				commands.push({title, isCloseAffordance: !!isCloseAffordance, handle});
 				if (isCloseAffordance) {
 					if (hasCloseAffordance) {
 						this._logService.warn(`[${extension.identifier}] Only one message item can have 'isCloseAffordance':`, command);

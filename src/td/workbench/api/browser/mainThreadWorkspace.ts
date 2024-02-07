@@ -55,8 +55,7 @@ export class MainThreadWorkspace implements MainThreadWorkspaceShape {
 		@IWorkspaceTrustRequestService private readonly _workspaceTrustRequestService: IWorkspaceTrustRequestService
 	) {
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostWorkspace);
-		console.log('this._proxy', this._proxy);
-		// this._proxy.$checkWorking('11')
+		// this._proxy.$checkWorking('11111111111111111111111111111111111111111111111111111111111111111111111111111111')
 		const workspace = this._contextService.getWorkspace();
 		// The workspace file is provided be a unknown file system provider. It might come
 		// from the extension host. So initialize now knowing that `rootPath` is undefined.

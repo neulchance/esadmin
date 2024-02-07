@@ -272,18 +272,32 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 		return new Proxy(Object.create(null), handler);
 	}
 
-	// [extHostRpcService.ts] this.set = rpcProtocol.set.bind(rpcProtocol);
-	// extHost.api.impl.ts's rpcProtocol is an instance of RPCProtocol
-	// extHost.api.impl.ts's rpcProtocol.set function means RPCProtocol.set
 	public set<T, R extends T>(identifier: ProxyIdentifier<T>, value: R): R {
-		console.log(`\x1b[31m set: ${identifier.sid}\x1b[0m`)
-		// set: ExtHostWindow
+		// console.log(`\x1b[31m set: ${identifier.sid}\x1b[0m`)
 		this._locals[identifier.nid] = value;
 		return value;
 	}
 
-	// '_locals'에 확실히 'identifiers'의 모든 프록시가 등록되어 있는지 확인합니다.
+	// '_locals'에 'identifiers'의 모든 프록시가 등록되어 있는지 확인합니다.
 	public assertRegistered(identifiers: ProxyIdentifier<any>[]): void {
+		/* let env = '';
+		if (typeof process !== 'undefined' && process.release && process.release.name === 'node') {
+			env = 'NODE';
+			for (let i = 0, len = identifiers.length; i < len; i++) {
+				const nid = identifiers[i].nid;
+				const sid = identifiers[i].sid;
+				if (this._locals[nid] === null) {
+					console.log(`${i} [let's check] \x1b[31mNull\x1b[0m nid: ${nid}, sid: ${sid}`)
+				} else if (this._locals[nid] === undefined) {
+					console.log(`${i} [let's check] \x1b[31mUndefined\x1b[0m nid: ${nid}, sid: ${sid}`)
+				} else {
+					console.log(`${i} [let's check] nid: ${nid}, sid: ${sid}`)
+				} 
+			}
+		} else {
+			env = 'BOWSER';
+		} */
+		
 		for (let i = 0, len = identifiers.length; i < len; i++) {
 			const identifier = identifiers[i];
 			if (!this._locals[identifier.nid]) {
@@ -468,9 +482,9 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 		if (!actor) {
 			// console.log(getStringIdentifierFor(rpcId))
 			throw new Error('Unknown actor ' + getStringIdentifierForProxy(rpcId));
-		} else {
+		}/*  else {
 			console.log(`\x1b[31mSetted actor ${getStringIdentifierForProxy(rpcId)}\x1b[0m`)
-		}
+		} */
 		const method = actor[methodName];
 		if (typeof method !== 'function') {
 			throw new Error('Unknown method ' + methodName + ' on actor ' + getStringIdentifierForProxy(rpcId));

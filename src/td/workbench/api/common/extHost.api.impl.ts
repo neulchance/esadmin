@@ -123,7 +123,7 @@ export interface IExtensionApiFactory {
  * node-process
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	console.log('createApiFactoryAndRegisterActors 1')
+	console.log(`\x1b[32mcreateApiFactoryAndRegisterActors started\x1b[0m`)
 
 	// services
 	const initData = accessor.get(IExtHostInitDataService);
@@ -145,7 +145,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostWindow = accessor.get(IExtHostWindow);
 	const extHostSecretState = accessor.get(IExtHostSecretState);
 	// const extHostEditorTabs = accessor.get(IExtHostEditorTabs);
-	// const extHostManagedSockets = accessor.get(IExtHostManagedSockets);
+	const extHostManagedSockets = accessor.get(IExtHostManagedSockets);
 	
 	// register addressable instances
 	rpcProtocol.set(ExtHostContext.ExtHostFileSystemInfo, extHostFileSystemInfo);
@@ -159,8 +159,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	rpcProtocol.set(ExtHostContext.ExtHostSecretState, extHostSecretState);
 	// rpcProtocol.set(ExtHostContext.ExtHostTelemetry, extHostTelemetry);
 	// rpcProtocol.set(ExtHostContext.ExtHostEditorTabs, extHostEditorTabs);
-	// rpcProtocol.set(ExtHostContext.ExtHostManagedSockets, extHostManagedSockets);
+	rpcProtocol.set(ExtHostContext.ExtHostManagedSockets, extHostManagedSockets);
 
+	console.log(`\x1b[32mcreateApiFactoryAndRegisterActors middle 1\x1b[0m`)
 	// automatically create and register addressable instances
 	// const extHostDecorations = rpcProtocol.set(ExtHostContext.ExtHostDecorations, accessor.get(IExtHostDecorations));
 	const extHostDocumentsAndEditors = rpcProtocol.set(ExtHostContext.ExtHostDocumentsAndEditors, accessor.get(IExtHostDocumentsAndEditors));
@@ -218,20 +219,23 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// const extHostAiEmbeddingVector = rpcProtocol.set(ExtHostContext.ExtHostAiEmbeddingVector, new ExtHostAiEmbeddingVector(rpcProtocol));
 	// const extHostIssueReporter = rpcProtocol.set(ExtHostContext.ExtHostIssueReporter, new ExtHostIssueReporter(rpcProtocol));
 	const extHostStatusBar = rpcProtocol.set(ExtHostContext.ExtHostStatusBar, new ExtHostStatusBar(rpcProtocol, extHostCommands.converter));
-	const extHostSpeech = rpcProtocol.set(ExtHostContext.ExtHostSpeech, new ExtHostSpeech(rpcProtocol));
+	// const extHostSpeech = rpcProtocol.set(ExtHostContext.ExtHostSpeech, new ExtHostSpeech(rpcProtocol));
+	console.log(`\x1b[32mcreateApiFactoryAndRegisterActors rpc setting done\x1b[0m`)
 
 	// Check that no named customers are missing
 	const expected = Object.values<ProxyIdentifier<any>>(ExtHostContext);
-	console.log('--rpcProtocol.assertRegistered--')
-	console.log(expected)
+	console.log(`\x1b[32mrpcProtocol.assertRegistered started\x1b[0m`)
 	rpcProtocol.assertRegistered(expected);
-	console.log('createApiFactoryAndRegisterActors 1-23')
+	console.log(`\x1b[32mrpcProtocol.assertRegistered done\x1b[0m`)
 
 	// Other instances
 	// const extHostBulkEdits = new ExtHostBulkEdits(rpcProtocol, extHostDocumentsAndEditors);
 	const extHostClipboard = new ExtHostClipboard(rpcProtocol);
+	console.log(`\x1b[32mextHostClipboard\x1b[0m`)
 	const extHostMessageService = new ExtHostMessageService(rpcProtocol, extHostLogService);
+	console.log(`\x1b[32mextHostMessageService\x1b[0m`)
 	const extHostDialogs = new ExtHostDialogs(rpcProtocol);
+	console.log(`\x1b[32mextHostDialogs\x1b[0m`)
 
 	// Register API-ish commands
 	ExtHostApiCommands.register(extHostCommands);
@@ -1384,10 +1388,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 
 		// namespace: speech
 		const speech: typeof vscode.speech = {
-			registerSpeechProvider(id: string, provider: vscode.SpeechProvider) {
-				checkProposedApiEnabled(extension, 'speech');
-				return extHostSpeech.registerProvider(extension.identifier, id, provider);
-			}
+			// registerSpeechProvider(id: string, provider: vscode.SpeechProvider) {
+			// 	checkProposedApiEnabled(extension, 'speech');
+			// 	return extHostSpeech.registerProvider(extension.identifier, id, provider);
+			// }
 		};
 
 		console.log('createApiFactoryAndRegisterActors 2')

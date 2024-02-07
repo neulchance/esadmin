@@ -32,6 +32,7 @@ import {IExtHostTerminalService} from './extHostTerminalService';
 import {IExtHostLocalizationService} from './extHostLocalizationService';
 import {IExtHostTunnelService} from './extHostTunnelService';
 import {IExtHostManagedSockets} from './extHostManagedSockets';
+import {IExtHostCommands} from './extHostCommands';
 
 export interface IExitFn {
 	(code?: number): any;
@@ -188,11 +189,12 @@ export class ExtensionHostMain {
 		// must call initialize *after* creating the extension service
 		// because `initialize` itself creates instances that depend on it
 		this._extensionService = instaService.invokeFunction(accessor => {
+			// Check preluded DI services
+			accessor.get(IExtHostCommands);
+			console.log('\x1b[34maccessor.get(IExtHostCommands) done\x1b[0m')
 			/* _util.serviceIds.forEach((id, key) => {
 				console.log(id, key)
 			}) */
-			accessor.get(IExtHostTelemetry)
-			console.log('ret IExtHostTelemetry')
 			return accessor.get(IExtHostExtensionService)
 		});
 		// Above IExtHostExtensionService instance is registered in extHost.node.services.ts's registerSingleton().

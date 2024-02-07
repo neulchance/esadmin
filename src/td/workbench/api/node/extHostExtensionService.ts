@@ -61,20 +61,21 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 	readonly extensionRuntime = ExtensionRuntime.Node;
 
 	protected async _beforeAlmostReadyToRunExtensions(): Promise<void> {
-		console.log(`\x1b[32m createInstance ExtHostConsoleForwarder start \x1b[0m`)
+		// console.log(`\x1b[32m createInstance ExtHostConsoleForwarder start \x1b[0m`)
 		// make sure console.log calls make it to the render
 		this._instaService.createInstance(ExtHostConsoleForwarder);
-		console.log(`\x1b[32m createInstance ExtHostConsoleForwarder done \x1b[0m`)
+		// console.log(`\x1b[32m createInstance ExtHostConsoleForwarder done \x1b[0m`)
 
 		// initialize API and register actors
 		// explain@neulchance
-		console.log('extensionApiFactory1')
+		console.log(`\x1b[32mextensionApiFactory before\x1b[0m`)
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
-		console.log('extensionApiFactory2')
-		console.log(extensionApiFactory)
+		console.log(`\x1b[32mextensionApiFactory after\x1b[0m`)
+		// console.log()
 
 		// Register Download command
 		this._instaService.createInstance(ExtHostDownloadService);
+		console.log(`\x1b[32mExtHostDownloadService\x1b[0m`)
 
 		// Register CLI Server for ipc
 		if (this._initData.remote.isRemote && this._initData.remote.authority) {

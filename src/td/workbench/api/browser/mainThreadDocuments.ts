@@ -131,7 +131,6 @@ export class MainThreadDocuments extends Disposable implements MainThreadDocumen
 		@IWorkingCopyFileService workingCopyFileService: IWorkingCopyFileService,
 		@IPathService private readonly _pathService: IPathService
 	) {
-		console.log('MainThreadDocuments@lsakdjflaksdjf')
 		super();
 
 		this._modelReferenceCollection = this._store.add(new BoundModelReferenceCollection(_uriIdentityService.extUri));

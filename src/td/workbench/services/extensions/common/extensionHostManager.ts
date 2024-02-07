@@ -17,7 +17,7 @@ import {Categories} from 'td/platform/action/common/actionCommonCategories';
 import {Action2, registerAction2} from 'td/platform/actions/common/actions';
 import {ExtensionIdentifier, IExtensionDescription} from 'td/platform/extensions/common/extensions';
 import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
-import {ILogService} from 'td/platform/log/common/log';
+import {ILogService, ILoggerService} from 'td/platform/log/common/log';
 import {RemoteAuthorityResolverErrorCode, getRemoteAuthorityPrefix} from 'td/platform/remote/common/remoteAuthorityResolver';
 import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
 import {IEditorService} from 'td/workbench/services/editor/common/editorService';
@@ -35,6 +35,8 @@ import {IWorkingCopyFileService} from '../../workingCopy/common/workingCopyFileS
 import {IPathService} from '../../path/common/pathService';
 import {IModelService} from 'td/editor/common/services/model';
 import {IWorkbenchIssueService} from '../../issue/common/issue';
+import {IConfigurationService} from 'td/platform/configuration/common/configuration';
+import {INativeEnvironmentService} from 'td/platform/environment/common/environment';
 
 // Enable to see detailed message communication between window and extension host
 const LOG_EXTENSION_HOST_COMMUNICATION = false;
@@ -266,17 +268,14 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 			remoteAuthority: this._extensionHost.remoteAuthority,
 			extensionHostKind: this.kind,
 			getProxy: <T>(identifier: ProxyIdentifier<T>): Proxied<T> => {
-			if (identifier) {
+				/* if (identifier) {
 					console.log(`\x1b[32mIDENTIFIER exists\x1b[0m \x1b[31m${identifier.sid}\x1b[0m`)
 				} else {
 					console.log(`\x1b[32mIDENTIFIER does not exist\x1b[0m`)
-				}
+				} */
 				return this._rpcProtocol!.getProxy(identifier)
 			},
-			set: <T, R extends T>(identifier: ProxyIdentifier<T>, instance: R): R => {
-				console.log(`\x1b[32m set set set set set set set \x1b[0m`)
-				return this._rpcProtocol!.set(identifier, instance)
-			},
+			set: <T, R extends T>(identifier: ProxyIdentifier<T>, instance: R): R => this._rpcProtocol!.set(identifier, instance),
 			dispose: (): void => this._rpcProtocol!.dispose(),
 			assertRegistered: (identifiers: ProxyIdentifier<any>[]): void => {
 				console.log('identifiersidentifiersidentifiersidentifiersidentifiersidentifiersidentifiers')
@@ -299,6 +298,10 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		// Named customers
 		// extensionHost.contribution.ts 에서 등록한 
 		this._instantiationService.invokeFunction((accessor: ServicesAccessor) => {
+			// Check that no named customers are missing
+			// accessor.get(ILogService);
+			accessor.get(ILoggerService);
+			console.log('\x1b[31maccessor.get(ILoggerService) done\x1b[0m')
 			// accessor.get(IWorkbenchIssueService);
 			// console.log('accessor.get(IWorkbenchIssueService) done')
 		})
@@ -307,8 +310,8 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 			const [id, ctor] = namedCustomers[i];
 			try {
 				// When create ctor:MainThreadExtensionService then its inside call getProxy(ExtHostContext.ExtHostExtensionService)
-				console.log(`\x1b[32m ----------\x1b[0m\x1b[34m GOGO \x1b[0m\x1b[32m---------- \x1b[0m`)
-				console.log(`\x1b[32mExtensionHostManager: \x1b[0m\x1b[34m[ctor.name]:\x1b[0m \x1b[33m${ctor.name} \x1b[0m`)
+				// console.log(`\x1b[32m ----------\x1b[0m\x1b[34m GOGO \x1b[0m\x1b[32m---------- \x1b[0m`)
+				// console.log(`\x1b[32mExtensionHostManager: \x1b[0m\x1b[34m[ctor.name]:\x1b[0m \x1b[33m${ctor.name} \x1b[0m`)
 				const instance = this._instantiationService.createInstance(ctor, extHostContext);
 				this._customers.push(instance);
 				// explain@neulchance rpcProtocol.set
