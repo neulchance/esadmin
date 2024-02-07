@@ -120,5 +120,8 @@ import 'td/workbench/contrib/output/browser/output.contribution';
 // Bulk Edit
 // import 'td/workbench/contrib/bulkEdit/browser/bulkEditService';
 
+// Terminal
+import 'td/workbench/contrib/terminal/terminal.all';
+
 
 //#endregion

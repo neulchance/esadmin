@@ -57,6 +57,7 @@
         "plugin:@typescript-eslint/recommended"
       ],
       "rules": {
+        "no-fallthrough": "warn",
         "no-self-assign": "warn",
         "no-unexpected-multiline": "warn",
         "no-ex-assign": "warn",

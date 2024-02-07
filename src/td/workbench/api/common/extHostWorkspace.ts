@@ -213,10 +213,6 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		this._confirmedWorkspace = data ? new ExtHostWorkspaceImpl(data.id, data.name, [], !!data.transient, data.configuration ? URI.revive(data.configuration) : null, !!data.isUntitled, uri => ignorePathCasing(uri, extHostFileSystemInfo)) : undefined;
 	}
 
-	// $checkWorking(data?: any): void {
-	// 	console.log(`Working? Working? ${data}`)
-	// }
-
 	$initializeWorkspace(data: IWorkspaceData | null, trusted: boolean): void {
 		this._trusted = trusted;
 		this.$acceptWorkspaceData(data);
@@ -447,34 +443,34 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 	/**
 	 * Note, null/undefined have different and important meanings for "exclude"
 	 */
-	// findFiles(include: vscode.GlobPattern | undefined, exclude: vscode.GlobPattern | null | undefined, maxResults: number | undefined, extensionId: ExtensionIdentifier, token: vscode.CancellationToken = CancellationToken.None): Promise<vscode.Uri[]> {
-	// 	this._logService.trace(`extHostWorkspace#findFiles: fileSearch, extension: ${extensionId.value}, entryPoint: findFiles`);
+	findFiles(include: vscode.GlobPattern | undefined, exclude: vscode.GlobPattern | null | undefined, maxResults: number | undefined, extensionId: ExtensionIdentifier, token: vscode.CancellationToken = CancellationToken.None): Promise<vscode.Uri[]> {
+		this._logService.trace(`extHostWorkspace#findFiles: fileSearch, extension: ${extensionId.value}, entryPoint: findFiles`);
 
-	// 	let excludePatternOrDisregardExcludes: string | false | undefined = undefined;
-	// 	if (exclude === null) {
-	// 		excludePatternOrDisregardExcludes = false;
-	// 	} else if (exclude) {
-	// 		if (typeof exclude === 'string') {
-	// 			excludePatternOrDisregardExcludes = exclude;
-	// 		} else {
-	// 			excludePatternOrDisregardExcludes = exclude.pattern;
-	// 		}
-	// 	}
+		let excludePatternOrDisregardExcludes: string | false | undefined = undefined;
+		if (exclude === null) {
+			excludePatternOrDisregardExcludes = false;
+		} else if (exclude) {
+			if (typeof exclude === 'string') {
+				excludePatternOrDisregardExcludes = exclude;
+			} else {
+				excludePatternOrDisregardExcludes = exclude.pattern;
+			}
+		}
 
-	// 	if (token && token.isCancellationRequested) {
-	// 		return Promise.resolve([]);
-	// 	}
+		if (token && token.isCancellationRequested) {
+			return Promise.resolve([]);
+		}
 
-	// 	const {includePattern, folder} = parseSearchInclude(GlobPattern.from(include));
-	// 	return this._proxy.$startFileSearch(
-	// 		includePattern ?? null,
-	// 		folder ?? null,
-	// 		excludePatternOrDisregardExcludes ?? null,
-	// 		maxResults ?? null,
-	// 		token
-	// 	)
-	// 		.then(data => Array.isArray(data) ? data.map(d => URI.revive(d)) : []);
-	// }
+		const {includePattern, folder} = parseSearchInclude(GlobPattern.from(include));
+		return this._proxy.$startFileSearch(
+			includePattern ?? null,
+			folder ?? null,
+			excludePatternOrDisregardExcludes ?? null,
+			maxResults ?? null,
+			token
+		)
+			.then(data => Array.isArray(data) ? data.map(d => URI.revive(d)) : []);
+	}
 
 	async findTextInFiles(query: vscode.TextSearchQuery, options: vscode.FindTextInFilesOptions, callback: (result: vscode.TextSearchResult) => void, extensionId: ExtensionIdentifier, token: vscode.CancellationToken = CancellationToken.None): Promise<vscode.TextSearchComplete> {
 		this._logService.trace(`extHostWorkspace#findTextInFiles: textSearch, extension: ${extensionId.value}, entryPoint: findTextInFiles`);
@@ -545,14 +541,14 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		}
 
 		try {
-			// const result = await this._proxy.$startTextSearch(
-			// 	query,
-			// 	folder ?? null,
-			// 	queryOptions,
-			// 	requestId,
-			// 	token);
+			const result = await this._proxy.$startTextSearch(
+				query,
+				folder ?? null,
+				queryOptions,
+				requestId,
+				token);
 			delete this._activeSearchCallbacks[requestId];
-			return /* result ||  */{};
+			return result || {};
 		} catch (err) {
 			delete this._activeSearchCallbacks[requestId];
 			throw err;
@@ -617,7 +613,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		this._editSessionIdentityProviders.set(scheme, provider);
 		const outgoingScheme = this._uriTransformerService.transformOutgoingScheme(scheme);
 		const handle = this._providerHandlePool++;
-		// this._proxy.$registerEditSessionIdentityProvider(handle, outgoingScheme);
+		this._proxy.$registerEditSessionIdentityProvider(handle, outgoingScheme);
 
 		return toDisposable(() => {
 			this._editSessionIdentityProviders.delete(scheme);
@@ -720,7 +716,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		this._canonicalUriProviders.set(scheme, provider);
 		const outgoingScheme = this._uriTransformerService.transformOutgoingScheme(scheme);
 		const handle = this._providerHandlePool++;
-		// this._proxy.$registerCanonicalUriProvider(handle, outgoingScheme);
+		this._proxy.$registerCanonicalUriProvider(handle, outgoingScheme);
 
 		return toDisposable(() => {
 			this._canonicalUriProviders.delete(scheme);

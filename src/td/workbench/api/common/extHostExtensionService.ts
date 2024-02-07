@@ -211,6 +211,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 	public async initialize(): Promise<void> {
 		try {
 			await this._beforeAlmostReadyToRunExtensions();
+			console.log('_beforeAlmostReadyToRunExtensions done')
 			this._almostReadyToRunExtensions.open();
 
 			await this._extHostWorkspace.waitForInitializeCall();

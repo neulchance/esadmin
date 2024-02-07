@@ -140,32 +140,47 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostStorage = accessor.get(IExtHostStorage);
 	console.log('createApiFactoryAndRegisterActors 11')
 	const extensionStoragePaths = accessor.get(IExtensionStoragePaths);
+	console.log('createApiFactoryAndRegisterActors 12')
 	const extHostLoggerService = accessor.get(ILoggerService);
+	console.log('createApiFactoryAndRegisterActors 13')
 	const extHostLogService = accessor.get(ILogService);
+	console.log('createApiFactoryAndRegisterActors 14')
 	const extHostTunnelService = accessor.get(IExtHostTunnelService);
+	console.log('createApiFactoryAndRegisterActors 15')
 	const extHostApiDeprecation = accessor.get(IExtHostApiDeprecationService);
+	console.log('createApiFactoryAndRegisterActors 16')
 	const extHostWindow = accessor.get(IExtHostWindow);
+	console.log('createApiFactoryAndRegisterActors 17')
 	const extHostSecretState = accessor.get(IExtHostSecretState);
-	const extHostEditorTabs = accessor.get(IExtHostEditorTabs);
+	console.log('createApiFactoryAndRegisterActors 18')
+	// const extHostEditorTabs = accessor.get(IExtHostEditorTabs);
+	console.log('createApiFactoryAndRegisterActors 19')
 	// const extHostManagedSockets = accessor.get(IExtHostManagedSockets);
 	
 	console.log('createApiFactoryAndRegisterActors 1-2')
-
 	// register addressable instances
 	rpcProtocol.set(ExtHostContext.ExtHostFileSystemInfo, extHostFileSystemInfo);
+	console.log('createApiFactoryAndRegisterActors 1-3')
 	rpcProtocol.set(ExtHostContext.ExtHostLogLevelServiceShape, <ExtHostLogLevelServiceShape><any>extHostLoggerService);
+	console.log('createApiFactoryAndRegisterActors 1-4')
 	rpcProtocol.set(ExtHostContext.ExtHostWorkspace, extHostWorkspace);
+	console.log('createApiFactoryAndRegisterActors 1-5')
 	rpcProtocol.set(ExtHostContext.ExtHostConfiguration, extHostConfiguration);
+	console.log('createApiFactoryAndRegisterActors 1-6')
 	rpcProtocol.set(ExtHostContext.ExtHostExtensionService, extensionService);
+	console.log('createApiFactoryAndRegisterActors 1-7')
 	rpcProtocol.set(ExtHostContext.ExtHostStorage, extHostStorage);
+	console.log('createApiFactoryAndRegisterActors 1-8')
 	rpcProtocol.set(ExtHostContext.ExtHostTunnelService, extHostTunnelService);
+	console.log('createApiFactoryAndRegisterActors 1-9')
 	rpcProtocol.set(ExtHostContext.ExtHostWindow, extHostWindow);
+	console.log('createApiFactoryAndRegisterActors 1-10')
 	rpcProtocol.set(ExtHostContext.ExtHostSecretState, extHostSecretState);
 	// rpcProtocol.set(ExtHostContext.ExtHostTelemetry, extHostTelemetry);
-	rpcProtocol.set(ExtHostContext.ExtHostEditorTabs, extHostEditorTabs);
+	// rpcProtocol.set(ExtHostContext.ExtHostEditorTabs, extHostEditorTabs);
 	// rpcProtocol.set(ExtHostContext.ExtHostManagedSockets, extHostManagedSockets);
 
-	console.log('createApiFactoryAndRegisterActors 1-3')
+	console.log('createApiFactoryAndRegisterActors 1-11')
 
 	// automatically create and register addressable instances
 	// const extHostDecorations = rpcProtocol.set(ExtHostContext.ExtHostDecorations, accessor.get(IExtHostDecorations));
@@ -178,7 +193,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, accessor.get(IExtHostOutputService));
 	// const extHostLocalization = rpcProtocol.set(ExtHostContext.ExtHostLocalization, accessor.get(IExtHostLocalizationService));
 
-	console.log('createApiFactoryAndRegisterActors 1-4')
+	console.log('createApiFactoryAndRegisterActors 1-12')
 	// manually create and register addressable instances
 	const extHostUrls = rpcProtocol.set(ExtHostContext.ExtHostUrls, new ExtHostUrls(rpcProtocol));
 	const extHostDocuments = rpcProtocol.set(ExtHostContext.ExtHostDocuments, new ExtHostDocuments(rpcProtocol, extHostDocumentsAndEditors));
