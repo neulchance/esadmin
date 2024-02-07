@@ -25,6 +25,7 @@ import './mainThreadCommands';
 import './mainThreadUrls';
 import './mainThreadErrors';
 import './mainThreadDocuments';
+import './mainThreadDocumentsAndEditors';
 import './mainThreadLogService';
 import './mainThreadWorkspace';
 import './mainThreadMessageService';
@@ -38,6 +39,7 @@ import './mainThreadStorage';
 import './mainThreadTunnelService';
 import './mainThreadManagedSockets';
 import './mainThreadTerminalService';
+import './mainThreadSecretState';
 
 export class ExtensionPoints implements IWorkbenchContribution {
 

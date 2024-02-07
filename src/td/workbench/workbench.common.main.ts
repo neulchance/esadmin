@@ -36,6 +36,7 @@ import 'td/workbench/services/notification/common/notificationService';
 import 'td/workbench/services/remote/common/remoteExtensionsScanner';
 import 'td/workbench/services/editor/browser/codeEditorService';
 import 'td/workbench/services/preferences/browser/preferencesService';
+import 'td/workbench/services/clipboard/electron-sandbox/clipboardService';
 import 'td/workbench/services/configuration/common/jsonEditingService';
 import 'td/workbench/services/textmodelResolver/common/textModelResolverService';
 import 'td/workbench/services/extensionManagement/browser/extensionEnablementService';

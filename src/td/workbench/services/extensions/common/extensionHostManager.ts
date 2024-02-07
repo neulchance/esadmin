@@ -34,6 +34,7 @@ import {IRPCProtocolLogger, RPCProtocol, RequestInitiator, ResponsiveState} from
 import {IWorkingCopyFileService} from '../../workingCopy/common/workingCopyFileService';
 import {IPathService} from '../../path/common/pathService';
 import {IModelService} from 'td/editor/common/services/model';
+import {IWorkbenchIssueService} from '../../issue/common/issue';
 
 // Enable to see detailed message communication between window and extension host
 const LOG_EXTENSION_HOST_COMMUNICATION = false;
@@ -298,8 +299,8 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		// Named customers
 		// extensionHost.contribution.ts 에서 등록한 
 		this._instantiationService.invokeFunction((accessor: ServicesAccessor) => {
-			accessor.get(IModelService);
-			console.log('accessor.get(IModelService) done')
+			// accessor.get(IWorkbenchIssueService);
+			// console.log('accessor.get(IWorkbenchIssueService) done')
 		})
 		const namedCustomers = ExtHostCustomersRegistry.getNamedCustomers();
 		for (let i = 0, len = namedCustomers.length; i < len; i++) {

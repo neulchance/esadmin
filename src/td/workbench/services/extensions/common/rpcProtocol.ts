@@ -284,9 +284,6 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 
 	// '_locals'에 확실히 'identifiers'의 모든 프록시가 등록되어 있는지 확인합니다.
 	public assertRegistered(identifiers: ProxyIdentifier<any>[]): void {
-		console.log('그때그때 달라요')
-		console.log(identifiers)
-		console.log('this._locals', this._locals)
 		for (let i = 0, len = identifiers.length; i < len; i++) {
 			const identifier = identifiers[i];
 			if (!this._locals[identifier.nid]) {

@@ -216,7 +216,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// const extHostChat = rpcProtocol.set(ExtHostContext.ExtHostChat, new ExtHostChat(rpcProtocol));
 	// const extHostAiRelatedInformation = rpcProtocol.set(ExtHostContext.ExtHostAiRelatedInformation, new ExtHostRelatedInformation(rpcProtocol));
 	// const extHostAiEmbeddingVector = rpcProtocol.set(ExtHostContext.ExtHostAiEmbeddingVector, new ExtHostAiEmbeddingVector(rpcProtocol));
-	const extHostIssueReporter = rpcProtocol.set(ExtHostContext.ExtHostIssueReporter, new ExtHostIssueReporter(rpcProtocol));
+	// const extHostIssueReporter = rpcProtocol.set(ExtHostContext.ExtHostIssueReporter, new ExtHostIssueReporter(rpcProtocol));
 	const extHostStatusBar = rpcProtocol.set(ExtHostContext.ExtHostStatusBar, new ExtHostStatusBar(rpcProtocol, extHostCommands.converter));
 	const extHostSpeech = rpcProtocol.set(ExtHostContext.ExtHostSpeech, new ExtHostSpeech(rpcProtocol));
 
@@ -408,14 +408,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get onDidChangeLogLevel() {
 				return _asExtensionEvent(extHostLogService.onDidChangeLogLevel);
 			},
-			registerIssueUriRequestHandler(handler: vscode.IssueUriRequestHandler) {
-				checkProposedApiEnabled(extension, 'handleIssueUri');
-				return extHostIssueReporter.registerIssueUriRequestHandler(extension, handler);
-			},
-			registerIssueDataProvider(handler: vscode.IssueDataProvider) {
-				checkProposedApiEnabled(extension, 'handleIssueUri');
-				return extHostIssueReporter.registerIssueDataProvider(extension, handler);
-			},
+			// registerIssueUriRequestHandler(handler: vscode.IssueUriRequestHandler) {
+			// 	checkProposedApiEnabled(extension, 'handleIssueUri');
+			// 	return extHostIssueReporter.registerIssueUriRequestHandler(extension, handler);
+			// },
+			// registerIssueDataProvider(handler: vscode.IssueDataProvider) {
+			// 	checkProposedApiEnabled(extension, 'handleIssueUri');
+			// 	return extHostIssueReporter.registerIssueDataProvider(extension, handler);
+			// },
 			get appQuality(): string | undefined {
 				checkProposedApiEnabled(extension, 'resolvers');
 				return initData.quality;
