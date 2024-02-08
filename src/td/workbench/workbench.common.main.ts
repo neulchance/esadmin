@@ -14,6 +14,7 @@ import 'td/workbench/browser/workbench.contribution';
 
 //#region --- workbench actions
 
+import 'td/workbench/browser/actions/listCommands';
 import 'td/workbench/browser/actions/workspaceActions';
 import 'td/workbench/browser/actions/quickAccessActions';
 
