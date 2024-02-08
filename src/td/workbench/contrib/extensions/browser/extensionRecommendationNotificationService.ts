@@ -141,6 +141,8 @@ export class ExtensionRecommendationNotificationService extends Disposable imple
 		@IUserDataSyncEnablementService private readonly userDataSyncEnablementService: IUserDataSyncEnablementService,
 		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService,
 	) {
+
+		console.log('aslkdfjl;askfjdlaskdfjalskdfjals;kfdjaslkfdjasfj;dasfdjk;fklsjaksflfjsklafsj;dfajsda;sdfj;fsjdsfjds;dfjsfjdkasfdjkasfdjkasdfjkfsdjk')
 		super();
 	}
 

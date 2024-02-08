@@ -37,6 +37,11 @@ import {IModelService} from 'td/editor/common/services/model';
 import {IWorkbenchIssueService} from '../../issue/common/issue';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {INativeEnvironmentService} from 'td/platform/environment/common/environment';
+import {IStorageService} from 'td/platform/storage/common/storage';
+import {INotificationService} from 'td/platform/notification/common/notification';
+import {IExtensionsWorkbenchService} from 'td/workbench/contrib/extensions/common/extensions';
+import {IWorkbenchExtensionEnablementService, IWorkbenchExtensionManagementService} from '../../extensionManagement/common/extensionManagement';
+import {IExtensionIgnoredRecommendationsService} from '../../extensionRecommendations/common/extensionRecommendations';
 
 // Enable to see detailed message communication between window and extension host
 const LOG_EXTENSION_HOST_COMMUNICATION = false;
@@ -300,10 +305,8 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		this._instantiationService.invokeFunction((accessor: ServicesAccessor) => {
 			// Check that no named customers are missing
 			// accessor.get(ILogService);
-			// accessor.get(ILoggerService);
-			// console.log('\x1b[31maccessor.get(ILoggerService) done\x1b[0m')
-			// accessor.get(IWorkbenchIssueService);
-			// console.log('accessor.get(IWorkbenchIssueService) done')
+			// accessor.get(IExtensionIgnoredRecommendationsService);
+			console.log('\x1b[31maccessor.get(DI) done\x1b[0m')
 		})
 		const namedCustomers = ExtHostCustomersRegistry.getNamedCustomers();
 		for (let i = 0, len = namedCustomers.length; i < len; i++) {

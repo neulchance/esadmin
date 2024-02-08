@@ -43,6 +43,7 @@ export class ToggleDevToolsAction extends Action2 {
 	async run(accessor: ServicesAccessor): Promise<void> {
 		const nativeHostService = accessor.get(INativeHostService);
 
+		console.log('getActiveWindow().tddevWindowId', getActiveWindow().tddevWindowId);
 		return nativeHostService.toggleDevTools({targetWindowId: getActiveWindow().tddevWindowId});
 	}
 }

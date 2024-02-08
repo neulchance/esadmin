@@ -39,7 +39,7 @@ import {IPreferencesService} from 'td/workbench/services/preferences/common/pref
 import {ContextKeyExpr, IContextKeyService, RawContextKey} from 'td/platform/contextkey/common/contextkey';
 import {IQuickAccessRegistry, Extensions} from 'td/platform/quickinput/common/quickAccess';
 import {InstallExtensionQuickAccessProvider, ManageExtensionsQuickAccessProvider} from 'td/workbench/contrib/extensions/browser/extensionsQuickAccess';
-// import {ExtensionRecommendationsService} from 'td/workbench/contrib/extensions/browser/extensionRecommendationsService';
+import {ExtensionRecommendationsService} from 'td/workbench/contrib/extensions/browser/extensionRecommendationsService';
 import {CONTEXT_SYNC_ENABLEMENT} from 'td/workbench/services/userDataSync/common/userDataSync';
 import {CopyAction, CutAction, PasteAction} from 'td/editor/contrib/clipboard/browser/clipboard';
 import {IEditorService} from 'td/workbench/services/editor/common/editorService';
@@ -82,8 +82,8 @@ import {DeprecatedExtensionsChecker} from 'td/workbench/contrib/extensions/brows
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService, InstantiationType.Eager /* Auto updates extensions */);
-// registerSingleton(IExtensionRecommendationNotificationService, ExtensionRecommendationNotificationService, InstantiationType.Delayed);
-// registerSingleton(IExtensionRecommendationsService, ExtensionRecommendationsService, InstantiationType.Eager /* Prompts recommendations in the background */);
+registerSingleton(IExtensionRecommendationNotificationService, ExtensionRecommendationNotificationService, InstantiationType.Delayed);
+registerSingleton(IExtensionRecommendationsService, ExtensionRecommendationsService, InstantiationType.Eager /* Prompts recommendations in the background */);
 
 // Quick Access
 Registry.as<IQuickAccessRegistry>(Extensions.Quickaccess).registerQuickAccessProvider({
