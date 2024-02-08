@@ -52,12 +52,15 @@ export class CachedExtensionScanner {
 	}
 
 	private async _scanInstalledExtensions(): Promise<IExtensionDescription[]> {
+		if (true/* Coloring Flow Check */) console.log(`\x1b[32m _scanInstalledExtensions start\x1b[0m`)
 		try {
 			const language = platform.language;
 			const result = await Promise.allSettled([
 				this._extensionsScannerService.scanSystemExtensions({language, useCache: true, checkControlFile: true}),
 				// this._extensionsScannerService.scanUserExtensions({language, profileLocation: this._userDataProfileService.currentProfile.extensionsResource, useCache: true})
 			]);
+			if (true/* Coloring Flow Check */) console.log(`\x1b[32m Promise.allSettled \x1b[0m`)
+			console.log(result)
 
 			let scannedSystemExtensions: IScannedExtension[] = [],
 				scannedUserExtensions: IScannedExtension[] = [],

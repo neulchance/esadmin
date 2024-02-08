@@ -128,5 +128,8 @@ import 'td/workbench/contrib/output/browser/output.contribution';
 // Terminal
 import 'td/workbench/contrib/terminal/terminal.all';
 
+// Quickaccess
+import 'td/workbench/contrib/quickaccess/browser/quickAccess.contribution';
+
 
 //#endregion

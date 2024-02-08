@@ -434,7 +434,7 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 		const lock = await this._registry.acquireLock('_initialize');
 		try {
 			const resolvedExtensions = await this._resolveExtensions();
-
+			if (true/* Coloring Flow Check */) console.log(`\x1b[31m resolvedExtensions and _processExtensions \x1b[0m`)
 			this._processExtensions(lock, resolvedExtensions);
 
 			// Start extension hosts which are not automatically started
@@ -463,6 +463,10 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 		// takes care of duplicates and picks a running location for each extension
 		this._runningLocations.initializeRunningLocation(localExtensions, remoteExtensions);
 
+		/* 
+		[] Create extensionManager for each running location
+		[] 
+		 */
 		this._startExtensionHostsIfNecessary(true, []);
 
 		// Some remote extensions could run locally in the web worker, so store them

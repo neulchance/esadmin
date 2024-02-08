@@ -386,7 +386,11 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 			return;
 		}
 
+		
 		await proxy.activateByEvent(activationEvent, activationKind);
+		if (true/* Coloring Flow Check */) console.log(`\x1b[35m _activateByEvent \x1b[0m`)
+		console.log(activationEvent, activationKind)
+		console.log(proxy)
 		this._resolvedActivationEvents.add(activationEvent);
 	}
 
