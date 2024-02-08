@@ -17,7 +17,7 @@ import {VIEWLET_ID, IExtensionsWorkbenchService, IExtensionsViewPaneContainer, T
 import {ReinstallAction, InstallSpecificVersionOfExtensionAction, ConfigureWorkspaceRecommendedExtensionsAction, ConfigureWorkspaceFolderRecommendedExtensionsAction, PromptExtensionInstallFailureAction, SearchExtensionsAction, SwitchToPreReleaseVersionAction, SwitchToReleasedVersionAction, SetColorThemeAction, SetFileIconThemeAction, SetProductIconThemeAction, ClearLanguageAction, ToggleAutoUpdateForExtensionAction, ToggleAutoUpdatesForPublisherAction} from 'td/workbench/contrib/extensions/browser/extensionsActions';
 import {ExtensionsInput} from 'td/workbench/contrib/extensions/common/extensionsInput';
 import {ExtensionEditor} from 'td/workbench/contrib/extensions/browser/extensionEditor';
-// import {StatusUpdater, MaliciousExtensionChecker, ExtensionsViewletViewsContribution, ExtensionsViewPaneContainer, BuiltInExtensionsContext, SearchMarketplaceExtensionsContext, RecommendedExtensionsContext, DefaultViewsContext, ExtensionsSortByContext, SearchHasTextContext} from 'td/workbench/contrib/extensions/browser/extensionsViewlet';
+import {StatusUpdater, MaliciousExtensionChecker, ExtensionsViewletViewsContribution, ExtensionsViewPaneContainer, BuiltInExtensionsContext, SearchMarketplaceExtensionsContext, RecommendedExtensionsContext, DefaultViewsContext, ExtensionsSortByContext, SearchHasTextContext} from 'td/workbench/contrib/extensions/browser/extensionsViewlet';
 import {IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope} from 'td/platform/configuration/common/configurationRegistry';
 import * as jsonContributionRegistry from 'td/platform/jsonschemas/common/jsonContributionRegistry';
 import {ExtensionsConfigurationSchema, ExtensionsConfigurationSchemaId} from 'td/workbench/contrib/extensions/common/extensionsFileTemplate';
@@ -1699,7 +1699,7 @@ class ExtensionStorageCleaner implements IWorkbenchContribution {
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchRegistry.registerWorkbenchContribution(ExtensionsContributions, LifecyclePhase.Restored);
-// workbenchRegistry.registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Eventually);
+workbenchRegistry.registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Eventually);
 // workbenchRegistry.registerWorkbenchContribution(MaliciousExtensionChecker, LifecyclePhase.Eventually);
 // workbenchRegistry.registerWorkbenchContribution(KeymapExtensions, LifecyclePhase.Restored);
 // workbenchRegistry.registerWorkbenchContribution(ExtensionsViewletViewsContribution, LifecyclePhase.Restored);

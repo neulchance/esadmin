@@ -117,6 +117,7 @@ import 'td/workbench/contrib/files/browser/files.contribution';/* this help to w
 
 // Extensions Management
 import 'td/workbench/contrib/extensions/browser/extensions.contribution';
+import 'td/workbench/contrib/extensions/browser/extensionsViewlet';
 
 // Themes
 import 'td/workbench/contrib/themes/browser/themes.contribution';

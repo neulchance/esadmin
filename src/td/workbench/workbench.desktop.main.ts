@@ -73,7 +73,7 @@ registerSingleton(IExtensionsProfileScannerService, ExtensionsProfileScannerServ
 //#region --- workbench contributions
 
 // Extensions Management
-// import 'td/workbench/contrib/extensions/electron-sandbox/extensions.contribution';
+import 'td/workbench/contrib/extensions/electron-sandbox/extensions.contribution';
 
 // Debug
 import 'td/workbench/contrib/debug/electron-sandbox/extensionHostDebugService';
