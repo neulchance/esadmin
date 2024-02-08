@@ -12,6 +12,13 @@ import 'td/workbench/browser/workbench.contribution';
 
 //#endregion
 
+//#region --- workbench actions
+
+import 'td/workbench/browser/actions/workspaceActions';
+import 'td/workbench/browser/actions/quickAccessActions';
+
+//#endregion
+
 
 //#region --- workbench parts
 
