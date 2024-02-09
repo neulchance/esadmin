@@ -9,16 +9,9 @@ import {registerAction2} from 'td/platform/actions/common/actions';
 import {Extensions as ConfigurationExtensions, IConfigurationPropertySchema, IConfigurationRegistry} from 'td/platform/configuration/common/configurationRegistry';
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {Registry} from 'td/platform/registry/common/platform';
-import {Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry} from 'td/workbench/common/contributions';
-import {LifecyclePhase} from 'td/workbench/services/lifecycle/common/lifecycle';
 import {IAudioCueService, AudioCueService} from 'td/platform/audioCues/browser/audioCueService';
-import {AudioCueLineDebuggerContribution} from 'td/workbench/contrib/audioCues/browser/audioCueDebuggerContribution';
-import {AudioCueLineFeatureContribution} from 'td/workbench/contrib/audioCues/browser/audioCueLineFeatureContribution';
 
 registerSingleton(IAudioCueService, AudioCueService, InstantiationType.Delayed);
-
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(AudioCueLineFeatureContribution, LifecyclePhase.Restored);
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(AudioCueLineDebuggerContribution, LifecyclePhase.Restored);
 
 const audioCueFeatureBase: IConfigurationPropertySchema = {
 	'type': 'string',
