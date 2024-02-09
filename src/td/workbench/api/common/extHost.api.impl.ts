@@ -123,7 +123,7 @@ export interface IExtensionApiFactory {
  * node-process
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	if (false/* Coloring Flow Check */) console.log(`\x1b[32mcreateApiFactoryAndRegisterActors started\x1b[0m`)
+	if (true/* Coloring Flow Check */) console.log(`\x1b[32mcreateApiFactoryAndRegisterActors started\x1b[0m`)
 
 	// services
 	const initData = accessor.get(IExtHostInitDataService);
@@ -237,7 +237,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// Register API-ish commands
 	ExtHostApiCommands.register(extHostCommands);
 
+	/* 
+	 * Extensions 들은 아래 에서 반환된 함수를 이용해서 필요한 기능수행을 완료한다.
+	 */
 	return function (extension: IExtensionDescription, extensionInfo: IExtensionRegistries, configProvider: ExtHostConfigProvider): typeof vscode {
+		if (false) console.log(`\x1b[35m [2][Extension Load Flow] Extension API factory invoked on ${(typeof process !== 'undefined' && process.release && process.release.name === 'node') ? 'NODE' : 'BROWSER'}\x1b[0m`);
 
 		// Wraps an event with error handling and telemetry so that we know what extension fails
 		// handling events. This will prevent us from reporting this as "our" error-telemetry and
@@ -1390,8 +1394,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			// 	return extHostSpeech.registerProvider(extension.identifier, id, provider);
 			// }
 		};
-
-		console.log('createApiFactoryAndRegisterActors 2')
 
 		return /* <typeof vscode> */{
 			version: initData.version,

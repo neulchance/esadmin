@@ -434,7 +434,7 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 		const lock = await this._registry.acquireLock('_initialize');
 		try {
 			const resolvedExtensions = await this._resolveExtensions();
-			if (true/* Coloring Flow Check */) console.log(`\x1b[31m resolvedExtensions and _processExtensions \x1b[0m`)
+			if (false/* Coloring Flow Check */) console.log(`\x1b[31m resolvedExtensions and _processExtensions \x1b[0m`)
 			this._processExtensions(lock, resolvedExtensions);
 
 			// Start extension hosts which are not automatically started

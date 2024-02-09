@@ -325,7 +325,7 @@ export class NativeExtensionService extends AbstractExtensionService implements 
 	}
 
 	protected async _resolveExtensions(): Promise<ResolvedExtensions> {
-		if (true/* Coloring Flow Check */) console.log(`\x1b[31m _resolveExtensions() internal start \x1b[0m`)
+		if (false/* Coloring Flow Check */) console.log(`\x1b[31m _resolveExtensions() internal start \x1b[0m`)
 		this._extensionScanner.startScanningExtensions();
 
 		const remoteAuthority = this._environmentService.remoteAuthority;

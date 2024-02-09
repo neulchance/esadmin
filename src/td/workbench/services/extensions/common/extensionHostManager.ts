@@ -14,7 +14,7 @@ import {IMessagePassingProtocol} from 'td/base/parts/ipc/common/ipc';
 import {ITextModelService} from 'td/editor/common/services/resolverService';
 import * as nls from 'td/nls';
 import {Categories} from 'td/platform/action/common/actionCommonCategories';
-import {Action2, registerAction2} from 'td/platform/actions/common/actions';
+import {Action2, IMenuService, registerAction2} from 'td/platform/actions/common/actions';
 import {ExtensionIdentifier, IExtensionDescription} from 'td/platform/extensions/common/extensions';
 import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
 import {ILogService, ILoggerService} from 'td/platform/log/common/log';
@@ -28,7 +28,7 @@ import {IExtensionHostManager} from 'td/workbench/services/extensions/common/ext
 import {IExtensionDescriptionDelta} from 'td/workbench/services/extensions/common/extensionHostProtocol';
 import {IExtensionHostProxy, IResolveAuthorityResult} from 'td/workbench/services/extensions/common/extensionHostProxy';
 import {ExtensionRunningLocation} from 'td/workbench/services/extensions/common/extensionRunningLocation';
-import {ActivationKind, ExtensionActivationReason, ExtensionHostStartup, IExtensionHost, IInternalExtensionService} from 'td/workbench/services/extensions/common/extensions';
+import {ActivationKind, ExtensionActivationReason, ExtensionHostStartup, IExtensionHost, IExtensionService, IInternalExtensionService} from 'td/workbench/services/extensions/common/extensions';
 import {Proxied, ProxyIdentifier} from 'td/workbench/services/extensions/common/proxyIdentifier';
 import {IRPCProtocolLogger, RPCProtocol, RequestInitiator, ResponsiveState} from 'td/workbench/services/extensions/common/rpcProtocol';
 import {IWorkingCopyFileService} from '../../workingCopy/common/workingCopyFileService';
@@ -42,6 +42,16 @@ import {INotificationService} from 'td/platform/notification/common/notification
 import {IExtensionsWorkbenchService} from 'td/workbench/contrib/extensions/common/extensions';
 import {IWorkbenchExtensionEnablementService, IWorkbenchExtensionManagementService} from '../../extensionManagement/common/extensionManagement';
 import {IExtensionIgnoredRecommendationsService} from '../../extensionRecommendations/common/extensionRecommendations';
+import {IKeybindingService} from 'td/platform/keybinding/common/keybinding';
+import {ICommandService} from 'td/platform/commands/common/commands';
+import {IDialogService} from 'td/platform/dialogs/common/dialogs';
+import {IEditorGroupsService} from '../../editor/common/editorGroupsService';
+import {IPreferencesService} from '../../preferences/common/preferences';
+import {IProductService} from 'td/platform/product/common/productService';
+import {IAiRelatedInformationService} from '../../aiRelatedInformation/common/aiRelatedInformation';
+import {IChatAgentService} from 'td/workbench/contrib/chat/common/chatAgents';
+import {IContextKeyService} from 'td/platform/contextkey/common/contextkey';
+import {IListService} from 'td/platform/list/browser/listService';
 
 // Enable to see detailed message communication between window and extension host
 const LOG_EXTENSION_HOST_COMMUNICATION = false;
@@ -306,7 +316,7 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 			// Check that no named customers are missing
 			// accessor.get(ILogService);
 			// accessor.get(IExtensionIgnoredRecommendationsService);
-			console.log('\x1b[31maccessor.get(DI) done\x1b[0m')
+			// console.log('\x1b[31maccessor.get(DI) done\x1b[0m')
 		})
 		const namedCustomers = ExtHostCustomersRegistry.getNamedCustomers();
 		for (let i = 0, len = namedCustomers.length; i < len; i++) {
@@ -391,9 +401,9 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 
 		
 		await proxy.activateByEvent(activationEvent, activationKind);
-		if (true/* Coloring Flow Check */) console.log(`\x1b[35m _activateByEvent \x1b[0m`)
-		console.log(activationEvent, activationKind)
-		console.log(proxy)
+		if (false/* Coloring Flow Check */) console.log(`\x1b[35m _activateByEvent \x1b[0m`)
+		if (false/* Coloring Flow Check */) console.log(activationEvent, activationKind)
+		if (false/* Coloring Flow Check */) console.log(proxy)
 		this._resolvedActivationEvents.add(activationEvent);
 	}
 

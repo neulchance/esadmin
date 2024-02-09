@@ -185,7 +185,7 @@ export abstract class AbstractExtensionsScannerService extends Disposable implem
 
 	// Currently invoked from cachedExtensionScanner.ts
 	async scanSystemExtensions(scanOptions: ScanOptions): Promise<IScannedExtension[]> {
-		if (true/* Coloring Flow Check */) console.log(`\x1b[32m scanSystemExtensions \x1b[0m`)
+		if (false/* Coloring Flow Check */) console.log(`\x1b[32m scanSystemExtensions \x1b[0m`)
 		const promises: Promise<IRelaxedScannedExtension[]>[] = [];
 		promises.push(this.scanDefaultSystemExtensions(!!scanOptions.useCache, scanOptions.language));
 		promises.push(this.scanDevSystemExtensions(scanOptions.language, !!scanOptions.checkControlFile));
@@ -397,7 +397,7 @@ export abstract class AbstractExtensionsScannerService extends Disposable implem
 		const extensionsScannerInput = await this.createExtensionScannerInput(this.systemExtensionsLocation, false, ExtensionType.System, true, language, true, undefined);
 		const extensionsScanner = useCache && !extensionsScannerInput.devMode ? this.systemExtensionsCachedScanner : this.extensionsScanner;
 		const result = await extensionsScanner.scanExtensions(extensionsScannerInput);
-		if (true/* Coloring Flow Check */) console.log(`\x1b[32m scanDefaultSystemExtensions \x1b[0m`)
+		if (false/* Coloring Flow Check */) console.log(`\x1b[32m scanDefaultSystemExtensions \x1b[0m`)
 		this.logService.trace('Scanned system extensions:', result.length);
 		return result;
 	}

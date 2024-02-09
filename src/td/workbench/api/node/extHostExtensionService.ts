@@ -68,9 +68,9 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 
 		// initialize API and register actors
 		// explain@neulchance
+		console.log(`\x1b[32m Above line of invokeFunction(createApiFactoryAndRegisterActors) :: This Message When invoked.\x1b[0m`)
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
-		// console.log(`\x1b[32mextensionApiFactory done\x1b[0m`)
-		// console.log()
+		console.log(`\x1b[32m Below line of invokeFunction(createApiFactoryAndRegisterActors) :: This Message When invoked.\x1b[0m`)
 
 		// Register Download command
 		this._instaService.createInstance(ExtHostDownloadService);

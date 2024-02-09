@@ -4,23 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'td/css!./standaloneQuickInput';
-import { Event } from 'td/base/common/event';
-import { ICodeEditor, IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'td/editor/browser/editorBrowser';
-import { EditorContributionInstantiation, registerEditorContribution } from 'td/editor/browser/editorExtensions';
-import { IEditorContribution } from 'td/editor/common/editorCommon';
-import { IThemeService } from 'td/platform/theme/common/themeService';
-import { IQuickInputService, IQuickInputButton, IQuickPickItem, IQuickPick, IInputBox, IQuickNavigateConfiguration, IPickOptions, QuickPickInput, IInputOptions, IQuickWidget } from 'td/platform/quickinput/common/quickInput';
-import { CancellationToken } from 'td/base/common/cancellation';
-import { IInstantiationService } from 'td/platform/instantiation/common/instantiation';
-import { IContextKeyService } from 'td/platform/contextkey/common/contextkey';
-import { EditorScopedLayoutService } from 'td/editor/standalone/browser/standaloneLayoutService';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { QuickInputController, IQuickInputControllerHost } from 'td/platform/quickinput/browser/quickInputController';
-import { QuickInputService } from 'td/platform/quickinput/browser/quickInputService';
-import { createSingleCallFunction } from 'td/base/common/functional';
-import { IQuickAccessController } from 'td/platform/quickinput/common/quickAccess';
-import { IConfigurationService } from 'td/platform/configuration/common/configuration';
-import { IHoverService } from 'td/platform/hover/browser/hover';
+import {Event} from 'td/base/common/event';
+import {ICodeEditor, IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference} from 'td/editor/browser/editorBrowser';
+import {EditorContributionInstantiation, registerEditorContribution} from 'td/editor/browser/editorExtensions';
+import {IEditorContribution} from 'td/editor/common/editorCommon';
+import {IThemeService} from 'td/platform/theme/common/themeService';
+import {IQuickInputService, IQuickInputButton, IQuickPickItem, IQuickPick, IInputBox, IQuickNavigateConfiguration, IPickOptions, QuickPickInput, IInputOptions, IQuickWidget} from 'td/platform/quickinput/common/quickInput';
+import {CancellationToken} from 'td/base/common/cancellation';
+import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
+import {IContextKeyService} from 'td/platform/contextkey/common/contextkey';
+import {EditorScopedLayoutService} from 'td/editor/standalone/browser/standaloneLayoutService';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {QuickInputController, IQuickInputControllerHost} from 'td/platform/quickinput/browser/quickInputController';
+import {QuickInputService} from 'td/platform/quickinput/browser/quickInputService';
+import {createSingleCallFunction} from 'td/base/common/functional';
+import {IQuickAccessController} from 'td/platform/quickinput/common/quickAccess';
+import {IConfigurationService} from 'td/platform/configuration/common/configuration';
+import {IHoverService} from 'td/platform/hover/browser/hover';
 
 class EditorScopedQuickInputService extends QuickInputService {
 
@@ -58,12 +58,12 @@ class EditorScopedQuickInputService extends QuickInputService {
 				get activeContainerDimension() { return editor.getLayoutInfo(); },
 				get onDidLayoutMainContainer() { return editor.onDidLayoutChange; },
 				get onDidLayoutActiveContainer() { return editor.onDidLayoutChange; },
-				get onDidLayoutContainer() { return Event.map(editor.onDidLayoutChange, dimension => ({ container: widget.getDomNode(), dimension })); },
+				get onDidLayoutContainer() { return Event.map(editor.onDidLayoutChange, dimension => ({container: widget.getDomNode(), dimension})); },
 				get onDidChangeActiveContainer() { return Event.None; },
 				get onDidAddContainer() { return Event.None; },
 				get whenActiveContainerStylesLoaded() { return Promise.resolve(); },
-				get mainContainerOffset() { return { top: 0, quickPickTop: 0 }; },
-				get activeContainerOffset() { return { top: 0, quickPickTop: 0 }; },
+				get mainContainerOffset() { return {top: 0, quickPickTop: 0}; },
+				get activeContainerOffset() { return {top: 0, quickPickTop: 0}; },
 				focus: () => editor.focus()
 			};
 		} else {
@@ -199,7 +199,7 @@ export class QuickInputEditorWidget implements IOverlayWidget {
 	}
 
 	getPosition(): IOverlayWidgetPosition | null {
-		return { preference: OverlayWidgetPositionPreference.TOP_CENTER };
+		return {preference: OverlayWidgetPositionPreference.TOP_CENTER};
 	}
 
 	dispose(): void {

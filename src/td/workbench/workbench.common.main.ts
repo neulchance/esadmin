@@ -93,12 +93,14 @@ import {IDownloadService} from 'td/platform/download/common/download';
 import {DownloadService} from 'td/platform/download/common/downloadService';
 import {IEditorWorkerService} from 'td/editor/common/services/editorWorker';
 import {EditorWorkerService} from 'td/editor/browser/services/editorWorkerService';
+import {IListService, ListService} from 'td/platform/list/browser/listService';
 
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, InstantiationType.Delayed);
 registerSingleton(IUserDataSyncLogService, UserDataSyncLogService, InstantiationType.Delayed);
 registerSingleton(IGlobalExtensionEnablementService, GlobalExtensionEnablementService, InstantiationType.Delayed);
 registerSingleton(IIgnoredExtensionsManagementService, IgnoredExtensionsManagementService, InstantiationType.Delayed);
 registerSingleton(IContextViewService, ContextViewService, InstantiationType.Delayed);
+registerSingleton(IListService, ListService, InstantiationType.Delayed);
 registerSingleton(IMarkerService, MarkerService, InstantiationType.Delayed);
 registerSingleton(IExtensionStorageService, ExtensionStorageService, InstantiationType.Delayed);
 registerSingleton(IEditorWorkerService, EditorWorkerService, InstantiationType.Eager /* registers link detection and word based suggestions for any document */);

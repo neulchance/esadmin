@@ -14,7 +14,8 @@ import {isWindows, isLinux, isWeb, isMacintosh, isNative} from 'td/base/common/p
 import {IsMacNativeContext} from 'td/platform/contextkey/common/contextkeys';
 import {KeybindingsRegistry, KeybindingWeight} from 'td/platform/keybinding/common/keybindingsRegistry';
 import {ContextKeyExpr, ContextKeyExpression, IContextKeyService} from 'td/platform/contextkey/common/contextkey';
-import {IViewDescriptorService, IViewsService, ViewContainerLocation, IViewDescriptor, ViewContainerLocationToString} from 'td/workbench/common/views';
+import {IViewDescriptorService, ViewContainerLocation, IViewDescriptor, ViewContainerLocationToString} from 'td/workbench/common/views';
+import {IViewsService} from 'td/workbench/services/views/common/viewsService';
 import {QuickPickItem, IQuickInputService, IQuickPickItem, IQuickPickSeparator, IQuickPick} from 'td/platform/quickinput/common/quickInput';
 import {IDialogService} from 'td/platform/dialogs/common/dialogs';
 import {IPaneCompositePartService} from 'td/workbench/services/panecomposite/browser/panecomposite';

@@ -76,8 +76,8 @@ export class CommandsQuickAccessProvider extends AbstractEditorCommandsQuickAcce
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IProductService private readonly productService: IProductService,
-		@IAiRelatedInformationService private readonly aiRelatedInformationService: IAiRelatedInformationService,
-		@IChatAgentService private readonly chatAgentService: IChatAgentService,
+		// @IAiRelatedInformationService private readonly aiRelatedInformationService: IAiRelatedInformationService,
+		// @IChatAgentService private readonly chatAgentService: IChatAgentService,
 	) {
 		super({
 			showAlias: !Language.isDefaultVariant(),
@@ -110,7 +110,7 @@ export class CommandsQuickAccessProvider extends AbstractEditorCommandsQuickAcce
 			? new Set(this.productService.commandPaletteSuggestedCommandIds)
 			: undefined;
 		this.options.suggestedCommandIds = suggestedCommandIds;
-		this.useAiRelatedInfo = config.experimental.enableNaturalLanguageSearch;
+		this.useAiRelatedInfo = false;
 	}
 
 	protected async getCommandPicks(token: CancellationToken): Promise<Array<ICommandQuickPick>> {
@@ -143,7 +143,7 @@ export class CommandsQuickAccessProvider extends AbstractEditorCommandsQuickAcce
 			!this.useAiRelatedInfo
 			|| token.isCancellationRequested
 			|| filter === ''
-			|| !this.aiRelatedInformationService.isEnabled()
+			// || !this.aiRelatedInformationService.isEnabled()
 		) {
 			return false;
 		}
@@ -172,40 +172,40 @@ export class CommandsQuickAccessProvider extends AbstractEditorCommandsQuickAcce
 			});
 		}
 
-		const defaultAgent = this.chatAgentService.getDefaultAgent();
-		if (defaultAgent) {
-			additionalPicks.push({
-				label: localize('askXInChat', "Ask {0}: {1}", defaultAgent.metadata.fullName, filter),
-				commandId: this.configuration.experimental.askChatLocation === 'quickChat' ? ASK_QUICK_QUESTION_ACTION_ID : CHAT_OPEN_ACTION_ID,
-				args: [filter]
-			});
-		}
+		// const defaultAgent = this.chatAgentService.getDefaultAgent();
+		// if (defaultAgent) {
+		// 	additionalPicks.push({
+		// 		label: localize('askXInChat', "Ask {0}: {1}", defaultAgent.metadata.fullName, filter),
+		// 		commandId: this.configuration.experimental.askChatLocation === 'quickChat' ? ASK_QUICK_QUESTION_ACTION_ID : CHAT_OPEN_ACTION_ID,
+		// 		args: [filter]
+		// 	});
+		// }
 
 		return additionalPicks;
 	}
 
 	private async getRelatedInformationPicks(allPicks: ICommandQuickPick[], picksSoFar: ICommandQuickPick[], filter: string, token: CancellationToken) {
-		const relatedInformation = await this.aiRelatedInformationService.getRelatedInformation(
-			filter,
-			[RelatedInformationType.CommandInformation],
-			token
-		) as CommandInformationResult[];
+		// const relatedInformation = await this.aiRelatedInformationService.getRelatedInformation(
+		// 	filter,
+		// 	[RelatedInformationType.CommandInformation],
+		// 	token
+		// ) as CommandInformationResult[];
 
-		// Sort by weight descending to get the most relevant results first
-		relatedInformation.sort((a, b) => b.weight - a.weight);
+		// // Sort by weight descending to get the most relevant results first
+		// relatedInformation.sort((a, b) => b.weight - a.weight);
 
 		const setOfPicksSoFar = new Set(picksSoFar.map(p => p.commandId));
 		const additionalPicks = new Array<ICommandQuickPick | IQuickPickSeparator>();
 
-		for (const info of relatedInformation) {
-			if (info.weight < CommandsQuickAccessProvider.AI_RELATED_INFORMATION_THRESHOLD || additionalPicks.length === CommandsQuickAccessProvider.AI_RELATED_INFORMATION_MAX_PICKS) {
-				break;
-			}
-			const pick = allPicks.find(p => p.commandId === info.command && !setOfPicksSoFar.has(p.commandId));
-			if (pick) {
-				additionalPicks.push(pick);
-			}
-		}
+		// for (const info of relatedInformation) {
+		// 	if (info.weight < CommandsQuickAccessProvider.AI_RELATED_INFORMATION_THRESHOLD || additionalPicks.length === CommandsQuickAccessProvider.AI_RELATED_INFORMATION_MAX_PICKS) {
+		// 		break;
+		// 	}
+		// 	const pick = allPicks.find(p => p.commandId === info.command && !setOfPicksSoFar.has(p.commandId));
+		// 	if (pick) {
+		// 		additionalPicks.push(pick);
+		// 	}
+		// }
 
 		return additionalPicks;
 	}

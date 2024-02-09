@@ -189,6 +189,10 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 
 				actualActivateExtension: async (extensionId: ExtensionIdentifier, reason: ExtensionActivationReason): Promise<ActivatedExtension> => {
 					if (ExtensionDescriptionRegistry.isHostExtension(extensionId, this._myRegistry, this._globalRegistry)) {
+						/*
+							MainContext.MainThreadExtensionService
+							획득한 
+						 */
 						await this._mainThreadExtensionsProxy.$activateExtension(extensionId, reason);
 						return new HostExtension();
 					}
@@ -580,6 +584,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 				logService.trace(`ExtensionService#_callActivateOptional ${extensionId.value}`);
 				const scope = typeof global === 'object' ? global : self; // `global` is nodejs while `self` is for workers
 				const activateResult: Promise<IExtensionAPI> = extensionModule.activate.apply(scope, [context]);
+				/* 👆 apply 는 scope 와 [context] 를 이용해서 함수 activate 를 호출한다. */
 				activationTimesBuilder.activateCallStop();
 
 				activationTimesBuilder.activateResolveStart();

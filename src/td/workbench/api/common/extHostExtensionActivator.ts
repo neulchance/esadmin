@@ -5,12 +5,12 @@
 
 import type * as vscode from 'vscode';
 import * as errors from 'td/base/common/errors';
-import { IDisposable } from 'td/base/common/lifecycle';
-import { ExtensionDescriptionRegistry } from 'td/workbench/services/extensions/common/extensionDescriptionRegistry';
-import { ExtensionIdentifier, ExtensionIdentifierMap } from 'td/platform/extensions/common/extensions';
-import { ExtensionActivationReason, MissingExtensionDependency } from 'td/workbench/services/extensions/common/extensions';
-import { ILogService } from 'td/platform/log/common/log';
-import { Barrier } from 'td/base/common/async';
+import {IDisposable} from 'td/base/common/lifecycle';
+import {ExtensionDescriptionRegistry} from 'td/workbench/services/extensions/common/extensionDescriptionRegistry';
+import {ExtensionIdentifier, ExtensionIdentifierMap} from 'td/platform/extensions/common/extensions';
+import {ExtensionActivationReason, MissingExtensionDependency} from 'td/workbench/services/extensions/common/extensions';
+import {ILogService} from 'td/platform/log/common/log';
+import {Barrier} from 'td/base/common/async';
 
 /**
  * Represents the source code (module) of an extension.
@@ -140,19 +140,19 @@ export class ActivatedExtension {
 
 export class EmptyExtension extends ActivatedExtension {
 	constructor(activationTimes: ExtensionActivationTimes) {
-		super(false, null, activationTimes, { activate: undefined, deactivate: undefined }, undefined, []);
+		super(false, null, activationTimes, {activate: undefined, deactivate: undefined}, undefined, []);
 	}
 }
 
 export class HostExtension extends ActivatedExtension {
 	constructor() {
-		super(false, null, ExtensionActivationTimes.NONE, { activate: undefined, deactivate: undefined }, undefined, []);
+		super(false, null, ExtensionActivationTimes.NONE, {activate: undefined, deactivate: undefined}, undefined, []);
 	}
 }
 
 class FailedExtension extends ActivatedExtension {
 	constructor(activationError: Error) {
-		super(true, activationError, ExtensionActivationTimes.NONE, { activate: undefined, deactivate: undefined }, undefined, []);
+		super(true, activationError, ExtensionActivationTimes.NONE, {activate: undefined, deactivate: undefined}, undefined, []);
 	}
 }
 
@@ -222,7 +222,7 @@ export class ExtensionsActivator implements IDisposable {
 		const activateExtensions = this._registry.getExtensionDescriptionsForActivationEvent(activationEvent);
 		await this._activateExtensions(activateExtensions.map(e => ({
 			id: e.identifier,
-			reason: { startup, extensionId: e.identifier, activationEvent }
+			reason: {startup, extensionId: e.identifier, activationEvent}
 		})));
 
 		this._alreadyActivatedEvents[activationEvent] = true;
@@ -233,7 +233,7 @@ export class ExtensionsActivator implements IDisposable {
 		if (!desc) {
 			throw new Error(`Extension '${extensionId}' is not known`);
 		}
-		return this._activateExtensions([{ id: desc.identifier, reason }]);
+		return this._activateExtensions([{id: desc.identifier, reason}]);
 	}
 
 	private async _activateExtensions(extensions: ActivationIdAndReason[]): Promise<void> {
