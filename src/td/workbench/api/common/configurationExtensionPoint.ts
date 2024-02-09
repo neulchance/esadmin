@@ -5,22 +5,22 @@
 
 import * as nls from 'td/nls';
 import * as objects from 'td/base/common/objects';
-import { Registry } from 'td/platform/registry/common/platform';
-import { IJSONSchema } from 'td/base/common/jsonSchema';
-import { ExtensionsRegistry, IExtensionPointUser } from 'td/workbench/services/extensions/common/extensionsRegistry';
-import { IConfigurationNode, IConfigurationRegistry, Extensions, validateProperty, ConfigurationScope, OVERRIDE_PROPERTY_REGEX, IConfigurationDefaults, configurationDefaultsSchemaId, IConfigurationDelta } from 'td/platform/configuration/common/configurationRegistry';
-import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'td/platform/jsonschemas/common/jsonContributionRegistry';
-import { workspaceSettingsSchemaId, launchSchemaId, tasksSchemaId } from 'td/workbench/services/configuration/common/configuration';
-import { isObject } from 'td/base/common/types';
-import { ExtensionIdentifierMap } from 'td/platform/extensions/common/extensions';
-import { IStringDictionary } from 'td/base/common/collections';
+import {Registry} from 'td/platform/registry/common/platform';
+import {IJSONSchema} from 'td/base/common/jsonSchema';
+import {ExtensionsRegistry, IExtensionPointUser} from 'td/workbench/services/extensions/common/extensionsRegistry';
+import {IConfigurationNode, IConfigurationRegistry, Extensions, validateProperty, ConfigurationScope, OVERRIDE_PROPERTY_REGEX, IConfigurationDefaults, configurationDefaultsSchemaId, IConfigurationDelta} from 'td/platform/configuration/common/configurationRegistry';
+import {IJSONContributionRegistry, Extensions as JSONExtensions} from 'td/platform/jsonschemas/common/jsonContributionRegistry';
+import {workspaceSettingsSchemaId, launchSchemaId, tasksSchemaId} from 'td/workbench/services/configuration/common/configuration';
+import {isObject} from 'td/base/common/types';
+import {ExtensionIdentifierMap} from 'td/platform/extensions/common/extensions';
+import {IStringDictionary} from 'td/base/common/collections';
 
 const jsonRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 
 const configurationEntrySchema: IJSONSchema = {
 	type: 'object',
-	defaultSnippets: [{ body: { title: '', properties: {} } }],
+	defaultSnippets: [{body: {title: '', properties: {}}}],
 	properties: {
 		title: {
 			description: nls.localize('vscode.extension.contributes.configuration.title', 'A title for the current category of settings. This label will be rendered in the Settings editor as a subheading. If the title is the same as the extension display name, then the category will be grouped under the main extension heading.'),
@@ -130,7 +130,7 @@ const defaultConfigurationExtPoint = ExtensionsRegistry.registerExtensionPoint<I
 		$ref: configurationDefaultsSchemaId,
 	}
 });
-defaultConfigurationExtPoint.setHandler((extensions, { added, removed }) => {
+defaultConfigurationExtPoint.setHandler((extensions, {added, removed}) => {
 
 	if (_configDelta) {
 		// HIGHLY unlikely, but just in case
@@ -147,7 +147,7 @@ defaultConfigurationExtPoint.setHandler((extensions, { added, removed }) => {
 	});
 
 	if (removed.length) {
-		const removedDefaultConfigurations = removed.map<IConfigurationDefaults>(extension => ({ overrides: objects.deepClone(extension.value), source: { id: extension.description.identifier.value, displayName: extension.description.displayName } }));
+		const removedDefaultConfigurations = removed.map<IConfigurationDefaults>(extension => ({overrides: objects.deepClone(extension.value), source: {id: extension.description.identifier.value, displayName: extension.description.displayName}}));
 		_configDelta.removedDefaults = removedDefaultConfigurations;
 	}
 	if (added.length) {
@@ -164,7 +164,7 @@ defaultConfigurationExtPoint.setHandler((extensions, { added, removed }) => {
 					}
 				}
 			}
-			return { overrides, source: { id: extension.description.identifier.value, displayName: extension.description.displayName } };
+			return {overrides, source: {id: extension.description.identifier.value, displayName: extension.description.displayName}};
 		});
 		_configDelta.addedDefaults = addedDefaultConfigurations;
 	}
@@ -190,7 +190,7 @@ const configurationExtPoint = ExtensionsRegistry.registerExtensionPoint<IConfigu
 
 const extensionConfigurations: ExtensionIdentifierMap<IConfigurationNode[]> = new ExtensionIdentifierMap<IConfigurationNode[]>();
 
-configurationExtPoint.setHandler((extensions, { added, removed }) => {
+configurationExtPoint.setHandler((extensions, {added, removed}) => {
 
 	// HIGHLY unlikely (only configuration but not defaultConfiguration EXT point changes)
 	_configDelta ??= {};
@@ -217,7 +217,7 @@ configurationExtPoint.setHandler((extensions, { added, removed }) => {
 		validateProperties(configuration, extension);
 
 		configuration.id = node.id || extension.description.identifier.value;
-		configuration.extensionInfo = { id: extension.description.identifier.value, displayName: extension.description.displayName };
+		configuration.extensionInfo = {id: extension.description.identifier.value, displayName: extension.description.displayName};
 		configuration.restrictedProperties = extension.description.capabilities?.untrustedWorkspaces?.supported === 'limited' ? extension.description.capabilities?.untrustedWorkspaces.restrictedConfigurations : undefined;
 		configuration.title = configuration.title || extension.description.displayName || extension.description.identifier.value;
 		configurations.push(configuration);
@@ -320,7 +320,7 @@ jsonRegistry.registerSchema('vscode://schemas/workspaceConfig', {
 			description: nls.localize('workspaceConfig.folders.description', "List of folders to be loaded in the workspace."),
 			items: {
 				type: 'object',
-				defaultSnippets: [{ body: { path: '$1' } }],
+				defaultSnippets: [{body: {path: '$1'}}],
 				oneOf: [{
 					properties: {
 						path: {
@@ -356,13 +356,13 @@ jsonRegistry.registerSchema('vscode://schemas/workspaceConfig', {
 		},
 		'launch': {
 			type: 'object',
-			default: { configurations: [], compounds: [] },
+			default: {configurations: [], compounds: []},
 			description: nls.localize('workspaceConfig.launch.description', "Workspace launch configurations"),
 			$ref: launchSchemaId
 		},
 		'tasks': {
 			type: 'object',
-			default: { version: '2.0.0', tasks: [] },
+			default: {version: '2.0.0', tasks: []},
 			description: nls.localize('workspaceConfig.tasks.description', "Workspace task configurations"),
 			$ref: tasksSchemaId
 		},
