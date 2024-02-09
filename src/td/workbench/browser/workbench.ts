@@ -1,5 +1,5 @@
 import 'td/workbench/browser/style';
-import {Emitter, setGlobalLeakWarningThreshold} from 'td/base/common/event';
+import {Event, Emitter, setGlobalLeakWarningThreshold} from 'td/base/common/event';
 import {getSingletonServiceDescriptors} from 'td/platform/instantiation/common/extensions';
 import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
 import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
@@ -13,6 +13,12 @@ import {IStorageService, StorageScope, StorageTarget, WillSaveStateReason} from 
 import {IConfigurationChangeEvent, IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {INotificationService} from 'td/platform/notification/common/notification';
 import {NotificationService} from 'td/workbench/services/notification/common/notificationService';
+import {NotificationsCenter} from 'td/workbench/browser/parts/notifications/notificationsCenter';
+import {NotificationsAlerts} from 'td/workbench/browser/parts/notifications/notificationsAlerts';
+import {NotificationsStatus} from 'td/workbench/browser/parts/notifications/notificationsStatus';
+import {NotificationsTelemetry} from 'td/workbench/browser/parts/notifications/notificationsTelemetry';
+import {registerNotificationCommands} from 'td/workbench/browser/parts/notifications/notificationsCommands';
+import {NotificationsToasts} from 'td/workbench/browser/parts/notifications/notificationsToasts';
 import {setARIAContainer} from 'td/base/browser/ui/aria/aria';
 import {isChrome, isFirefox, isLinux, isMacintosh, isNative, isSafari, isWeb, isWindows} from 'td/base/common/platform';
 import {coalesce} from 'td/base/common/arrays';
@@ -152,7 +158,7 @@ export class Workbench extends Layout {
 				this.registerListeners(lifecycleService, storageService, configurationService, hostService, dialogService);
 
 				// Render Workbench
-				this.renderWorkbench(instantiationService, /* notificationService, */ storageService, configurationService);
+				this.renderWorkbench(instantiationService, notificationService, storageService, configurationService);
 
 				// Workbench Layout
 				this.createWorkbenchLayout();
@@ -303,7 +309,7 @@ export class Workbench extends Layout {
   /**
    * Invoked from self in startup()
    */
-  private renderWorkbench(instantiationService: IInstantiationService, /* notificationService: NotificationService, */ storageService: IStorageService, configurationService: IConfigurationService): void {
+  private renderWorkbench(instantiationService: IInstantiationService, notificationService: NotificationService, storageService: IStorageService, configurationService: IConfigurationService): void {
 		
 		// ARIA
 		setARIAContainer(this.mainContainer);
@@ -350,9 +356,40 @@ export class Workbench extends Layout {
 			mark(`code/didCreatePart/${id}`);
 		}
 
+		// Notification Handlers
+		this.createNotificationsHandlers(instantiationService, notificationService);
+
 		// Add Workbench to DOM
 		this.parent.appendChild(this.mainContainer)
   }
+
+	private createNotificationsHandlers(instantiationService: IInstantiationService, notificationService: NotificationService): void {
+
+		// Instantiate Notification components
+		const notificationsCenter = this._register(instantiationService.createInstance(NotificationsCenter, this.mainContainer, notificationService.model));
+		const notificationsToasts = this._register(instantiationService.createInstance(NotificationsToasts, this.mainContainer, notificationService.model));
+		this._register(instantiationService.createInstance(NotificationsAlerts, notificationService.model));
+		const notificationsStatus = instantiationService.createInstance(NotificationsStatus, notificationService.model);
+		this._register(instantiationService.createInstance(NotificationsTelemetry));
+
+		// Visibility
+		this._register(notificationsCenter.onDidChangeVisibility(() => {
+			notificationsStatus.update(notificationsCenter.isVisible, notificationsToasts.isVisible);
+			notificationsToasts.update(notificationsCenter.isVisible);
+		}));
+
+		this._register(notificationsToasts.onDidChangeVisibility(() => {
+			notificationsStatus.update(notificationsCenter.isVisible, notificationsToasts.isVisible);
+		}));
+
+		// Register Commands
+		registerNotificationCommands(notificationsCenter, notificationsToasts, notificationService.model);
+
+		// Register with Layout
+		this.registerNotifications({
+			onDidChangeNotificationsVisibility: Event.map(Event.any(notificationsToasts.onDidChangeVisibility, notificationsCenter.onDidChangeVisibility), () => notificationsToasts.isVisible || notificationsCenter.isVisible)
+		});
+	}
 
 	private createPart(id: string, role: string, classes: string[]): HTMLElement {
 		const part = document.createElement(role === 'status' ? 'footer' /* Use footer element for status bar #98376 */ : 'div');
