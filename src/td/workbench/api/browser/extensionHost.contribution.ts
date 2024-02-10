@@ -41,8 +41,10 @@ import './mainThreadStatusBar';
 import './mainThreadStorage';
 import './mainThreadTunnelService';
 import './mainThreadManagedSockets';
+import './mainThreadOutputService';
 import './mainThreadTerminalService';
 import './mainThreadSecretState';
+import './mainThreadDecorations';
 
 export class ExtensionPoints implements IWorkbenchContribution {
 

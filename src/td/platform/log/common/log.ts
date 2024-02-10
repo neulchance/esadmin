@@ -599,6 +599,8 @@ export abstract class AbstractLoggerService extends Disposable implements ILogge
 	}
 
 	createLogger(idOrResource: URI | string, options?: ILoggerOptions): ILogger {
+		console.log(`\x1b[31mcreateLogger\x1b[0m`)
+		console.log(options)
 		const resource = this.toResource(idOrResource);
 		const id = isString(idOrResource) ? idOrResource : (options?.id ?? hash(resource.toString()).toString(16));
 		let logger = this._loggers.get(resource)?.logger;

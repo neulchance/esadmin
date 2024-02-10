@@ -293,6 +293,8 @@ export class ThemeConfiguration {
 	}
 
 	public async setColorTheme(theme: IWorkbenchColorTheme, settingsTarget: ThemeSettingTarget): Promise<IWorkbenchColorTheme> {
+		console.log(`\x1b[31mtheme, settingsTarget\x1b[0m`)
+		console.log(theme, settingsTarget)
 		await this.writeConfiguration(ThemeSettings.COLOR_THEME, theme.settingsId, settingsTarget);
 		return theme;
 	}

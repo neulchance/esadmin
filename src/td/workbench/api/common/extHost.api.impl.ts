@@ -163,14 +163,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 
 	if (false /* Coloring Flow Check */) console.log(`\x1b[32mcreateApiFactoryAndRegisterActors middle 1\x1b[0m`)
 	// automatically create and register addressable instances
-	// const extHostDecorations = rpcProtocol.set(ExtHostContext.ExtHostDecorations, accessor.get(IExtHostDecorations));
+	const extHostDecorations = rpcProtocol.set(ExtHostContext.ExtHostDecorations, accessor.get(IExtHostDecorations));
 	const extHostDocumentsAndEditors = rpcProtocol.set(ExtHostContext.ExtHostDocumentsAndEditors, accessor.get(IExtHostDocumentsAndEditors));
 	const extHostCommands = rpcProtocol.set(ExtHostContext.ExtHostCommands, accessor.get(IExtHostCommands));
 	const extHostTerminalService = rpcProtocol.set(ExtHostContext.ExtHostTerminalService, accessor.get(IExtHostTerminalService));
 	// const extHostDebugService = rpcProtocol.set(ExtHostContext.ExtHostDebugService, accessor.get(IExtHostDebugService));
 	// const extHostSearch = rpcProtocol.set(ExtHostContext.ExtHostSearch, accessor.get(IExtHostSearch));
 	// const extHostTask = rpcProtocol.set(ExtHostContext.ExtHostTask, accessor.get(IExtHostTask));
-	// const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, accessor.get(IExtHostOutputService));
+	const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, accessor.get(IExtHostOutputService));
 	// const extHostLocalization = rpcProtocol.set(ExtHostContext.ExtHostLocalization, accessor.get(IExtHostLocalizationService));
 
 	// manually create and register addressable instances
@@ -774,9 +774,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			// withProgress<R>(options: vscode.ProgressOptions, task: (progress: vscode.Progress<{ message?: string; worked?: number }>, token: vscode.CancellationToken) => Thenable<R>) {
 			// 	return extHostProgress.withProgress(extension, options, task);
 			// },
-			// createOutputChannel(name: string, options: string | { log: true } | undefined): any {
-			// 	return extHostOutputService.createOutputChannel(name, options, extension);
-			// },
+			createOutputChannel(name: string, options: string | { log: true } | undefined): any {
+				return extHostOutputService.createOutputChannel(name, options, extension);
+			},
 			// createWebviewPanel(viewType: string, title: string, showOptions: vscode.ViewColumn | { viewColumn: vscode.ViewColumn; preserveFocus?: boolean }, options?: vscode.WebviewPanelOptions & vscode.WebviewOptions): vscode.WebviewPanel {
 			// 	return extHostWebviewPanels.createWebviewPanel(extension, viewType, title, showOptions, options);
 			// },
@@ -815,9 +815,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			// registerCustomEditorProvider: (viewType: string, provider: vscode.CustomTextEditorProvider | vscode.CustomReadonlyEditorProvider, options: { webviewOptions?: vscode.WebviewPanelOptions; supportsMultipleEditorsPerDocument?: boolean } = {}) => {
 			// 	return extHostCustomEditors.registerCustomEditorProvider(extension, viewType, provider, options);
 			// },
-			// registerFileDecorationProvider(provider: vscode.FileDecorationProvider) {
-			// 	return extHostDecorations.registerFileDecorationProvider(provider, extension);
-			// },
+			registerFileDecorationProvider(provider: vscode.FileDecorationProvider) {
+				return extHostDecorations.registerFileDecorationProvider(provider, extension);
+			},
 			// registerUriHandler(handler: vscode.UriHandler) {
 			// 	return extHostUrls.registerUriHandler(extension, handler);
 			// },

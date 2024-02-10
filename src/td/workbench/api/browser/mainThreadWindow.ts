@@ -21,7 +21,7 @@ export class MainThreadWindow implements MainThreadWindowShape {
 	constructor(
 		extHostContext: IExtHostContext,
 		@IHostService private readonly hostService: IHostService,
-		@IOpenerService private readonly openerService: IOpenerService,
+		// @IOpenerService private readonly openerService: IOpenerService,
 		@IUserActivityService private readonly userActivityService: IUserActivityService,
 	) {
 		this.proxy = extHostContext.getProxy(ExtHostContext.ExtHostWindow);
@@ -42,25 +42,25 @@ export class MainThreadWindow implements MainThreadWindowShape {
 		});
 	}
 
-	async $openUri(uriComponents: UriComponents, uriString: string | undefined, options: IOpenUriOptions): Promise<boolean> {
-		const uri = URI.from(uriComponents);
-		let target: URI | string;
-		if (uriString && URI.parse(uriString).toString() === uri.toString()) {
-			// called with string and no transformation happened -> keep string
-			target = uriString;
-		} else {
-			// called with URI or transformed -> use uri
-			target = uri;
-		}
-		return this.openerService.open(target, {
-			openExternal: true,
-			allowTunneling: options.allowTunneling,
-			allowContributedOpeners: options.allowContributedOpeners,
-		});
-	}
+	// async $openUri(uriComponents: UriComponents, uriString: string | undefined, options: IOpenUriOptions): Promise<boolean> {
+	// 	const uri = URI.from(uriComponents);
+	// 	let target: URI | string;
+	// 	if (uriString && URI.parse(uriString).toString() === uri.toString()) {
+	// 		// called with string and no transformation happened -> keep string
+	// 		target = uriString;
+	// 	} else {
+	// 		// called with URI or transformed -> use uri
+	// 		target = uri;
+	// 	}
+	// 	return this.openerService.open(target, {
+	// 		openExternal: true,
+	// 		allowTunneling: options.allowTunneling,
+	// 		allowContributedOpeners: options.allowContributedOpeners,
+	// 	});
+	// }
 
-	async $asExternalUri(uriComponents: UriComponents, options: IOpenUriOptions): Promise<UriComponents> {
-		const result = await this.openerService.resolveExternalUri(URI.revive(uriComponents), options);
-		return result.resolved;
-	}
+	// async $asExternalUri(uriComponents: UriComponents, options: IOpenUriOptions): Promise<UriComponents> {
+	// 	const result = await this.openerService.resolveExternalUri(URI.revive(uriComponents), options);
+	// 	return result.resolved;
+	// }
 }

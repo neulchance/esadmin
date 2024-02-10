@@ -149,5 +149,8 @@ import 'td/workbench/contrib/quickaccess/browser/quickAccess.contribution';
 // Audio Cues
 import 'td/workbench/contrib/audioCues/browser/audioCues.contribution';
 
+// Logs
+import 'td/workbench/contrib/logs/common/logs.contribution';
+
 
 //#endregion

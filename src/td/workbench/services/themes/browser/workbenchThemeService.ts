@@ -108,7 +108,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 		@IExtensionService extensionService: IExtensionService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		// @ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IBrowserWorkbenchEnvironmentService private readonly environmentService: IBrowserWorkbenchEnvironmentService,
 		@IFileService fileService: IFileService,
 		@IExtensionResourceLoaderService private readonly extensionResourceLoaderService: IExtensionResourceLoaderService,
@@ -621,13 +621,13 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 					publisherDisplayName: string;
 					themeId: string;
 				};
-				this.telemetryService.publicLog2<ActivatePluginEvent, ActivatePluginClassification>('activatePlugin', {
-					id: themeData.extensionId,
-					name: themeData.extensionName,
-					isBuiltin: themeData.extensionIsBuiltin,
-					publisherDisplayName: themeData.extensionPublisher,
-					themeId: themeId
-				});
+				// this.telemetryService.publicLog2<ActivatePluginEvent, ActivatePluginClassification>('activatePlugin', {
+				// 	id: themeData.extensionId,
+				// 	name: themeData.extensionName,
+				// 	isBuiltin: themeData.extensionIsBuiltin,
+				// 	publisherDisplayName: themeData.extensionPublisher,
+				// 	themeId: themeId
+				// });
 				this.themeExtensionsActivated.set(key, true);
 			}
 		}

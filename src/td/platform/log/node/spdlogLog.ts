@@ -77,6 +77,8 @@ export class SpdLogLogger extends AbstractMessageLogger implements ILogger {
 		donotUseFormatters: boolean,
 		level: LogLevel,
 	) {
+		console.log(`\x1b[33mlevel\x1b[0m`)
+		console.log(level)
 		super();
 		this.setLevel(level);
 		this._loggerCreationPromise = this._createSpdLogLogger(name, filepath, rotating, donotUseFormatters);
@@ -88,6 +90,7 @@ export class SpdLogLogger extends AbstractMessageLogger implements ILogger {
 	}
 
 	private async _createSpdLogLogger(name: string, filepath: string, rotating: boolean, donotUseFormatters: boolean): Promise<void> {
+		console.log('Creating spdlog logger', name, filepath, rotating, donotUseFormatters)
 		const filecount = rotating ? 6 : 1;
 		const filesize = (30 / filecount) * ByteSize.MB;
 		const logger = await createSpdLogLogger(name, filepath, filesize, filecount, donotUseFormatters);
