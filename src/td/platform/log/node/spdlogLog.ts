@@ -53,9 +53,6 @@ function log(logger: spdlog.Logger, level: LogLevel, message: string): void {
 }
 
 function setLogLevel(logger: spdlog.Logger, level: LogLevel): void {
-	console.trace(`\x1b[34mCalled here? \x1b[0m`)
-	console.log(logger)
-	console.log(level)
 	switch (level) {
 		case LogLevel.Trace: logger.setLevel(SpdLogLevel.Trace); break;
 		case LogLevel.Debug: logger.setLevel(SpdLogLevel.Debug); break;
@@ -81,10 +78,7 @@ export class SpdLogLogger extends AbstractMessageLogger implements ILogger {
 		level: LogLevel,
 	) {
 		super();
-		console.log(`\x1b[33m[1] received level value: ${level}\x1b[0m`)
 		this.setLevel(level);
-		console.log(`\x1b[33m[0] level ${this.getLevel()}\x1b[0m`)
-		console.log(level)
 		this._loggerCreationPromise = this._createSpdLogLogger(name, filepath, rotating, donotUseFormatters);
 		this._register(this.onDidChangeLogLevel(level => {
 			if (this._logger) {

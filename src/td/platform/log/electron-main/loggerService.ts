@@ -37,7 +37,6 @@ export class LoggerMainService extends LoggerService implements ILoggerMainServi
 	private readonly loggerResourcesByWindow = new ResourceMap<number>();
 
 	override createLogger(idOrResource: URI | string, options?: ILoggerOptions, windowId?: number): ILogger {
-		console.log(`\x1b[31m[1] createLogger on main::\x1b[0m ${idOrResource} ${windowId}`)
 		if (windowId !== undefined) {
 			this.loggerResourcesByWindow.set(this.toResource(idOrResource), windowId);
 		}

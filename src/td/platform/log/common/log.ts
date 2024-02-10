@@ -600,14 +600,11 @@ export abstract class AbstractLoggerService extends Disposable implements ILogge
 	}
 
 	createLogger(idOrResource: URI | string, options?: ILoggerOptions): ILogger {
-		console.log(`\x1b[31m[1] super.createLogger on main::\x1b[0m ${idOrResource} ${options}`)
-		console.log(options)
 		const resource = this.toResource(idOrResource);
 		const id = isString(idOrResource) ? idOrResource : (options?.id ?? hash(resource.toString()).toString(16));
 		let logger = this._loggers.get(resource)?.logger;
 		const logLevel = options?.logLevel === 'always' ? LogLevel.Trace : options?.logLevel;
 		if (!logger) {
-			console.log(`\x1b[35m[4] this.getLogLevel(resource) \x1b[0m ${this.getLogLevel(resource)}`)
 			logger = this.doCreateLogger(resource, logLevel ?? this.getLogLevel(resource) ?? this.logLevel, {...options, id});
 		}
 		const loggerEntry: LoggerEntry = {
@@ -627,7 +624,6 @@ export abstract class AbstractLoggerService extends Disposable implements ILogge
 	setLogLevel(logLevel: LogLevel): void;
 	setLogLevel(resource: URI, logLevel: LogLevel): void;
 	setLogLevel(arg1: any, arg2?: any): void {
-		console.log(`\x1b[33m who called setLogLevel \x1b[0m`)
 		if (URI.isUri(arg1)) {
 			const resource = arg1;
 			const logLevel = arg2;
@@ -659,12 +655,10 @@ export abstract class AbstractLoggerService extends Disposable implements ILogge
 	}
 
 	getLogLevel(resource?: URI): LogLevel {
-		console.log(`\x1b[35m[3] getLogLevel resource \x1b[0m ${resource}`)
 		let logLevel;
 		if (resource) {
 			logLevel = this._loggers.get(resource)?.info.logLevel;
 		}
-		console.log(`\x1b[35m[3] getLogLevel this.logLevel \x1b[0m ${this.logLevel}`)
 		return logLevel ?? this.logLevel;
 	}
 
