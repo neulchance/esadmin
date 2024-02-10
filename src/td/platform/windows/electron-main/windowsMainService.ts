@@ -166,7 +166,7 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
 
       userEnv: {...this.initialUserEnv/* , ...options.userEnv */},
 
-
+			logLevel: this.loggerService.getLogLevel(),
       loggers: {
 				window: [],
 				global: this.loggerService.getRegisteredLoggers()
