@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'td/nls';
-import { ILoggerService } from 'td/platform/log/common/log';
-import { LogService } from 'td/platform/log/common/logService';
-import { IExtHostInitDataService } from 'td/workbench/api/common/extHostInitDataService';
+import {localize} from 'td/nls';
+import {ILoggerService} from 'td/platform/log/common/log';
+import {LogService} from 'td/platform/log/common/logService';
+import {IExtHostInitDataService} from 'td/workbench/api/common/extHostInitDataService';
 
 export class ExtHostLogService extends LogService {
 
@@ -19,7 +19,7 @@ export class ExtHostLogService extends LogService {
 	) {
 		const id = initData.remote.isRemote ? 'remoteexthost' : isWorker ? 'workerexthost' : 'exthost';
 		const name = initData.remote.isRemote ? localize('remote', "Extension Host (Remote)") : isWorker ? localize('worker', "Extension Host (Worker)") : localize('local', "Extension Host");
-		super(loggerService.createLogger(id, { name }));
+		super(loggerService.createLogger(id, {name}));
 	}
 
 }

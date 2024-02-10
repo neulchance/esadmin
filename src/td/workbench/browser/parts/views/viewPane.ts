@@ -20,7 +20,8 @@ import {IThemeService} from 'td/platform/theme/common/themeService';
 import {ThemeIcon} from 'td/base/common/themables';
 import {IPaneOptions, Pane, IPaneStyles} from 'td/base/browser/ui/splitview/paneview';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
-import {Extensions as ViewContainerExtensions, IView, IViewDescriptorService, ViewContainerLocation, IViewsRegistry, IViewContentDescriptor, defaultViewIcon, IViewsService, ViewContainerLocationToString} from 'td/workbench/common/views';
+import {Extensions as ViewContainerExtensions, IView, IViewDescriptorService, ViewContainerLocation, IViewsRegistry, IViewContentDescriptor, defaultViewIcon, ViewContainerLocationToString} from 'td/workbench/common/views';
+import {IViewsService} from 'td/workbench/services/views/common/viewsService';
 import {IContextKeyService} from 'td/platform/contextkey/common/contextkey';
 import {assertIsDefined} from 'td/base/common/types';
 import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
@@ -113,7 +114,7 @@ class ViewWelcomeController {
 		private readonly delegate: IViewWelcomeDelegate,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IOpenerService protected openerService: IOpenerService,
-		@ITelemetryService protected telemetryService: ITelemetryService,
+		// @ITelemetryService protected telemetryService: ITelemetryService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
 	) {
 		this.delegate.onDidChangeViewWelcomeState(this.onDidChangeViewWelcomeState, this, this.disposables);
@@ -243,7 +244,7 @@ class ViewWelcomeController {
 					const button = new Button(buttonContainer, {title: node.title, supportIcons: true, ...defaultButtonStyles});
 					button.label = node.label;
 					button.onDidClick(_ => {
-						this.telemetryService.publicLog2<{ viewId: string; uri: string }, WelcomeActionClassification>('views.welcomeAction', {viewId: this.delegate.id, uri: node.href});
+						// this.telemetryService.publicLog2<{ viewId: string; uri: string }, WelcomeActionClassification>('views.welcomeAction', {viewId: this.delegate.id, uri: node.href});
 						this.openerService.open(node.href, {allowCommands: true});
 					}, null, this.renderDisposables);
 					this.renderDisposables.add(button);
@@ -356,7 +357,7 @@ export abstract class ViewPane extends Pane implements IView {
 		@IInstantiationService protected instantiationService: IInstantiationService,
 		@IOpenerService protected openerService: IOpenerService,
 		@IThemeService protected themeService: IThemeService,
-		@ITelemetryService protected telemetryService: ITelemetryService,
+		// @ITelemetryService protected telemetryService: ITelemetryService,
 	) {
 		super({...options, ...{orientation: viewDescriptorService.getViewLocationById(options.id) === ViewContainerLocation.Panel ? Orientation.HORIZONTAL : Orientation.VERTICAL}});
 
@@ -575,7 +576,7 @@ export abstract class ViewPane extends Pane implements IView {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		this.viewWelcomeController = this._register(new ViewWelcomeController(container, this, this.instantiationService, this.openerService, this.telemetryService, this.contextKeyService));
+		this.viewWelcomeController = this._register(new ViewWelcomeController(container, this, this.instantiationService, this.openerService, /* this.telemetryService, */ this.contextKeyService));
 	}
 
 	protected layoutBody(height: number, width: number): void {
@@ -717,9 +718,9 @@ export abstract class FilterViewPane extends ViewPane {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IOpenerService openerService: IOpenerService,
 		@IThemeService themeService: IThemeService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		// @ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService/* , telemetryService */);
 		this.filterWidget = this._register(instantiationService.createChild(new ServiceCollection([IContextKeyService, this.scopedContextKeyService])).createInstance(FilterWidget, options.filterOptions));
 	}
 

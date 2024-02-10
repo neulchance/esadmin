@@ -44,11 +44,13 @@ class DefaultLogLevelsService implements IDefaultLogLevelsService {
 		@ILogService private readonly logService: ILogService,
 		@ILoggerService private readonly loggerService: ILoggerService,
 	) {
-		console.log('DefaultLogLevelsService constructor');
 	}
 
 	async getDefaultLogLevels(): Promise<DefaultLogLevels> {
 		const argvLogLevel = await this._parseLogLevelsFromArgv();
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
+		console.log(`${red}FIGUREOUTs argvLogLevel${done}`)
+		console.log(argvLogLevel)
 		return {
 			default: argvLogLevel?.default ?? this._getDefaultLogLevelFromEnv(),
 			extensions: argvLogLevel?.extensions ?? this._getExtensionsDefaultLogLevelsFromEnv()

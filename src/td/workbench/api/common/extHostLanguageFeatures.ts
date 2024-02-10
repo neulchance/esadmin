@@ -112,7 +112,7 @@ class CodeLensAdapter {
 		private readonly _commands: CommandsConverter,
 		private readonly _provider: vscode.CodeLensProvider,
 		private readonly _extension: IExtensionDescription,
-		private readonly _extTelemetry: ExtHostTelemetry,
+		// private readonly _extTelemetry: ExtHostTelemetry,
 		private readonly _logService: ILogService,
 	) { }
 
@@ -168,7 +168,7 @@ class CodeLensAdapter {
 
 		if (!resolvedLens.command) {
 			const error = new Error('INVALID code lens resolved, lacks command: ' + this._extension.identifier.value);
-			this._extTelemetry.onExtensionError(this._extension.identifier, error);
+			// this._extTelemetry.onExtensionError(this._extension.identifier, error);
 			this._logService.error(error);
 			return undefined;
 		}
@@ -487,7 +487,7 @@ class CodeActionAdapter {
 					kind: candidate.kind && candidate.kind.value,
 					isPreferred: candidate.isPreferred,
 					isAI: isProposedApiEnabled(this._extension, 'codeActionAI') ? candidate.isAI : false,
-					ranges: isProposedApiEnabled(this._extension, 'codeActionRanges') ? coalesce(range.map(typeConvert.Range.from)) : undefined,
+					// ranges: isProposedApiEnabled(this._extension, 'codeActionRanges') ? coalesce(range.map(typeConvert.Range.from)) : undefined,
 					disabled: candidate.disabled?.reason
 				});
 			}
@@ -1929,7 +1929,7 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 		private readonly _diagnostics: ExtHostDiagnostics,
 		private readonly _logService: ILogService,
 		private readonly _apiDeprecation: IExtHostApiDeprecationService,
-		private readonly _extensionTelemetry: IExtHostTelemetry
+		// private readonly _extensionTelemetry: IExtHostTelemetry
 	) {
 		this._proxy = mainContext.getProxy(extHostProtocol.MainContext.MainThreadLanguageFeatures);
 	}
@@ -1976,7 +1976,7 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 				this._logService.error(`[${data.extension.identifier.value}] provider FAILED`);
 				this._logService.error(err);
 
-				this._extensionTelemetry.onExtensionError(data.extension.identifier, err);
+				// this._extensionTelemetry.onExtensionError(data.extension.identifier, err);
 			}
 		}).finally(() => {
 			if (!doNotLog) {
@@ -2019,7 +2019,7 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 		const handle = this._nextHandle();
 		const eventHandle = typeof provider.onDidChangeCodeLenses === 'function' ? this._nextHandle() : undefined;
 
-		this._adapter.set(handle, new AdapterData(new CodeLensAdapter(this._documents, this._commands.converter, provider, extension, this._extensionTelemetry, this._logService), extension));
+		this._adapter.set(handle, new AdapterData(new CodeLensAdapter(this._documents, this._commands.converter, provider, extension, /* this._extensionTelemetry, */ this._logService), extension));
 		this._proxy.$registerCodeLensSupport(handle, this._transformDocumentSelector(selector, extension), eventHandle);
 		let result = this._createDisposable(handle);
 

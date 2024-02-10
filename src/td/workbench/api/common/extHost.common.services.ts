@@ -21,7 +21,7 @@ import {IExtHostWindow, ExtHostWindow} from 'td/workbench/api/common/extHostWind
 import {IExtHostConsumerFileSystem, ExtHostConsumerFileSystem} from 'td/workbench/api/common/extHostFileSystemConsumer';
 import {IExtHostFileSystemInfo, ExtHostFileSystemInfo} from 'td/workbench/api/common/extHostFileSystemInfo';
 import {IExtHostSecretState, ExtHostSecretState} from 'td/workbench/api/common/extHostSecretState';
-import {ExtHostTelemetry, IExtHostTelemetry} from 'td/workbench/api/common/extHostTelemetry';
+// import {ExtHostTelemetry, IExtHostTelemetry} from 'td/workbench/api/common/extHostTelemetry';
 import {ExtHostEditorTabs, IExtHostEditorTabs} from 'td/workbench/api/common/extHostEditorTabs';
 import {ExtHostLoggerService} from 'td/workbench/api/common/extHostLoggerService';
 import {ILoggerService} from 'td/platform/log/common/log';
@@ -49,6 +49,6 @@ registerSingleton(IExtHostTunnelService, ExtHostTunnelService, InstantiationType
 registerSingleton(IExtHostWindow, ExtHostWindow, InstantiationType.Eager);
 registerSingleton(IExtHostWorkspace, ExtHostWorkspace, InstantiationType.Eager);
 registerSingleton(IExtHostSecretState, ExtHostSecretState, InstantiationType.Eager);
-registerSingleton(IExtHostTelemetry, ExtHostTelemetry, InstantiationType.Eager);
+// registerSingleton(IExtHostTelemetry, ExtHostTelemetry, InstantiationType.Eager);
 registerSingleton(IExtHostEditorTabs, ExtHostEditorTabs, InstantiationType.Eager);
 registerSingleton(IExtHostVariableResolverProvider, ExtHostVariableResolverProviderService, InstantiationType.Eager);

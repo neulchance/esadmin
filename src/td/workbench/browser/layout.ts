@@ -300,7 +300,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		this.logService = accessor.get(ILogService);
 		// this.telemetryService = accessor.get(ITelemetryService);
 		this.auxiliaryWindowService = accessor.get(IAuxiliaryWindowService);
-		this.logService.setLevel(1)
+		// this.logService.setLevel(1) // temp
 
 		// Parts
 		this.editorService = accessor.get(IEditorService);

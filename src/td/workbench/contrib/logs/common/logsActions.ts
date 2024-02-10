@@ -48,6 +48,7 @@ export class SetLogLevelAction extends Action {
 	}
 
 	private async selectLogLevelOrChannel(): Promise<LogChannelQuickPickItem | LogLevel | null> {
+		console.log(`\x1b[31mselectLogLevelOrChannel called\x1b[0m`)
 		const defaultLogLevels = await this.defaultLogLevelsService.getDefaultLogLevels();
 		const extensionLogs: LogChannelQuickPickItem[] = [], logs: LogChannelQuickPickItem[] = [];
 		const logLevel = this.loggerService.getLogLevel();
@@ -97,6 +98,8 @@ export class SetLogLevelAction extends Action {
 	}
 
 	private async setLogLevelForChannel(logChannel: LogChannelQuickPickItem): Promise<void> {
+		const red = "\x1b[31m"; const green = "\x1b[32m"; const blue = "\x1b[34m"; const x1b35 = "\x1b[35m"; const done = "\x1b[0m"; 
+		console.log(`${red}FIGUREOUTs setLogLevelForChannel${done}`)
 		const defaultLogLevels = await this.defaultLogLevelsService.getDefaultLogLevels();
 		const defaultLogLevel = defaultLogLevels.extensions.find(e => e[0] === logChannel.extensionId?.toLowerCase())?.[1] ?? defaultLogLevels.default;
 		const currentLogLevel = this.loggerService.getLogLevel(logChannel.resource) ?? defaultLogLevel;

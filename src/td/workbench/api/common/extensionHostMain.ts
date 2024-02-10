@@ -21,7 +21,7 @@ import {IInstantiationService, ServicesAccessor, _util} from 'td/platform/instan
 import {IExtHostRpcService, ExtHostRpcService} from 'td/workbench/api/common/extHostRpcService';
 import {IURITransformerService, URITransformerService} from 'td/workbench/api/common/extHostUriTransformerService';
 import {IExtHostExtensionService, IHostUtils} from 'td/workbench/api/common/extHostExtensionService';
-import {IExtHostTelemetry} from 'td/workbench/api/common/extHostTelemetry';
+// import {IExtHostTelemetry} from 'td/workbench/api/common/extHostTelemetry';
 import {Mutable} from 'td/base/common/types';
 import {IExtHostWorkspace} from './extHostWorkspace';
 import {IExtHostConfiguration} from './extHostConfiguration';
@@ -68,7 +68,7 @@ export abstract class ErrorHandler {
 		const logService = accessor.get(ILogService);
 		const rpcService = accessor.get(IExtHostRpcService);
 		const extensionService = accessor.get(IExtHostExtensionService);
-		const extensionTelemetry = accessor.get(IExtHostTelemetry);
+		// const extensionTelemetry = accessor.get(IExtHostTelemetry);
 
 		const mainThreadExtensions = rpcService.getProxy(MainContext.MainThreadExtensionService);
 		const mainThreadErrors = rpcService.getProxy(MainContext.MainThreadErrors);
@@ -136,8 +136,8 @@ export abstract class ErrorHandler {
 			}
 
 			mainThreadExtensions.$onExtensionRuntimeError(stackData.extensionIdentifier, errorData);
-			const reported = extensionTelemetry.onExtensionError(stackData.extensionIdentifier, err);
-			logService.trace('forwarded error to extension?', reported, stackData);
+			// const reported = extensionTelemetry.onExtensionError(stackData.extensionIdentifier, err);
+			logService.trace('forwarded error to extension?', /* reported, */ stackData);
 		});
 	}
 }

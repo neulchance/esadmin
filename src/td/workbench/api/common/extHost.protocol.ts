@@ -62,12 +62,12 @@ import {CellExecutionUpdateType} from 'td/workbench/contrib/notebook/common/note
 import {ICellExecutionComplete, ICellExecutionStateUpdate} from 'td/workbench/contrib/notebook/common/notebookExecutionStateService';
 import {ICellRange} from 'td/workbench/contrib/notebook/common/notebookRange';
 // import {InputValidationType} from 'td/workbench/contrib/scm/common/scm';
-// import {IWorkspaceSymbol, NotebookPriorityInfo} from 'td/workbench/contrib/search/common/search';
+import {IWorkspaceSymbol, NotebookPriorityInfo} from 'td/workbench/contrib/search/common/search';
 import {IRawClosedNotebookFileMatch} from 'td/workbench/contrib/search/common/searchNotebookHelpers';
 import {IKeywordRecognitionEvent, ISpeechProviderMetadata, ISpeechToTextEvent} from 'td/workbench/contrib/speech/common/speechService';
 import {CoverageDetails, ExtensionRunTestsRequest, ICallProfileRunHandler, IFileCoverage, ISerializedTestResults, IStartControllerTests, ITestItem, ITestMessage, ITestRunProfile, ITestRunTask, ResolvedTestRunRequest, TestResultState, TestsDiffOp} from 'td/workbench/contrib/testing/common/testTypes';
 // import {Timeline, TimelineChangeEvent, TimelineOptions, TimelineProviderDescriptor} from 'td/workbench/contrib/timeline/common/timeline';
-// import {TypeHierarchyItem} from 'td/workbench/contrib/typeHierarchy/common/typeHierarchy';
+import {TypeHierarchyItem} from 'td/workbench/contrib/typeHierarchy/common/typeHierarchy';
 // import {RelatedInformationResult, RelatedInformationType} from 'td/workbench/services/aiRelatedInformation/common/aiRelatedInformation';
 import {AuthenticationSession, AuthenticationSessionsChangeEvent, IAuthenticationCreateSessionOptions} from 'td/workbench/services/authentication/common/authentication';
 import {EditorGroupColumn} from 'td/workbench/services/editor/common/editorGroupColumn';
@@ -1945,8 +1945,8 @@ export type IInlayHintsDto = CachedSession<{ hints: IInlayHintDto[] }>;
 export type ILocationDto = Dto<languages.Location>;
 export type ILocationLinkDto = Dto<languages.LocationLink>;
 
-// export type IWorkspaceSymbolDto = CachedSessionItem<Dto<IWorkspaceSymbol>>;
-// export type IWorkspaceSymbolsDto = CachedSession<{ symbols: IWorkspaceSymbolDto[] }>;
+export type IWorkspaceSymbolDto = CachedSessionItem<Dto<IWorkspaceSymbol>>;
+export type IWorkspaceSymbolsDto = CachedSession<{ symbols: IWorkspaceSymbolDto[] }>;
 
 export interface IWorkspaceEditEntryMetadataDto {
 	needsConfirmation: boolean;
@@ -2044,7 +2044,7 @@ export interface IInlineValueContextDto {
 	stoppedLocation: IRange;
 }
 
-// export type ITypeHierarchyItemDto = Dto<TypeHierarchyItem>;
+export type ITypeHierarchyItemDto = Dto<TypeHierarchyItem>;
 
 export interface IPasteEditProviderMetadataDto {
 	readonly supportsCopy: boolean;

@@ -132,10 +132,9 @@ import 'td/workbench/contrib/themes/browser/themes.contribution';
 import 'td/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 
 // Output View
-// import 'td/workbench/contrib/output/common/outputChannelModelService';
+import 'td/workbench/contrib/output/common/outputChannelModelService';
 import 'td/workbench/contrib/output/browser/output.contribution';
-
-// import 'td/workbench/contrib/output/browser/outputView';
+import 'td/workbench/contrib/output/browser/outputView';
 
 // Bulk Edit
 // import 'td/workbench/contrib/bulkEdit/browser/bulkEditService';

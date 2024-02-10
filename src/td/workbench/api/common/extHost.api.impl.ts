@@ -83,7 +83,7 @@ import {ExtHostStatusBar} from 'td/workbench/api/common/extHostStatusBar';
 import {IExtHostStorage} from 'td/workbench/api/common/extHostStorage';
 import {IExtensionStoragePaths} from 'td/workbench/api/common/extHostStoragePaths';
 import {IExtHostTask} from 'td/workbench/api/common/extHostTask';
-import {ExtHostTelemetryLogger, IExtHostTelemetry, isNewAppInstall} from 'td/workbench/api/common/extHostTelemetry';
+// import {ExtHostTelemetryLogger, IExtHostTelemetry, isNewAppInstall} from 'td/workbench/api/common/extHostTelemetry';
 import {IExtHostTerminalService} from 'td/workbench/api/common/extHostTerminalService';
 import {ExtHostTesting} from 'td/workbench/api/common/extHostTesting';
 import {ExtHostEditors} from 'td/workbench/api/common/extHostTextEditors';
@@ -131,7 +131,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// const extHostConsumerFileSystem = accessor.get(IExtHostConsumerFileSystem);
 	const extensionService = accessor.get(IExtHostExtensionService);
 	const extHostWorkspace = accessor.get(IExtHostWorkspace);
-	const extHostTelemetry = accessor.get(IExtHostTelemetry);
+	// const extHostTelemetry = accessor.get(IExtHostTelemetry);
 	const extHostConfiguration = accessor.get(IExtHostConfiguration);
 	const uriTransformer = accessor.get(IURITransformerService);
 	// 'ExtensionHostMain'이 초기회 될때 constructor에서 함께 초기화 됩니다.
@@ -189,7 +189,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// const extHostEditorInsets = rpcProtocol.set(ExtHostContext.ExtHostEditorInsets, new ExtHostEditorInsets(rpcProtocol.getProxy(MainContext.MainThreadEditorInsets), extHostEditors, initData.remote));
 	const extHostDiagnostics = rpcProtocol.set(ExtHostContext.ExtHostDiagnostics, new ExtHostDiagnostics(rpcProtocol, extHostLogService, extHostFileSystemInfo, extHostDocumentsAndEditors));
 	// const extHostLanguages = rpcProtocol.set(ExtHostContext.ExtHostLanguages, new ExtHostLanguages(rpcProtocol, extHostDocuments, extHostCommands.converter, uriTransformer));
-	const extHostLanguageFeatures = rpcProtocol.set(ExtHostContext.ExtHostLanguageFeatures, new ExtHostLanguageFeatures(rpcProtocol, uriTransformer, extHostDocuments, extHostCommands, extHostDiagnostics, extHostLogService, extHostApiDeprecation, extHostTelemetry));
+	const extHostLanguageFeatures = rpcProtocol.set(ExtHostContext.ExtHostLanguageFeatures, new ExtHostLanguageFeatures(rpcProtocol, uriTransformer, extHostDocuments, extHostCommands, extHostDiagnostics, extHostLogService, extHostApiDeprecation/* , extHostTelemetry */));
 	const extHostFileSystem = rpcProtocol.set(ExtHostContext.ExtHostFileSystem, new ExtHostFileSystem(rpcProtocol, extHostLanguageFeatures));
 	// const extHostFileSystemEvent = rpcProtocol.set(ExtHostContext.ExtHostFileSystemEventService, new ExtHostFileSystemEventService(rpcProtocol, extHostLogService, extHostDocumentsAndEditors));
 	// const extHostQuickOpen = rpcProtocol.set(ExtHostContext.ExtHostQuickOpen, createExtHostQuickOpen(rpcProtocol, extHostWorkspace, extHostCommands));
@@ -253,7 +253,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 						listener.call(thisArgs, e);
 					} catch (err) {
 						errors.onUnexpectedExternalError(new Error(`[ExtensionListenerError] Extension '${extension.identifier.value}' FAILED to handle event`, {cause: err}));
-						extHostTelemetry.onExtensionError(extension.identifier, err);
+						// extHostTelemetry.onExtensionError(extension.identifier, err);
 					}
 				});
 				disposables?.push(handle);
@@ -355,27 +355,27 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get onDidChangeShell() {
 				return _asExtensionEvent(extHostTerminalService.onDidChangeShell);
 			},
-			get isTelemetryEnabled() {
-				return extHostTelemetry.getTelemetryConfiguration();
-			},
-			get onDidChangeTelemetryEnabled(): vscode.Event<boolean> {
-				return _asExtensionEvent(extHostTelemetry.onDidChangeTelemetryEnabled);
-			},
-			get telemetryConfiguration(): vscode.TelemetryConfiguration {
-				checkProposedApiEnabled(extension, 'telemetry');
-				return extHostTelemetry.getTelemetryDetails();
-			},
-			get onDidChangeTelemetryConfiguration(): vscode.Event<vscode.TelemetryConfiguration> {
-				checkProposedApiEnabled(extension, 'telemetry');
-				return _asExtensionEvent(extHostTelemetry.onDidChangeTelemetryConfiguration);
-			},
-			get isNewAppInstall() {
-				return isNewAppInstall(initData.telemetryInfo.firstSessionDate);
-			},
-			createTelemetryLogger(sender: vscode.TelemetrySender, options?: vscode.TelemetryLoggerOptions): vscode.TelemetryLogger {
-				ExtHostTelemetryLogger.validateSender(sender);
-				return extHostTelemetry.instantiateLogger(extension, sender, options);
-			},
+			// get isTelemetryEnabled() {
+			// 	return extHostTelemetry.getTelemetryConfiguration();
+			// },
+			// get onDidChangeTelemetryEnabled(): vscode.Event<boolean> {
+			// 	return _asExtensionEvent(extHostTelemetry.onDidChangeTelemetryEnabled);
+			// },
+			// get telemetryConfiguration(): vscode.TelemetryConfiguration {
+			// 	checkProposedApiEnabled(extension, 'telemetry');
+			// 	return extHostTelemetry.getTelemetryDetails();
+			// },
+			// get onDidChangeTelemetryConfiguration(): vscode.Event<vscode.TelemetryConfiguration> {
+			// 	checkProposedApiEnabled(extension, 'telemetry');
+			// 	return _asExtensionEvent(extHostTelemetry.onDidChangeTelemetryConfiguration);
+			// },
+			// get isNewAppInstall() {
+			// 	return isNewAppInstall(initData.telemetryInfo.firstSessionDate);
+			// },
+			// createTelemetryLogger(sender: vscode.TelemetrySender, options?: vscode.TelemetryLoggerOptions): vscode.TelemetryLogger {
+				// ExtHostTelemetryLogger.validateSender(sender);
+				// return extHostTelemetry.instantiateLogger(extension, sender, options);
+			// },
 			openExternal(uri: URI, options?: { allowContributedOpeners?: boolean | string }) {
 				return extHostWindow.openUri(uri, {
 					allowTunneling: !!initData.remote.authority,

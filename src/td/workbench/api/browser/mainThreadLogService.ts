@@ -42,6 +42,7 @@ export class MainThreadLoggerService implements MainThreadLoggerShape {
 	}
 
 	async $createLogger(file: UriComponents, options?: ILoggerOptions): Promise<void> {
+		console.log(`\x1b[35m$$$$$createLogger \x1b[0m`)
 		this.loggerService.createLogger(URI.revive(file), options);
 	}
 

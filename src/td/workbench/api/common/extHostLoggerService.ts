@@ -24,6 +24,7 @@ export class ExtHostLoggerService extends AbstractLoggerService implements ExtHo
 	}
 
 	$setLogLevel(logLevel: LogLevel, resource?: UriComponents): void {
+		console.log(`\x1b[35m[3] invoked here? \x1b[0m`)
 		if (resource) {
 			this.setLogLevel(URI.revive(resource), logLevel);
 		} else {
@@ -37,6 +38,7 @@ export class ExtHostLoggerService extends AbstractLoggerService implements ExtHo
 	}
 
 	protected doCreateLogger(resource: URI, logLevel: LogLevel, options?: ILoggerOptions): ILogger {
+		console.log(`\x1b[35m[3] super.doCreateLogger on node::\x1b[0m ${logLevel}`)
 		return new Logger(this._proxy, resource, logLevel, options);
 	}
 }
@@ -53,6 +55,7 @@ class Logger extends AbstractMessageLogger {
 		loggerOptions?: ILoggerOptions,
 	) {
 		super(loggerOptions?.logLevel === 'always');
+		console.log(`Class Logger logLevel: ${logLevel}`)
 		this.setLevel(logLevel);
 		this.proxy.$createLogger(file, loggerOptions)
 			.then(() => {

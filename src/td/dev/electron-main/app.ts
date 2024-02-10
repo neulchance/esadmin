@@ -566,7 +566,7 @@ export class DevApplication extends Disposable {
 	}
 
 	async startup(): Promise<void> {
-		this.logService.setLevel(1)
+		// this.logService.setLevel(1)
 		this.logService.debug('Starting VS Code');
 		this.logService.debug(`from: ${this.environmentMainService.appRoot}`);
 		this.logService.debug('args:', this.environmentMainService.args);

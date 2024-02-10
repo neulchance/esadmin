@@ -20,8 +20,8 @@ import {IMenubarData, IMenubarKeybinding, IMenubarMenu, IMenubarMenuRecentItemAc
 import {INativeHostMainService} from 'td/platform/native/electron-main/nativeHostMainService';
 import {IProductService} from 'td/platform/product/common/productService';
 import {IStateService} from 'td/platform/state/node/state';
-import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
-import {IUpdateService, StateType} from 'td/platform/update/common/update';
+// import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
+// import {IUpdateService, StateType} from 'td/platform/update/common/update';
 import {getTitleBarStyle, INativeRunActionInWindowRequest, INativeRunKeybindingInWindowRequest, IWindowOpenable} from 'td/platform/window/common/window';
 import {IWindowsCountChangedEvent, IWindowsMainService, OpenContext} from 'td/platform/windows/electron-main/windows';
 import {IWorkspacesHistoryMainService} from 'td/platform/workspaces/electron-main/workspacesHistoryMainService';
@@ -65,7 +65,7 @@ export class Menubar {
 	private readonly fallbackMenuHandlers: { [id: string]: (menuItem: MenuItem, browserWindow: BrowserWindow | undefined, event: KeyboardEvent) => void } = Object.create(null);
 
 	constructor(
-		@IUpdateService private readonly updateService: IUpdateService,
+		// @IUpdateService private readonly updateService: IUpdateService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
 		@IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
@@ -391,7 +391,7 @@ export class Menubar {
 
 	private setMacApplicationMenu(macApplicationMenu: Menu): void {
 		const about = this.createMenuItem(nls.localize('mAbout', "About {0}", this.productService.nameLong), 'workbench.action.showAboutDialog');
-		const checkForUpdates = this.getUpdateMenuItems();
+		// const checkForUpdates = this.getUpdateMenuItems();
 
 		let preferences;
 		if (this.shouldDrawMenu('Preferences')) {
@@ -422,7 +422,7 @@ export class Menubar {
 		}));
 
 		const actions = [about];
-		actions.push(...checkForUpdates);
+		// actions.push(...checkForUpdates);
 
 		if (preferences) {
 			actions.push(...[
@@ -535,11 +535,11 @@ export class Menubar {
 	}
 
 	private insertCheckForUpdatesItems(menu: Menu) {
-		const updateItems = this.getUpdateMenuItems();
-		if (updateItems.length) {
-			updateItems.forEach(i => menu.append(i));
-			menu.append(__separator__());
-		}
+		// const updateItems = this.getUpdateMenuItems();
+		// if (updateItems.length) {
+		// 	updateItems.forEach(i => menu.append(i));
+		// 	menu.append(__separator__());
+		// }
 	}
 
 	private createOpenRecentMenuItem(item: IMenubarMenuRecentItemAction): MenuItem {
@@ -616,54 +616,54 @@ export class Menubar {
 		].forEach(item => macWindowMenu.append(item));
 	}
 
-	private getUpdateMenuItems(): MenuItem[] {
-		const state = this.updateService.state;
+	// private getUpdateMenuItems(): MenuItem[] {
+	// 	const state = this.updateService.state;
 
-		switch (state.type) {
-			case StateType.Idle:
-				return [new MenuItem({
-					label: this.mnemonicLabel(nls.localize('miCheckForUpdates', "Check for &&Updates...")), click: () => setTimeout(() => {
-						this.reportMenuActionTelemetry('CheckForUpdate');
-						this.updateService.checkForUpdates(true);
-					}, 0)
-				})];
+	// 	switch (state.type) {
+	// 		case StateType.Idle:
+	// 			return [new MenuItem({
+	// 				label: this.mnemonicLabel(nls.localize('miCheckForUpdates', "Check for &&Updates...")), click: () => setTimeout(() => {
+	// 					this.reportMenuActionTelemetry('CheckForUpdate');
+	// 					this.updateService.checkForUpdates(true);
+	// 				}, 0)
+	// 			})];
 
-			case StateType.CheckingForUpdates:
-				return [new MenuItem({label: nls.localize('miCheckingForUpdates', "Checking for Updates..."), enabled: false})];
+	// 		case StateType.CheckingForUpdates:
+	// 			return [new MenuItem({label: nls.localize('miCheckingForUpdates', "Checking for Updates..."), enabled: false})];
 
-			case StateType.AvailableForDownload:
-				return [new MenuItem({
-					label: this.mnemonicLabel(nls.localize('miDownloadUpdate', "D&&ownload Available Update")), click: () => {
-						this.updateService.downloadUpdate();
-					}
-				})];
+	// 		case StateType.AvailableForDownload:
+	// 			return [new MenuItem({
+	// 				label: this.mnemonicLabel(nls.localize('miDownloadUpdate', "D&&ownload Available Update")), click: () => {
+	// 					this.updateService.downloadUpdate();
+	// 				}
+	// 			})];
 
-			case StateType.Downloading:
-				return [new MenuItem({label: nls.localize('miDownloadingUpdate', "Downloading Update..."), enabled: false})];
+	// 		case StateType.Downloading:
+	// 			return [new MenuItem({label: nls.localize('miDownloadingUpdate', "Downloading Update..."), enabled: false})];
 
-			case StateType.Downloaded:
-				return [new MenuItem({
-					label: this.mnemonicLabel(nls.localize('miInstallUpdate', "Install &&Update...")), click: () => {
-						this.reportMenuActionTelemetry('InstallUpdate');
-						this.updateService.applyUpdate();
-					}
-				})];
+	// 		case StateType.Downloaded:
+	// 			return [new MenuItem({
+	// 				label: this.mnemonicLabel(nls.localize('miInstallUpdate', "Install &&Update...")), click: () => {
+	// 					this.reportMenuActionTelemetry('InstallUpdate');
+	// 					this.updateService.applyUpdate();
+	// 				}
+	// 			})];
 
-			case StateType.Updating:
-				return [new MenuItem({label: nls.localize('miInstallingUpdate', "Installing Update..."), enabled: false})];
+	// 		case StateType.Updating:
+	// 			return [new MenuItem({label: nls.localize('miInstallingUpdate', "Installing Update..."), enabled: false})];
 
-			case StateType.Ready:
-				return [new MenuItem({
-					label: this.mnemonicLabel(nls.localize('miRestartToUpdate', "Restart to &&Update")), click: () => {
-						this.reportMenuActionTelemetry('RestartToUpdate');
-						this.updateService.quitAndInstall();
-					}
-				})];
+	// 		case StateType.Ready:
+	// 			return [new MenuItem({
+	// 				label: this.mnemonicLabel(nls.localize('miRestartToUpdate', "Restart to &&Update")), click: () => {
+	// 					this.reportMenuActionTelemetry('RestartToUpdate');
+	// 					this.updateService.quitAndInstall();
+	// 				}
+	// 			})];
 
-			default:
-				return [];
-		}
-	}
+	// 		default:
+	// 			return [];
+	// 	}
+	// }
 
 	private createMenuItem(label: string, commandId: string | string[], enabled?: boolean, checked?: boolean): MenuItem;
 	private createMenuItem(label: string, click: () => void, enabled?: boolean, checked?: boolean): MenuItem;
