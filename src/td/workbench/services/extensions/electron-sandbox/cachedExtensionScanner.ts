@@ -57,10 +57,8 @@ export class CachedExtensionScanner {
 			const language = platform.language;
 			const result = await Promise.allSettled([
 				this._extensionsScannerService.scanSystemExtensions({language, useCache: true, checkControlFile: true}),
-				// this._extensionsScannerService.scanUserExtensions({language, profileLocation: this._userDataProfileService.currentProfile.extensionsResource, useCache: true})
+				this._extensionsScannerService.scanUserExtensions({language, profileLocation: this._userDataProfileService.currentProfile.extensionsResource, useCache: true})
 			]);
-			if (false/* Coloring Flow Check */) console.log(`\x1b[32m Promise.allSettled \x1b[0m`)
-			if (false/* Coloring Flow Check */) console.log(result)
 
 			let scannedSystemExtensions: IScannedExtension[] = [],
 				scannedUserExtensions: IScannedExtension[] = [],
@@ -74,12 +72,12 @@ export class CachedExtensionScanner {
 				this._logService.error(`Error scanning system extensions:`, getErrorMessage(result[0].reason));
 			}
 
-			// if (result[1].status === 'fulfilled') {
-			// 	scannedUserExtensions = result[1].value;
-			// } else {
-			// 	hasErrors = true;
-			// 	this._logService.error(`Error scanning user extensions:`, getErrorMessage(result[1].reason));
-			// }
+			if (result[1].status === 'fulfilled') {
+				scannedUserExtensions = result[1].value;
+			} else {
+				hasErrors = true;
+				this._logService.error(`Error scanning user extensions:`, getErrorMessage(result[1].reason));
+			}
 
 			try {
 				scannedDevelopedExtensions = await this._extensionsScannerService.scanExtensionsUnderDevelopment({language}, [...scannedSystemExtensions, ...scannedUserExtensions]);
