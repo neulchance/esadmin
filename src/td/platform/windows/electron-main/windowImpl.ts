@@ -22,6 +22,7 @@ import {getMarks, mark} from 'td/base/common/performance';
 import {ILogService} from 'td/platform/log/common/log';
 import {CancellationToken} from 'vscode';
 import {toErrorMessage} from 'td/base/common/errorMessage';
+import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
 
 export interface IWindowCreationOptions {
 	readonly state: IWindowState;
@@ -177,7 +178,8 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 	constructor(
 		protected readonly configurationService: IConfigurationService,
 		protected readonly stateService: IStateService,
-		protected readonly environmentMainService: IEnvironmentMainService
+		protected readonly environmentMainService: IEnvironmentMainService,
+		protected readonly logService: ILogService
 	) {
 		super();
 	}
@@ -416,21 +418,27 @@ export class DevWindow extends BaseWindow {
 
   protected override _win: BrowserWindow;
 
+	private _config: INativeWindowConfiguration | undefined;
+	get config(): INativeWindowConfiguration | undefined { return this._config; }
+
   //#endregion
 
 	private readonly whenReadyCallbacks: { (window: IDevWindow): void }[] = [];
 
   private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
+	private pendingLoadConfig: INativeWindowConfiguration | undefined;
+	private wasLoaded = false;
 
   constructor(
 		config: IWindowCreationOptions,
-		@ILogService private readonly logService: ILogService,
+		@ILogService logService: ILogService,
+		@ILoggerMainService private readonly loggerMainService: ILoggerMainService,
     @IConfigurationService configurationService: IConfigurationService,
     @IStateService stateService: IStateService,
     @IEnvironmentMainService environmentMainService: IEnvironmentMainService,
 		@IProtocolMainService private readonly protocolMainService: IProtocolMainService,
   ) {
-    super(configurationService, stateService, environmentMainService);
+    super(configurationService, stateService, environmentMainService, logService);
 
     //#region create browser window
     {
@@ -480,8 +488,16 @@ export class DevWindow extends BaseWindow {
 		// and set it into the config object URL for usage
 		this.updateConfiguration(configuration)
 
+		// Load URL
 		this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench.html`).toString(true));
 		this._win.webContents.openDevTools()
+		
+		// Remember that we did load
+		const wasLoaded = this.wasLoaded;
+		this.wasLoaded = true;
+
+		// Event
+		this._onWillLoad.fire({workspace: configuration.workspace, reason: options.isReload ? LoadReason.RELOAD : wasLoaded ? LoadReason.LOAD : LoadReason.INITIAL});
 	}
 
 	private updateConfiguration(configuration: INativeWindowConfiguration, options?: ILoadOptions): void {
@@ -492,6 +508,50 @@ export class DevWindow extends BaseWindow {
 
 		// Update in config object URL for usage in renderer
 		this.configObjectUrl.update(configuration);
+	}
+
+	async reload(cli?: NativeParsedArgs): Promise<void> {
+
+		// Copy our current config for reuse
+		const configuration = Object.assign({}, this._config);
+
+		// Validate workspace
+		// configuration.workspace = await this.validateWorkspaceBeforeReload(configuration);
+
+		// Delete some properties we do not want during reload
+		delete configuration.filesToOpenOrCreate;
+		delete configuration.filesToDiff;
+		delete configuration.filesToMerge;
+		delete configuration.filesToWait;
+
+		// Some configuration things get inherited if the window is being reloaded and we are
+		// in extension development mode. These options are all development related.
+		// if (this.isExtensionDevelopmentHost && cli) {
+		// 	configuration.verbose = cli.verbose;
+		// 	configuration.debugId = cli.debugId;
+		// 	configuration.extensionEnvironment = cli.extensionEnvironment;
+		// 	configuration['inspect-extensions'] = cli['inspect-extensions'];
+		// 	configuration['inspect-brk-extensions'] = cli['inspect-brk-extensions'];
+		// 	configuration['extensions-dir'] = cli['extensions-dir'];
+		// }
+
+		configuration.accessibilitySupport = app.isAccessibilitySupportEnabled();
+		configuration.isInitialStartup = false; // since this is a reload
+		// configuration.policiesData = this.policyService.serialize(); // set policies data again
+		configuration.continueOn = this.environmentMainService.continueOn;
+		// configuration.profiles = {
+		// 	all: this.userDataProfilesService.profiles,
+		// 	profile: this.profile || this.userDataProfilesService.defaultProfile,
+		// 	home: this.userDataProfilesService.profilesHome
+		// };
+		configuration.logLevel = this.loggerMainService.getLogLevel();
+		// configuration.loggers = {
+		// 	window: this.loggerMainService.getRegisteredLoggers(this.id),
+		// 	global: this.loggerMainService.getRegisteredLoggers()
+		// };
+
+		// Load config
+		this.load(configuration, {isReload: true, disableExtensions: cli?.['disable-extensions']});
 	}
 
 	get isReady(): boolean {
