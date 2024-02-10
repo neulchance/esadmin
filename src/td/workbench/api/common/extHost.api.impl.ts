@@ -123,7 +123,7 @@ export interface IExtensionApiFactory {
  * node-process
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	if (true/* Coloring Flow Check */) console.log(`\x1b[32mcreateApiFactoryAndRegisterActors started\x1b[0m`)
+	if (false/* Coloring Flow Check */) console.log(`\x1b[32mcreateApiFactoryAndRegisterActors started\x1b[0m`)
 
 	// services
 	const initData = accessor.get(IExtHostInitDataService);

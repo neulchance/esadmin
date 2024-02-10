@@ -5,7 +5,7 @@
 
 import * as performance from 'td/base/common/performance';
 import {URI} from 'td/base/common/uri';
-import {MainThreadTelemetryShape, MainContext} from 'td/workbench/api/common/extHost.protocol';
+import {MainContext} from 'td/workbench/api/common/extHost.protocol';
 import {ExtHostConfigProvider, IExtHostConfiguration} from 'td/workbench/api/common/extHostConfiguration';
 import {nullExtensionDescription} from 'td/workbench/services/extensions/common/extensions';
 import * as vscode from 'vscode';
@@ -207,7 +207,6 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 	private _extensionId: string | undefined;
 	private _original?: IOriginalOpen;
 	private _impl: IOpenModule;
-	private _mainThreadTelemetry: MainThreadTelemetryShape;
 
 	constructor(
 		private readonly _extensionPaths: ExtensionPaths,
@@ -215,7 +214,6 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 		@IExtHostRpcService rpcService: IExtHostRpcService,
 	) {
 
-		this._mainThreadTelemetry = rpcService.getProxy(MainContext.MainThreadTelemetry);
 		const mainThreadWindow = rpcService.getProxy(MainContext.MainThreadWindow);
 
 		this._impl = (target, options) => {
@@ -259,7 +257,6 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 			comment: 'Know when the open-shim was used';
 			extension: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The extension is question' };
 		};
-		this._mainThreadTelemetry.$publicLog2<{ extension: string }, ShimmingOpenClassification>('shimming.open', {extension: this._extensionId});
 	}
 
 	private sendNoForwardTelemetry(): void {
@@ -271,7 +268,6 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 			comment: 'Know when the open-shim was used';
 			extension: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The extension is question' };
 		};
-		this._mainThreadTelemetry.$publicLog2<{ extension: string }, ShimmingOpenCallNoForwardClassification>('shimming.open.call.noForward', {extension: this._extensionId});
 	}
 }
 
