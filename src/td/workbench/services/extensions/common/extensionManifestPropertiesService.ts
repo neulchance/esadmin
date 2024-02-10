@@ -152,9 +152,9 @@ export class ExtensionManifestPropertiesService extends Disposable implements IE
 
 	getExtensionUntrustedWorkspaceSupportType(manifest: IExtensionManifest): ExtensionUntrustedWorkspaceSupportType {
 		// Workspace trust feature is disabled, or extension has no entry point
-		// if (!this.workspaceTrustEnablementService.isWorkspaceTrustEnabled() || !manifest.main) {
-		// 	return true;
-		// }
+		if (/* !this.workspaceTrustEnablementService.isWorkspaceTrustEnabled() ||  */!manifest.main) {
+			return true;
+		}
 
 		// Get extension workspace trust requirements from settings.json
 		const configuredWorkspaceTrustRequest = this.getConfiguredExtensionWorkspaceTrustRequest(manifest);
