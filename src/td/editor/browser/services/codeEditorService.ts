@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event } from 'td/base/common/event';
-import { ICodeEditor, IDiffEditor } from 'td/editor/browser/editorBrowser';
-import { IDecorationRenderOptions } from 'td/editor/common/editorCommon';
-import { IModelDecorationOptions, ITextModel } from 'td/editor/common/model';
-import { ITextResourceEditorInput } from 'td/platform/editor/common/editor';
-import { createDecorator } from 'td/platform/instantiation/common/instantiation';
-import { URI } from 'td/base/common/uri';
-import { IDisposable } from 'td/base/common/lifecycle';
+import {Event} from 'td/base/common/event';
+import {ICodeEditor, IDiffEditor} from 'td/editor/browser/editorBrowser';
+import {IDecorationRenderOptions} from 'td/editor/common/editorCommon';
+import {IModelDecorationOptions, ITextModel} from 'td/editor/common/model';
+import {ITextResourceEditorInput} from 'td/platform/editor/common/editor';
+import {createDecorator} from 'td/platform/instantiation/common/instantiation';
+import {URI} from 'td/base/common/uri';
+import {IDisposable} from 'td/base/common/lifecycle';
 
 export const ICodeEditorService = createDecorator<ICodeEditorService>('codeEditorService');
 
