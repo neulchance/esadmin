@@ -16,7 +16,7 @@ import {NativeParsedArgs} from 'td/platform/environment/common/argv';
 import {IProcessEnvironment, isLinuxSnap, isMacintosh, OS} from 'td/base/common/platform';
 import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
 import {getResolvedShellEnv} from 'td/platform/shell/node/shellEnv';
-import {ILogService} from 'td/platform/log/common/log';
+import {ILoggerService, ILogService} from 'td/platform/log/common/log';
 import {toErrorMessage} from 'td/base/common/errorMessage';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {resolveMachineId, resolveSqmId} from 'td/platform/telemetry/electron-main/telemetryUtils';
@@ -86,7 +86,9 @@ import {getPathLabel} from 'td/base/common/labels';
 import {firstOrDefault} from 'td/base/common/arrays';
 import {getRemoteAuthority} from 'td/platform/remote/common/remoteHosts';
 import {NativeURLService} from 'td/platform/url/common/urlService';
-
+import {ILocalPtyService, LocalReconnectConstants, TerminalIpcChannels, TerminalSettingId} from 'td/platform/terminal/common/terminal';
+import {ElectronPtyHostStarter} from 'td/platform/terminal/electron-main/electronPtyHostStarter';
+import {PtyHostService} from 'td/platform/terminal/node/ptyHostService';
 
 /**
  * The main TD Dev application. There will only ever be one instance,
@@ -109,6 +111,7 @@ export class DevApplication extends Disposable {
 		@IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILogService private readonly logService: ILogService,
+		@ILoggerService private readonly loggerService: ILoggerService,
 		@IStateService private readonly stateService: IStateService,
 		@IFileService private readonly fileService: IFileService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
@@ -289,6 +292,20 @@ export class DevApplication extends Disposable {
 		services.set(IStorageMainService, new SyncDescriptor(StorageMainService));
 		services.set(IApplicationStorageMainService, new SyncDescriptor(ApplicationStorageMainService));
 
+		// Terminal
+		const ptyHostStarter = new ElectronPtyHostStarter({
+			graceTime: LocalReconnectConstants.GraceTime,
+			shortGraceTime: LocalReconnectConstants.ShortGraceTime,
+			scrollback: this.configurationService.getValue<number>(TerminalSettingId.PersistentSessionScrollback) ?? 100
+		}, this.configurationService, this.environmentMainService, this.lifecycleMainService, this.logService);
+		const ptyHostService = new PtyHostService(
+			ptyHostStarter,
+			this.configurationService,
+			this.logService,
+			this.loggerService
+		);
+		services.set(ILocalPtyService, ptyHostService);
+
 		// Backups
 		const backupMainService = new BackupMainService(this.environmentMainService, this.configurationService, this.logService, this.stateService);
 		services.set(IBackupMainService, backupMainService);
@@ -380,6 +397,10 @@ export class DevApplication extends Disposable {
 		const storageChannel = this._register(new StorageDatabaseChannel(this.logService, accessor.get(IStorageMainService)));
 		mainProcessElectronServer.registerChannel('storage', storageChannel);
 		sharedProcessClient.then(client => client.registerChannel('storage', storageChannel));
+
+		// Terminal
+		const ptyHostChannel = ProxyChannel.fromService(accessor.get(ILocalPtyService), disposables);
+		mainProcessElectronServer.registerChannel(TerminalIpcChannels.LocalPty, ptyHostChannel);
 
 		// Logger
 		const loggerChannel = new LoggerChannel(accessor.get(ILoggerMainService),);
