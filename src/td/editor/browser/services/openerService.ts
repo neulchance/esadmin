@@ -4,19 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'td/base/browser/dom';
-import { mainWindow } from 'td/base/browser/window';
-import { CancellationToken } from 'td/base/common/cancellation';
-import { IDisposable } from 'td/base/common/lifecycle';
-import { LinkedList } from 'td/base/common/linkedList';
-import { ResourceMap } from 'td/base/common/map';
-import { parse } from 'td/base/common/marshalling';
-import { matchesScheme, matchesSomeScheme, Schemas } from 'td/base/common/network';
-import { normalizePath } from 'td/base/common/resources';
-import { URI } from 'td/base/common/uri';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { ICommandService } from 'td/platform/commands/common/commands';
-import { EditorOpenSource } from 'td/platform/editor/common/editor';
-import { extractSelection, IExternalOpener, IExternalUriResolver, IOpener, IOpenerService, IResolvedExternalUri, IValidator, OpenOptions, ResolveExternalUriOptions } from 'td/platform/opener/common/opener';
+import {mainWindow} from 'td/base/browser/window';
+import {CancellationToken} from 'td/base/common/cancellation';
+import {IDisposable} from 'td/base/common/lifecycle';
+import {LinkedList} from 'td/base/common/linkedList';
+import {ResourceMap} from 'td/base/common/map';
+import {parse} from 'td/base/common/marshalling';
+import {matchesScheme, matchesSomeScheme, Schemas} from 'td/base/common/network';
+import {normalizePath} from 'td/base/common/resources';
+import {URI} from 'td/base/common/uri';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {ICommandService} from 'td/platform/commands/common/commands';
+import {EditorOpenSource} from 'td/platform/editor/common/editor';
+import {extractSelection, IExternalOpener, IExternalUriResolver, IOpener, IOpenerService, IResolvedExternalUri, IValidator, OpenOptions, ResolveExternalUriOptions} from 'td/platform/opener/common/opener';
 
 class CommandOpener implements IOpener {
 
@@ -73,7 +73,7 @@ class EditorOpener implements IOpener {
 		if (typeof target === 'string') {
 			target = URI.parse(target);
 		}
-		const { selection, uri } = extractSelection(target);
+		const {selection, uri} = extractSelection(target);
 		target = uri;
 
 		if (target.scheme === Schemas.file) {
@@ -104,7 +104,7 @@ export class OpenerService implements IOpenerService {
 	private readonly _openers = new LinkedList<IOpener>();
 	private readonly _validators = new LinkedList<IValidator>();
 	private readonly _resolvers = new LinkedList<IExternalUriResolver>();
-	private readonly _resolvedUriTargets = new ResourceMap<URI>(uri => uri.with({ path: null, fragment: null, query: null }).toString());
+	private readonly _resolvedUriTargets = new ResourceMap<URI>(uri => uri.with({path: null, fragment: null, query: null}).toString());
 
 	private _defaultExternalOpener: IExternalOpener;
 	private readonly _externalOpeners = new LinkedList<IExternalOpener>();
@@ -146,17 +146,17 @@ export class OpenerService implements IOpenerService {
 
 	registerOpener(opener: IOpener): IDisposable {
 		const remove = this._openers.unshift(opener);
-		return { dispose: remove };
+		return {dispose: remove};
 	}
 
 	registerValidator(validator: IValidator): IDisposable {
 		const remove = this._validators.push(validator);
-		return { dispose: remove };
+		return {dispose: remove};
 	}
 
 	registerExternalUriResolver(resolver: IExternalUriResolver): IDisposable {
 		const remove = this._resolvers.push(resolver);
-		return { dispose: remove };
+		return {dispose: remove};
 	}
 
 	setDefaultExternalOpener(externalOpener: IExternalOpener): void {
@@ -165,7 +165,7 @@ export class OpenerService implements IOpenerService {
 
 	registerExternalOpener(opener: IExternalOpener): IDisposable {
 		const remove = this._externalOpeners.push(opener);
-		return { dispose: remove };
+		return {dispose: remove};
 	}
 
 	async open(target: URI | string, options?: OpenOptions): Promise<boolean> {
@@ -242,7 +242,7 @@ export class OpenerService implements IOpenerService {
 			}
 		}
 
-		return this._defaultExternalOpener.openExternal(href, { sourceUri: uri }, CancellationToken.None);
+		return this._defaultExternalOpener.openExternal(href, {sourceUri: uri}, CancellationToken.None);
 	}
 
 	dispose() {
