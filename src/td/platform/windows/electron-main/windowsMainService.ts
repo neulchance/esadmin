@@ -3,7 +3,7 @@
  *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
  *---------------------------------------------------------------------------------------------------*/
 
-import {BrowserWindow, WebContents} from 'electron';
+import {app, BrowserWindow, WebContents} from 'electron';
 import {hostname, release, arch} from 'os';
 import {distinct} from 'td/base/common/arrays';
 import {IPath, IPathsToWaitFor, IWindowSettings} from 'td/platform/window/common/window';
@@ -31,6 +31,7 @@ import {IStateService} from 'td/platform/state/node/state';
 import {ILifecycleMainService} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
 import {ILogService} from 'td/platform/log/common/log';
 import {isEqualAuthority} from 'td/base/common/resources';
+import {IThemeMainService} from 'td/platform/theme/electron-main/themeMainService';
 
 interface IOpenBrowserWindowOptions {
 	readonly userEnv?: IProcessEnvironment;
@@ -107,6 +108,7 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
     @IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
     @IUserDataProfilesMainService private readonly userDataProfilesMainService: IUserDataProfilesMainService,
     @IConfigurationService private readonly configurationService: IConfigurationService,
+		@IThemeMainService private readonly themeMainService: IThemeMainService,
   ) {
     super()
   }
@@ -132,7 +134,7 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
   }
 
   private async openInBrowserWindow(/* options: IOpenBrowserWindowOptions */): Promise<IDevWindow> {
-    // const windowConfig = this.configurationService.getValue<IWindowSettings | undefined>('window');
+    const windowConfig = this.configurationService.getValue<IWindowSettings | undefined>('window');
 
     // const lastActiveWindow = this.getLastActiveWindow();
     // const defaultProfile = lastActiveWindow?.profile ?? this.userDataProfilesMainService.defaultProfile;
@@ -174,6 +176,13 @@ export class WindowsMainService extends Disposable /* implements IWindowsMainSer
 
       product,
       os: {release: release(), hostname: hostname(), arch: arch()},
+
+			autoDetectHighContrast: windowConfig?.autoDetectHighContrast ?? true,
+			autoDetectColorScheme: windowConfig?.autoDetectColorScheme ?? false,
+			accessibilitySupport: app.accessibilitySupportEnabled,
+			colorScheme: this.themeMainService.getColorScheme(),
+			// policiesData: this.policyService.serialize(),
+			continueOn: this.environmentMainService.continueOn
     }
     
 		// New window
