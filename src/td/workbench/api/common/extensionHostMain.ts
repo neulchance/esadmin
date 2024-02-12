@@ -33,6 +33,7 @@ import {IExtHostLocalizationService} from './extHostLocalizationService';
 import {IExtHostTunnelService} from './extHostTunnelService';
 import {IExtHostManagedSockets} from './extHostManagedSockets';
 import {IExtHostCommands} from './extHostCommands';
+import {IWindowsMainService} from 'td/platform/windows/electron-main/windows';
 
 export interface IExitFn {
 	(code?: number): any;
@@ -190,7 +191,7 @@ export class ExtensionHostMain {
 		// because `initialize` itself creates instances that depend on it
 		this._extensionService = instaService.invokeFunction(accessor => {
 			// Check preluded DI services
-			// accessor.get(IExtHostCommands);
+			// accessor.get(IWindowsMainService);
 			// console.log('\x1b[34maccessor.get(IExtHostCommands) done\x1b[0m')
 			/* _util.serviceIds.forEach((id, key) => {
 				console.log(id, key)

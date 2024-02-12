@@ -17,8 +17,6 @@
 │)
 └─────
 
-
-
 vscode.media-preview
 workbench/contrib/webview/browser/resourceLoading.ts:55
 

@@ -10,19 +10,37 @@ import {IWindowState, IDevWindow, ILoadEvent, WindowMode, WindowError, LoadReaso
 import * as path from 'path'
 import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol';
 import {Disposable} from 'td/base/common/lifecycle';
-import {getTitleBarStyle, INativeWindowConfiguration, useNativeFullScreen, useWindowControlsOverlay} from 'td/platform/window/common/window';
+import {getTitleBarStyle, INativeWindowConfiguration, IWindowSettings, MenuBarVisibility, useNativeFullScreen, useWindowControlsOverlay} from 'td/platform/window/common/window';
 import {isBigSurOrNewer, isMacintosh, isWindows} from 'td/base/common/platform';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
 import {IStateService} from 'td/platform/state/node/state';
 import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
 import {DeferredPromise, timeout} from 'td/base/common/async';
-import {FileAccess} from 'td/base/common/network';
+import {FileAccess, Schemas} from 'td/base/common/network';
 import {NativeParsedArgs} from 'td/platform/environment/common/argv';
 import {getMarks, mark} from 'td/base/common/performance';
 import {ILogService} from 'td/platform/log/common/log';
 import {CancellationToken} from 'vscode';
 import {toErrorMessage} from 'td/base/common/errorMessage';
 import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
+import {ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier, toWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
+import {IUserDataProfile} from 'td/platform/userDataProfile/common/userDataProfile';
+import {IPolicyService} from 'td/platform/policy/common/policy';
+import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
+import {IApplicationStorageMainService, IStorageMainService} from 'td/platform/storage/electron-main/storageMainService';
+import {IThemeMainService} from 'td/platform/theme/electron-main/themeMainService';
+import {IWorkspacesManagementMainService} from 'td/platform/workspaces/electron-main/workspacesManagementMainService';
+import {IBackupMainService} from 'td/platform/backup/electron-main/backup';
+import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
+import {IDialogMainService} from 'td/platform/dialogs/electron-main/dialogMainService';
+import {ILifecycleMainService} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
+import {IProductService} from 'td/platform/product/common/productService';
+import {IWindowsMainService} from './windows';
+import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
+import {IFileService} from 'td/platform/files/common/files';
+import {ISerializableCommandAction} from 'td/platform/action/common/action';
+import {ThemeIcon} from 'td/base/common/themables';
+import {URI} from 'td/base/common/uri';
 
 export interface IWindowCreationOptions {
 	readonly state: IWindowState;
@@ -179,7 +197,7 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 		protected readonly configurationService: IConfigurationService,
 		protected readonly stateService: IStateService,
 		protected readonly environmentMainService: IEnvironmentMainService,
-		protected readonly logService: ILogService
+		// protected readonly logService: ILogService
 	) {
 		super();
 	}
@@ -395,7 +413,7 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 	}
 }
 
-export class DevWindow extends BaseWindow {
+export class DevWindow extends BaseWindow implements IDevWindow {
 
 	//#region Events
 
@@ -413,32 +431,81 @@ export class DevWindow extends BaseWindow {
 
 	//#region Properties
 
-  private _id: number;
+	private _id: number;
 	get id(): number { return this._id; }
 
-  protected override _win: BrowserWindow;
+	protected override _win: BrowserWindow;
+
+	get backupPath(): string | undefined { return this._config?.backupPath; }
+
+	get openedWorkspace(): IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier | undefined { return this._config?.workspace; }
+
+	get profile(): IUserDataProfile | undefined {
+		if (!this.config) {
+			return undefined;
+		}
+
+		const profile = this.userDataProfilesService.profiles.find(profile => profile.id === this.config?.profiles.profile.id);
+		if (this.isExtensionDevelopmentHost && profile) {
+			return profile;
+		}
+
+		return this.userDataProfilesService.getProfileForWorkspace(this.config.workspace ?? toWorkspaceIdentifier(this.backupPath, this.isExtensionDevelopmentHost)) ?? this.userDataProfilesService.defaultProfile;
+	}
+
+	get remoteAuthority(): string | undefined { return this._config?.remoteAuthority; }
 
 	private _config: INativeWindowConfiguration | undefined;
 	get config(): INativeWindowConfiguration | undefined { return this._config; }
 
-  //#endregion
+	get isExtensionDevelopmentHost(): boolean { return !!(this._config?.extensionDevelopmentPath); }
+
+	get isExtensionTestHost(): boolean { return !!(this._config?.extensionTestsPath); }
+
+	get isExtensionDevelopmentTestFromCli(): boolean { return this.isExtensionDevelopmentHost && this.isExtensionTestHost && !this._config?.debugId; }
+
+	//#endregion
+
+	private readonly windowState: IWindowState;
+	private currentMenuBarVisibility: MenuBarVisibility | undefined;
 
 	private readonly whenReadyCallbacks: { (window: IDevWindow): void }[] = [];
 
-  private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
+	private readonly touchBarGroups: TouchBarSegmentedControl[] = [];
+
+	private currentHttpProxy: string | undefined = undefined;
+	private currentNoProxy: string | undefined = undefined;
+
+	private customZoomLevel: number | undefined = undefined;
+
+	private readonly configObjectUrl = this._register(this.protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>());
 	private pendingLoadConfig: INativeWindowConfiguration | undefined;
 	private wasLoaded = false;
 
   constructor(
 		config: IWindowCreationOptions,
-		@ILogService logService: ILogService,
+		@ILogService private readonly logService: ILogService,
 		@ILoggerMainService private readonly loggerMainService: ILoggerMainService,
-    @IConfigurationService configurationService: IConfigurationService,
-    @IStateService stateService: IStateService,
-    @IEnvironmentMainService environmentMainService: IEnvironmentMainService,
+		@IEnvironmentMainService environmentMainService: IEnvironmentMainService,
+		@IPolicyService private readonly policyService: IPolicyService,
+		@IUserDataProfilesMainService private readonly userDataProfilesService: IUserDataProfilesMainService,
+		@IFileService private readonly fileService: IFileService,
+		@IApplicationStorageMainService private readonly applicationStorageMainService: IApplicationStorageMainService,
+		@IStorageMainService private readonly storageMainService: IStorageMainService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IThemeMainService private readonly themeMainService: IThemeMainService,
+		@IWorkspacesManagementMainService private readonly workspacesManagementMainService: IWorkspacesManagementMainService,
+		@IBackupMainService private readonly backupMainService: IBackupMainService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		@IDialogMainService private readonly dialogMainService: IDialogMainService,
+		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
+		@IProductService private readonly productService: IProductService,
 		@IProtocolMainService private readonly protocolMainService: IProtocolMainService,
+		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
+		@IStateService stateService: IStateService,
+		@IInstantiationService instantiationService: IInstantiationService
   ) {
-    super(configurationService, stateService, environmentMainService, logService);
+    super(configurationService, stateService, environmentMainService);
 
     //#region create browser window
     {
@@ -477,6 +544,12 @@ export class DevWindow extends BaseWindow {
 
 		// Events
 		this._onDidSignalReady.fire();
+	}
+
+	addTabbedWindow(window: IDevWindow): void {
+		if (isMacintosh && window.win) {
+			this._win.addTabbedWindow(window.win);
+		}
 	}
 
 	/* Invoked in windowsMainService.ts #doOpenInBrowserWindow */
@@ -569,6 +642,93 @@ export class DevWindow extends BaseWindow {
 		});
 	}
 
+	serializeWindowState(): IWindowState {
+		if (!this._win) {
+			return defaultWindowState();
+		}
+
+		// fullscreen gets special treatment
+		if (this.isFullScreen) {
+			let display: Display | undefined;
+			try {
+				display = screen.getDisplayMatching(this.getBounds());
+			} catch (error) {
+				// Electron has weird conditions under which it throws errors
+				// e.g. https://github.com/microsoft/vscode/issues/100334 when
+				// large numbers are passed in
+			}
+
+			const defaultState = defaultWindowState();
+
+			return {
+				mode: WindowMode.Fullscreen,
+				display: display ? display.id : undefined,
+
+				// Still carry over window dimensions from previous sessions
+				// if we can compute it in fullscreen state.
+				// does not seem possible in all cases on Linux for example
+				// (https://github.com/microsoft/vscode/issues/58218) so we
+				// fallback to the defaults in that case.
+				width: this.windowState.width || defaultState.width,
+				height: this.windowState.height || defaultState.height,
+				x: this.windowState.x || 0,
+				y: this.windowState.y || 0,
+				zoomLevel: this.customZoomLevel
+			};
+		}
+
+		const state: IWindowState = Object.create(null);
+		let mode: WindowMode;
+
+		// get window mode
+		if (!isMacintosh && this._win.isMaximized()) {
+			mode = WindowMode.Maximized;
+		} else {
+			mode = WindowMode.Normal;
+		}
+
+		// we don't want to save minimized state, only maximized or normal
+		if (mode === WindowMode.Maximized) {
+			state.mode = WindowMode.Maximized;
+		} else {
+			state.mode = WindowMode.Normal;
+		}
+
+		// only consider non-minimized window states
+		if (mode === WindowMode.Normal || mode === WindowMode.Maximized) {
+			let bounds: Rectangle;
+			if (mode === WindowMode.Normal) {
+				bounds = this.getBounds();
+			} else {
+				bounds = this._win.getNormalBounds(); // make sure to persist the normal bounds when maximized to be able to restore them
+			}
+
+			state.x = bounds.x;
+			state.y = bounds.y;
+			state.width = bounds.width;
+			state.height = bounds.height;
+		}
+
+		state.zoomLevel = this.customZoomLevel;
+
+		return state;
+	}
+
+	get whenClosedOrLoaded(): Promise<void> {
+		return new Promise<void>(resolve => {
+
+			function handle() {
+				closeListener.dispose();
+				loadListener.dispose();
+
+				resolve();
+			}
+
+			const closeListener = this.onDidClose(() => handle());
+			const loadListener = this.onWillLoad(() => handle());
+		});
+	}
+
 	sendWhenReady(channel: string, token: CancellationToken, ...args: any[]): void {
 		if (this.isReady) {
 			this.send(channel, ...args);
@@ -594,5 +754,69 @@ export class DevWindow extends BaseWindow {
 				this.logService.warn(`Error sending IPC message to channel '${channel}' of window ${this._id}: ${toErrorMessage(error)}`);
 			}
 		}
+	}
+
+	updateTouchBar(groups: ISerializableCommandAction[][]): void {
+		if (!isMacintosh) {
+			return; // only supported on macOS
+		}
+
+		// Update segments for all groups. Setting the segments property
+		// of the group directly prevents ugly flickering from happening
+		this.touchBarGroups.forEach((touchBarGroup, index) => {
+			const commands = groups[index];
+			touchBarGroup.segments = this.createTouchBarGroupSegments(commands);
+		});
+	}
+
+	private createTouchBarGroupSegments(items: ISerializableCommandAction[] = []): ITouchBarSegment[] {
+		const segments: ITouchBarSegment[] = items.map(item => {
+			let icon: NativeImage | undefined;
+			if (item.icon && !ThemeIcon.isThemeIcon(item.icon) && item.icon?.dark?.scheme === Schemas.file) {
+				icon = nativeImage.createFromPath(URI.revive(item.icon.dark).fsPath);
+				if (icon.isEmpty()) {
+					icon = undefined;
+				}
+			}
+
+			let title: string;
+			if (typeof item.title === 'string') {
+				title = item.title;
+			} else {
+				title = item.title.value;
+			}
+
+			return {
+				id: item.id,
+				label: !icon ? title : undefined,
+				icon
+			};
+		});
+
+		return segments;
+	}
+
+	notifyZoomLevel(zoomLevel: number | undefined): void {
+		this.customZoomLevel = zoomLevel;
+	}
+
+	private getZoomLevel(): number | undefined {
+		if (typeof this.customZoomLevel === 'number') {
+			return this.customZoomLevel;
+		}
+
+		const windowSettings = this.configurationService.getValue<IWindowSettings | undefined>('window');
+		return windowSettings?.zoomLevel;
+	}
+
+	close(): void {
+		this._win?.close();
+	}
+
+	getBounds(): Rectangle {
+		const [x, y] = this._win.getPosition();
+		const [width, height] = this._win.getSize();
+
+		return {x, y, width, height};
 	}
 }

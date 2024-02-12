@@ -209,7 +209,7 @@ export class ExplorerView extends ViewPane implements IExplorerView {
 		@ICommandService private readonly commandService: ICommandService,
 		@IOpenerService openerService: IOpenerService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, /* telemetryService */);
 
 		this.delegate = options.delegate;
 		this.resourceContext = instantiationService.createInstance(ResourceContextKey);
@@ -523,7 +523,7 @@ export class ExplorerView extends ViewPane implements IExplorerView {
 					// Do not react if clicking on directories
 					return;
 				}
-				this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {id: 'workbench.files.openFile', from: 'explorer'});
+				// this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {id: 'workbench.files.openFile', from: 'explorer'});
 				try {
 					this.delegate?.willOpenElement(e.browserEvent);
 					await this.editorService.openEditor({resource: element.resource, options: {preserveFocus: e.editorOptions.preserveFocus, pinned: e.editorOptions.pinned, source: EditorOpenSource.USER}}, e.sideBySide ? SIDE_GROUP : ACTIVE_GROUP);

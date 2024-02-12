@@ -10,7 +10,7 @@ import {URI} from 'td/base/common/uri';
 import {NativeParsedArgs} from 'td/platform/environment/common/argv';
 import {ServicesAccessor, createDecorator} from 'td/platform/instantiation/common/instantiation';
 import {IDevWindow, IWindowState} from 'td/platform/window/electron-main/window';
-import {IOpenEmptyWindowOptions, IWindowOpenable, IWindowSettings, WindowMinimumSize, getTitleBarStyle, useNativeFullScreen, useWindowControlsOverlay, zoomLevelToZoomFactor} from 'td/platform/window/common/window';
+import {IOpenEmptyWindowOptions, IWindowOpenable, IWindowSettings, WindowMinimumSize, hasNativeTitlebar, useNativeFullScreen, useWindowControlsOverlay, zoomLevelToZoomFactor} from 'td/platform/window/common/window';
 import {IThemeMainService} from 'td/platform/theme/electron-main/themeMainService';
 import {IProductService} from 'td/platform/product/common/productService';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
@@ -32,11 +32,11 @@ export interface IWindowsMainService {
 	readonly onDidSignalReadyWindow: Event<IDevWindow>;
 	readonly onDidMaximizeWindow: Event<IDevWindow>;
 	readonly onDidUnmaximizeWindow: Event<IDevWindow>;
-	readonly onDidChangeFullScreen: Event<IDevWindow>;
+	readonly onDidChangeFullScreen: Event<{ window: IDevWindow; fullscreen: boolean }>;
 	readonly onDidTriggerSystemContextMenu: Event<{ readonly window: IDevWindow; readonly x: number; readonly y: number }>;
 	readonly onDidDestroyWindow: Event<IDevWindow>;
 
-	open(openConfig?: IOpenConfiguration): Promise<IDevWindow[]>;
+	open(openConfig: IOpenConfiguration): Promise<IDevWindow[]>;
 	openEmptyWindow(openConfig: IOpenEmptyConfiguration, options?: IOpenEmptyWindowOptions): Promise<IDevWindow[]>;
 	openExtensionDevelopmentHostWindow(extensionDevelopmentPath: string[], openConfig: IOpenConfiguration): Promise<IDevWindow[]>;
 
@@ -173,8 +173,8 @@ export function defaultBrowserWindowOptions(accessor: ServicesAccessor, windowSt
 		options.tabbingIdentifier = productService.nameShort; // this opts in to sierra tabs
 	}
 
-	const useCustomTitleStyle = getTitleBarStyle(configurationService) === 'custom';
-	if (useCustomTitleStyle) {
+	const hideNativeTitleBar = !hasNativeTitlebar(configurationService);
+	if (hideNativeTitleBar) {
 		options.titleBarStyle = 'hidden';
 		if (!isMacintosh) {
 			options.frame = false;

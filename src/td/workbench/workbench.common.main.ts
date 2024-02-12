@@ -66,6 +66,7 @@ import 'td/workbench/services/editor/browser/editorResolverService';
 import 'td/workbench/services/untitled/common/untitledTextEditorService';
 import 'td/workbench/services/textfile/common/textEditorService';
 import 'td/workbench/services/textresourceProperties/common/textResourcePropertiesService';
+import 'td/workbench/services/languageDetection/browser/languageDetectionWorkerServiceImpl';
 import 'td/workbench/services/language/common/languageService';
 import 'td/workbench/services/model/common/modelService';
 import 'td/workbench/services/quickinput/browser/quickInputService';
