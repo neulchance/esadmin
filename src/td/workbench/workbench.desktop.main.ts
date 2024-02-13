@@ -57,6 +57,7 @@ import 'td/workbench/services/extensionManagement/electron-sandbox/extensionMana
 import 'td/workbench/services/path/electron-sandbox/pathService';
 import 'td/platform/remote/electron-sandbox/sharedProcessTunnelService';
 import 'td/workbench/services/tunnel/electron-sandbox/tunnelService';
+import 'td/platform/diagnostics/electron-sandbox/diagnosticsService';
 import 'td/workbench/services/request/electron-sandbox/requestService';
 import 'td/workbench/services/extensions/electron-sandbox/extensionsScannerService';
 import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementServerService';
