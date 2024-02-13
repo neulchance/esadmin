@@ -21,6 +21,15 @@ import 'td/workbench/browser/actions/quickAccessActions';
 //#endregion
 
 
+//#region --- API Extension Points
+
+import 'td/workbench/services/actions/common/menusExtensionPoint';
+import 'td/workbench/api/common/configurationExtensionPoint';
+// import 'td/workbench/api/browser/viewsExtensionPoint';
+
+//#endregion
+
+
 //#region --- workbench parts
 
 import 'td/workbench/browser/parts/editor/editor.contribution';
@@ -73,6 +82,7 @@ import 'td/workbench/services/quickinput/browser/quickInputService';
 import 'td/workbench/services/userDataSync/browser/userDataSyncWorkbenchService';
 import 'td/workbench/services/activity/browser/activityService';
 import 'td/workbench/services/timer/electron-sandbox/timerService';
+import 'td/workbench/services/editor/browser/editorPaneService';
 
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {ExtensionGalleryService} from 'td/platform/extensionManagement/common/extensionGalleryService';

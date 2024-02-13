@@ -142,7 +142,7 @@ export class ExtensionsListView extends ViewPane {
 		@IOpenerService openerService: IOpenerService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IStorageService private readonly storageService: IStorageService,
-		@IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
+		// @IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
 		@ILogService private readonly logService: ILogService
@@ -151,7 +151,7 @@ export class ExtensionsListView extends ViewPane {
 			...(viewletViewOptions as IViewPaneOptions),
 			showActions: ViewPaneShowActions.Always,
 			maximumBodySize: options.flexibleHeight ? (storageService.getNumber(`${viewletViewOptions.id}.size`, StorageScope.PROFILE, 0) ? undefined : 0) : undefined
-		}, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
+		}, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService/* , telemetryService */);
 		if (this.options.onDidChangeTitle) {
 			this._register(this.options.onDidChangeTitle(title => this.updateTitle(title)));
 		}
@@ -638,7 +638,7 @@ export class ExtensionsListView extends ViewPane {
 		};
 
 		const inVirtualWorkspace = isVirtualWorkspace(this.workspaceService.getWorkspace());
-		const inRestrictedWorkspace = !this.workspaceTrustManagementService.isWorkspaceTrusted();
+		const inRestrictedWorkspace = !true/* !this.workspaceTrustManagementService.isWorkspaceTrusted(); */
 
 		if (type === 'virtual') {
 			// show limited and disabled extensions unless disabled because of a untrusted workspace
@@ -1280,7 +1280,7 @@ export class StaticQueryExtensionsView extends ExtensionsListView {
 		@IOpenerService openerService: IOpenerService,
 		@IPreferencesService preferencesService: IPreferencesService,
 		@IStorageService storageService: IStorageService,
-		@IWorkspaceTrustManagementService workspaceTrustManagementService: IWorkspaceTrustManagementService,
+		// @IWorkspaceTrustManagementService workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IWorkbenchExtensionEnablementService extensionEnablementService: IWorkbenchExtensionEnablementService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ILogService logService: ILogService
@@ -1288,7 +1288,7 @@ export class StaticQueryExtensionsView extends ExtensionsListView {
 		super(options, viewletViewOptions, notificationService, keybindingService, contextMenuService, instantiationService, themeService, extensionService,
 			extensionsWorkbenchService, extensionRecommendationsService, telemetryService, configurationService, contextService, extensionManagementServerService,
 			extensionManifestPropertiesService, extensionManagementService, workspaceService, productService, contextKeyService, viewDescriptorService, openerService,
-			preferencesService, storageService, workspaceTrustManagementService, extensionEnablementService, layoutService, logService);
+			preferencesService, storageService, /* workspaceTrustManagementService, */ extensionEnablementService, layoutService, logService);
 	}
 
 	override show(): Promise<IPagedModel<IExtension>> {
@@ -1359,7 +1359,7 @@ export class SearchMarketplaceExtensionsView extends ExtensionsListView {
 
 	private async reportSearchFinished(): Promise<void> {
 		await this.searchWaitPromise;
-		this.telemetryService.publicLog2('extensionsView:MarketplaceSearchFinished');
+		// this.telemetryService.publicLog2('extensionsView:MarketplaceSearchFinished');
 	}
 }
 

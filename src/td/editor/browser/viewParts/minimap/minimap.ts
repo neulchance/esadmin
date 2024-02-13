@@ -5,36 +5,36 @@
 
 import 'td/css!./minimap';
 import * as dom from 'td/base/browser/dom';
-import { FastDomNode, createFastDomNode } from 'td/base/browser/fastDomNode';
-import { GlobalPointerMoveMonitor } from 'td/base/browser/globalPointerMoveMonitor';
-import { CharCode } from 'td/base/common/charCode';
-import { IDisposable, Disposable } from 'td/base/common/lifecycle';
+import {FastDomNode, createFastDomNode} from 'td/base/browser/fastDomNode';
+import {GlobalPointerMoveMonitor} from 'td/base/browser/globalPointerMoveMonitor';
+import {CharCode} from 'td/base/common/charCode';
+import {IDisposable, Disposable} from 'td/base/common/lifecycle';
 import * as platform from 'td/base/common/platform';
 import * as strings from 'td/base/common/strings';
-import { ILine, RenderedLinesCollection } from 'td/editor/browser/view/viewLayer';
-import { PartFingerprint, PartFingerprints, ViewPart } from 'td/editor/browser/view/viewPart';
-import { RenderMinimap, EditorOption, MINIMAP_GUTTER_WIDTH, EditorLayoutInfoComputer } from 'td/editor/common/config/editorOptions';
-import { Range } from 'td/editor/common/core/range';
-import { RGBA8 } from 'td/editor/common/core/rgba';
-import { ScrollType } from 'td/editor/common/editorCommon';
-import { IEditorConfiguration } from 'td/editor/common/config/editorConfiguration';
-import { ColorId } from 'td/editor/common/encodedTokenAttributes';
-import { MinimapCharRenderer } from 'td/editor/browser/viewParts/minimap/minimapCharRenderer';
-import { Constants } from 'td/editor/browser/viewParts/minimap/minimapCharSheet';
-import { MinimapTokensColorTracker } from 'td/editor/common/viewModel/minimapTokensColorTracker';
-import { RenderingContext, RestrictedRenderingContext } from 'td/editor/browser/view/renderingContext';
-import { ViewContext } from 'td/editor/common/viewModel/viewContext';
-import { EditorTheme } from 'td/editor/common/editorTheme';
+import {ILine, RenderedLinesCollection} from 'td/editor/browser/view/viewLayer';
+import {PartFingerprint, PartFingerprints, ViewPart} from 'td/editor/browser/view/viewPart';
+import {RenderMinimap, EditorOption, MINIMAP_GUTTER_WIDTH, EditorLayoutInfoComputer} from 'td/editor/common/config/editorOptions';
+import {Range} from 'td/editor/common/core/range';
+import {RGBA8} from 'td/editor/common/core/rgba';
+import {ScrollType} from 'td/editor/common/editorCommon';
+import {IEditorConfiguration} from 'td/editor/common/config/editorConfiguration';
+import {ColorId} from 'td/editor/common/encodedTokenAttributes';
+import {MinimapCharRenderer} from 'td/editor/browser/viewParts/minimap/minimapCharRenderer';
+import {Constants} from 'td/editor/browser/viewParts/minimap/minimapCharSheet';
+import {MinimapTokensColorTracker} from 'td/editor/common/viewModel/minimapTokensColorTracker';
+import {RenderingContext, RestrictedRenderingContext} from 'td/editor/browser/view/renderingContext';
+import {ViewContext} from 'td/editor/common/viewModel/viewContext';
+import {EditorTheme} from 'td/editor/common/editorTheme';
 import * as viewEvents from 'td/editor/common/viewEvents';
-import { ViewLineData, ViewModelDecoration } from 'td/editor/common/viewModel';
-import { minimapSelection, minimapBackground, minimapForegroundOpacity } from 'td/platform/theme/common/colorRegistry';
-import { ModelDecorationMinimapOptions } from 'td/editor/common/model/textModel';
-import { Selection } from 'td/editor/common/core/selection';
-import { Color } from 'td/base/common/color';
-import { GestureEvent, EventType, Gesture } from 'td/base/browser/touch';
-import { MinimapCharRendererFactory } from 'td/editor/browser/viewParts/minimap/minimapCharRendererFactory';
-import { MinimapPosition, TextModelResolvedOptions } from 'td/editor/common/model';
-import { createSingleCallFunction } from 'td/base/common/functional';
+import {ViewLineData, ViewModelDecoration} from 'td/editor/common/viewModel';
+import {minimapSelection, minimapBackground, minimapForegroundOpacity} from 'td/platform/theme/common/colorRegistry';
+import {ModelDecorationMinimapOptions} from 'td/editor/common/model/textModel';
+import {Selection} from 'td/editor/common/core/selection';
+import {Color} from 'td/base/common/color';
+import {GestureEvent, EventType, Gesture} from 'td/base/browser/touch';
+import {MinimapCharRendererFactory} from 'td/editor/browser/viewParts/minimap/minimapCharRendererFactory';
+import {MinimapPosition, TextModelResolvedOptions} from 'td/editor/common/model';
+import {createSingleCallFunction} from 'td/base/common/functional';
 
 /**
  * The orthogonal distance to the slider at which dragging "resets". This implements "snapping"
@@ -595,7 +595,7 @@ class MinimapSamplingState {
 
 		// ratio is intentionally not part of the layout to avoid the layout changing all the time
 		// so we need to recompute it again...
-		const { minimapLineCount } = EditorLayoutInfoComputer.computeContainedMinimapLineCount({
+		const {minimapLineCount} = EditorLayoutInfoComputer.computeContainedMinimapLineCount({
 			viewLineCount: viewLineCount,
 			scrollBeyondLastLine: options.scrollBeyondLastLine,
 			paddingTop: options.paddingTop,
@@ -638,7 +638,7 @@ class MinimapSamplingState {
 					if (lastEvent && lastEvent.type === 'deleted' && lastEvent._oldIndex === oldIndex - 1) {
 						lastEvent.deleteToLineNumber++;
 					} else {
-						lastEvent = { type: 'deleted', _oldIndex: oldIndex, deleteFromLineNumber: oldMinimapLineNumber, deleteToLineNumber: oldMinimapLineNumber };
+						lastEvent = {type: 'deleted', _oldIndex: oldIndex, deleteFromLineNumber: oldMinimapLineNumber, deleteToLineNumber: oldMinimapLineNumber};
 						events.push(lastEvent);
 					}
 					oldDeltaLineCount--;
@@ -664,7 +664,7 @@ class MinimapSamplingState {
 					if (lastEvent && lastEvent.type === 'inserted' && lastEvent._i === i - 1) {
 						lastEvent.insertToLineNumber++;
 					} else {
-						lastEvent = { type: 'inserted', _i: i, insertFromLineNumber: oldMinimapLineNumber, insertToLineNumber: oldMinimapLineNumber };
+						lastEvent = {type: 'inserted', _i: i, insertFromLineNumber: oldMinimapLineNumber, insertToLineNumber: oldMinimapLineNumber};
 						events.push(lastEvent);
 					}
 					oldDeltaLineCount++;
@@ -681,7 +681,7 @@ class MinimapSamplingState {
 				if (lastEvent && lastEvent.type === 'deleted' && lastEvent._oldIndex === oldIndex - 1) {
 					lastEvent.deleteToLineNumber++;
 				} else {
-					lastEvent = { type: 'deleted', _oldIndex: oldIndex, deleteFromLineNumber: oldMinimapLineNumber, deleteToLineNumber: oldMinimapLineNumber };
+					lastEvent = {type: 'deleted', _oldIndex: oldIndex, deleteFromLineNumber: oldMinimapLineNumber, deleteToLineNumber: oldMinimapLineNumber};
 					events.push(lastEvent);
 				}
 				oldDeltaLineCount--;
@@ -689,7 +689,7 @@ class MinimapSamplingState {
 			}
 		} else {
 			// too many events, just give up
-			events = [{ type: 'flush' }];
+			events = [{type: 'flush'}];
 		}
 
 		return [new MinimapSamplingState(ratio, result), events];
@@ -897,7 +897,7 @@ export class Minimap extends ViewPart implements IMinimapModel {
 			for (const range of e.ranges) {
 				const minimapLineRange = this._samplingState.modelLineRangeToMinimapLineRange(range.fromLineNumber, range.toLineNumber);
 				if (minimapLineRange) {
-					ranges.push({ fromLineNumber: minimapLineRange[0], toLineNumber: minimapLineRange[1] });
+					ranges.push({fromLineNumber: minimapLineRange[0], toLineNumber: minimapLineRange[1]});
 				}
 			}
 			if (ranges.length) {
@@ -1211,7 +1211,7 @@ class InnerMinimap extends Disposable {
 				this._gestureInProgress = true;
 				this.scrollDueToTouchEvent(e);
 			}
-		}, { passive: false });
+		}, {passive: false});
 
 		this._sliderTouchMoveListener = dom.addDisposableListener(this._domNode.domNode, EventType.Change, (e: GestureEvent) => {
 			e.preventDefault();
@@ -1219,7 +1219,7 @@ class InnerMinimap extends Disposable {
 			if (this._lastRenderData && this._gestureInProgress) {
 				this.scrollDueToTouchEvent(e);
 			}
-		}, { passive: false });
+		}, {passive: false});
 
 		this._sliderTouchEndListener = dom.addStandardDisposableListener(this._domNode.domNode, EventType.End, (e: GestureEvent) => {
 			e.preventDefault();
@@ -1449,7 +1449,7 @@ class InnerMinimap extends Disposable {
 			const decorations = this._model.getMinimapDecorationsInViewport(layout.startLineNumber, layout.endLineNumber);
 			decorations.sort((a, b) => (a.options.zIndex || 0) - (b.options.zIndex || 0));
 
-			const { canvasInnerWidth, canvasInnerHeight } = this._model.options;
+			const {canvasInnerWidth, canvasInnerHeight} = this._model.options;
 			const minimapLineHeight = this._model.options.minimapLineHeight;
 			const minimapCharWidth = this._model.options.minimapCharWidth;
 			const tabSize = this._model.getOptions().tabSize;
@@ -1666,7 +1666,7 @@ class InnerMinimap extends Disposable {
 			return;
 		}
 
-		const { startLineNumber, endLineNumber } = decorationRange;
+		const {startLineNumber, endLineNumber} = decorationRange;
 		const startColumn = (startLineNumber === lineNumber ? decorationRange.startColumn : 1);
 		const endColumn = (endLineNumber === lineNumber ? decorationRange.endColumn : this._model.getLineMaxColumn(lineNumber));
 

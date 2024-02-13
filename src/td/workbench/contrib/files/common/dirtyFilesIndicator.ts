@@ -14,6 +14,9 @@ import {IWorkingCopy, WorkingCopyCapabilities} from 'td/workbench/services/worki
 import {IFilesConfigurationService} from 'td/workbench/services/filesConfiguration/common/filesConfigurationService';
 
 export class DirtyFilesIndicator extends Disposable implements IWorkbenchContribution {
+
+	static readonly ID = 'workbench.contrib.dirtyFilesIndicator';
+
 	private readonly badgeHandle = this._register(new MutableDisposable());
 
 	private lastKnownDirtyCount = 0;

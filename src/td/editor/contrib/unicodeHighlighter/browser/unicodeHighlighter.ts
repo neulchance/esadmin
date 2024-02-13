@@ -47,7 +47,7 @@ export class UnicodeHighlighter extends Disposable implements IEditorContributio
 	constructor(
 		private readonly _editor: ICodeEditor,
 		@IEditorWorkerService private readonly _editorWorkerService: IEditorWorkerService,
-		@IWorkspaceTrustManagementService private readonly _workspaceTrustService: IWorkspaceTrustManagementService,
+		// @IWorkspaceTrustManagementService private readonly _workspaceTrustService: IWorkspaceTrustManagementService,
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
 		super();
@@ -61,9 +61,9 @@ export class UnicodeHighlighter extends Disposable implements IEditorContributio
 
 		this._options = _editor.getOption(EditorOption.unicodeHighlighting);
 
-		this._register(_workspaceTrustService.onDidChangeTrust(e => {
-			this._updateHighlighter();
-		}));
+		// this._register(_workspaceTrustService.onDidChangeTrust(e => {
+		// 	this._updateHighlighter();
+		// }));
 
 		this._register(_editor.onDidChangeConfiguration(e => {
 			if (e.hasChanged(EditorOption.unicodeHighlighting)) {
@@ -141,7 +141,7 @@ export class UnicodeHighlighter extends Disposable implements IEditorContributio
 		if (!this._editor.hasModel()) {
 			return;
 		}
-		const options = resolveOptions(this._workspaceTrustService.isWorkspaceTrusted(), this._options);
+		const options = resolveOptions(true, /* this._workspaceTrustService.isWorkspaceTrusted(), */ this._options);
 
 		if (
 			[

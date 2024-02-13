@@ -28,6 +28,8 @@ import {IEditorGroupsService} from 'td/workbench/services/editor/common/editorGr
 
 export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker implements IWorkbenchContribution {
 
+	static readonly ID = 'workbench.contrib.nativeWorkingCopyBackupTracker';
+
 	constructor(
 		@IWorkingCopyBackupService workingCopyBackupService: IWorkingCopyBackupService,
 		@IFilesConfigurationService filesConfigurationService: IFilesConfigurationService,

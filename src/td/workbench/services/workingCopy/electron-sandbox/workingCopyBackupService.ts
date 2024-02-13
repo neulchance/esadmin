@@ -11,9 +11,8 @@ import {IWorkingCopyBackupService} from 'td/workbench/services/workingCopy/commo
 import {IFileService} from 'td/platform/files/common/files';
 import {ILogService} from 'td/platform/log/common/log';
 import {INativeWorkbenchEnvironmentService} from 'td/workbench/services/environment/electron-sandbox/environmentService';
-import {Registry} from 'td/platform/registry/common/platform';
-import {IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from 'td/workbench/common/contributions';
-import {ILifecycleService, LifecyclePhase} from 'td/workbench/services/lifecycle/common/lifecycle';
+import {WorkbenchPhase, registerWorkbenchContribution2} from 'td/workbench/common/contributions';
+import {ILifecycleService} from 'td/workbench/services/lifecycle/common/lifecycle';
 import {NativeWorkingCopyBackupTracker} from 'td/workbench/services/workingCopy/electron-sandbox/workingCopyBackupTracker';
 
 export class NativeWorkingCopyBackupService extends WorkingCopyBackupService {
@@ -42,4 +41,4 @@ export class NativeWorkingCopyBackupService extends WorkingCopyBackupService {
 registerSingleton(IWorkingCopyBackupService, NativeWorkingCopyBackupService, InstantiationType.Eager);
 
 // Register Backup Tracker
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(NativeWorkingCopyBackupTracker, LifecyclePhase.Starting);
+registerWorkbenchContribution2(NativeWorkingCopyBackupTracker.ID, NativeWorkingCopyBackupTracker, WorkbenchPhase.BlockStartup);

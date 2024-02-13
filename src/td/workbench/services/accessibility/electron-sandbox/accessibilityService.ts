@@ -8,13 +8,11 @@ import {isWindows, isLinux} from 'td/base/common/platform';
 import {INativeWorkbenchEnvironmentService} from 'td/workbench/services/environment/electron-sandbox/environmentService';
 import {IContextKeyService} from 'td/platform/contextkey/common/contextkey';
 import {IConfigurationService} from 'td/platform/configuration/common/configuration';
-import {Registry} from 'td/platform/registry/common/platform';
 import {AccessibilityService} from 'td/platform/accessibility/browser/accessibilityService';
 import {InstantiationType, registerSingleton} from 'td/platform/instantiation/common/extensions';
 import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
 import {IJSONEditingService} from 'td/workbench/services/configuration/common/jsonEditing';
-import {IWorkbenchContribution, IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from 'td/workbench/common/contributions';
-import {LifecyclePhase} from 'td/workbench/services/lifecycle/common/lifecycle';
+import {IWorkbenchContribution, WorkbenchPhase, registerWorkbenchContribution2} from 'td/workbench/common/contributions';
 import {INativeHostService} from 'td/platform/native/common/native';
 import {ILayoutService} from 'td/platform/layout/browser/layoutService';
 
@@ -71,6 +69,9 @@ registerSingleton(IAccessibilityService, NativeAccessibilityService, Instantiati
 
 // On linux we do not automatically detect that a screen reader is detected, thus we have to implicitly notify the renderer to enable accessibility when user configures it in settings
 class LinuxAccessibilityContribution implements IWorkbenchContribution {
+
+	static readonly ID = 'workbench.contrib.linuxAccessibility';
+
 	constructor(
 		@IJSONEditingService jsonEditingService: IJSONEditingService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
@@ -87,5 +88,5 @@ class LinuxAccessibilityContribution implements IWorkbenchContribution {
 }
 
 if (isLinux) {
-	Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(LinuxAccessibilityContribution, LifecyclePhase.Ready);
+	registerWorkbenchContribution2(LinuxAccessibilityContribution.ID, LinuxAccessibilityContribution, WorkbenchPhase.BlockRestore);
 }

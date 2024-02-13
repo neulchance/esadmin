@@ -5,14 +5,14 @@
 
 import {localize} from 'td/nls';
 import {dirname, basename} from 'td/base/common/resources';
-import {ITitleProperties} from 'td/workbench/browser/parts/titlebar/titlebarPart';
+import {ITitleProperties, ITitleVariable} from 'td/workbench/browser/parts/titlebar/titlebarPart';
 import {IConfigurationService, IConfigurationChangeEvent} from 'td/platform/configuration/common/configuration';
 import {IEditorService} from 'td/workbench/services/editor/common/editorService';
 import {Disposable, DisposableStore} from 'td/base/common/lifecycle';
 import {EditorResourceAccessor, Verbosity, SideBySideEditor} from 'td/workbench/common/editor';
 import {IBrowserWorkbenchEnvironmentService} from 'td/workbench/services/environment/browser/environmentService';
 import {IWorkspaceContextService, WorkbenchState, IWorkspaceFolder} from 'td/platform/workspace/common/workspace';
-import {isWindows, isWeb, isMacintosh} from 'td/base/common/platform';
+import {isWindows, isWeb, isMacintosh, isNative} from 'td/base/common/platform';
 import {URI} from 'td/base/common/uri';
 import {trim} from 'td/base/common/strings';
 import {IEditorGroupsContainer} from 'td/workbench/services/editor/common/editorGroupsService';
@@ -26,11 +26,26 @@ import {getVirtualWorkspaceLocation} from 'td/platform/workspace/common/virtualW
 import {IUserDataProfileService} from 'td/workbench/services/userDataProfile/common/userDataProfile';
 import {IViewsService} from 'td/workbench/services/views/common/viewsService';
 import {ICodeEditor, isCodeEditor, isDiffEditor} from 'td/editor/browser/editorBrowser';
+import {IContextKeyService} from 'td/platform/contextkey/common/contextkey';
 
 const enum WindowSettingNames {
 	titleSeparator = 'window.titleSeparator',
-	title = 'window.title',
+	title = 'window.title'
 }
+
+export const defaultWindowTitle = (() => {
+	if (isMacintosh && isNative) {
+		return '${activeEditorShort}${separator}${rootName}${separator}${profileName}'; // macOS has native dirty indicator
+	}
+
+	const base = '${dirty}${activeEditorShort}${separator}${rootName}${separator}${profileName}${separator}${appName}';
+	if (isWeb) {
+		return base + '${separator}${remoteName}'; // Web: always show remote name
+	}
+
+	return base;
+})();
+export const defaultWindowTitleSeparator = isMacintosh ? ' \u2014 ' : ' - ';
 
 export class WindowTitle extends Disposable {
 
@@ -39,6 +54,8 @@ export class WindowTitle extends Disposable {
 	private static readonly TITLE_DIRTY = '\u25cf ';
 
 	private readonly properties: ITitleProperties = {isPure: true, isAdmin: false, prefix: undefined};
+	private readonly variables = new Map<string /* context key */, string /* name */>();
+
 	private readonly activeEditorListeners = this._register(new DisposableStore());
 	private readonly titleUpdater = this._register(new RunOnceScheduler(() => this.doUpdateTitle(), 0));
 
@@ -66,6 +83,7 @@ export class WindowTitle extends Disposable {
 		private readonly targetWindow: Window,
 		editorGroupsContainer: IEditorGroupsContainer | 'main',
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IBrowserWorkbenchEnvironmentService protected readonly environmentService: IBrowserWorkbenchEnvironmentService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
@@ -92,6 +110,11 @@ export class WindowTitle extends Disposable {
 		this._register(this.userDataProfileService.onDidChangeCurrentProfile(() => this.titleUpdater.schedule()));
 		this._register(this.viewsService.onDidChangeFocusedView(() => {
 			if (this.titleIncludesFocusedView) {
+				this.titleUpdater.schedule();
+			}
+		}));
+		this._register(this.contextKeyService.onDidChangeContext(e => {
+			if (e.affectsSome(this.variables)) {
 				this.titleUpdater.schedule();
 			}
 		}));
@@ -172,13 +195,8 @@ export class WindowTitle extends Disposable {
 		}
 	}
 
-	/*
-	${activeEditorShort}${separator}${rootName}${separator}${profileName}
-	'vscode'에서는 'editor'의 상황에 따라 위 'template'을 시용하여 'title'을 표시한다.
-	일단은 'TinyDeskDev'라고만 표시하고 추후 조정하자.
-	*/
 	private getFullWindowTitle(): string {
-		/* const {prefix, suffix} = this.getTitleDecorations();
+		const {prefix, suffix} = this.getTitleDecorations();
 
 		let title = this.getWindowTitle() || this.productService.nameLong;
 		if (prefix) {
@@ -190,8 +208,7 @@ export class WindowTitle extends Disposable {
 		}
 
 		// Replace non-space whitespace
-		return title.replace(/[^\S ]/g, ' '); */
-		return 'TinyDeskDev'
+		return title.replace(/[^\S ]/g, ' ');
 	}
 
 	getTitleDecorations() {
@@ -225,6 +242,22 @@ export class WindowTitle extends Disposable {
 			this.properties.isPure = isPure;
 			this.properties.prefix = prefix;
 
+			this.titleUpdater.schedule();
+		}
+	}
+
+	registerVariables(variables: ITitleVariable[]): void {
+		let changed = false;
+
+		for (const {name, contextKey} of variables) {
+			if (!this.variables.has(contextKey)) {
+				this.variables.set(contextKey, name);
+
+				changed = true;
+			}
+		}
+
+		if (changed) {
 			this.titleUpdater.schedule();
 		}
 	}
@@ -305,11 +338,24 @@ export class WindowTitle extends Disposable {
 		const dirty = editor?.isDirty() && !editor.isSaving() ? WindowTitle.TITLE_DIRTY : '';
 		const appName = this.productService.nameLong;
 		const profileName = this.userDataProfileService.currentProfile.isDefault ? '' : this.userDataProfileService.currentProfile.name;
-		const separator = this.configurationService.getValue<string>(WindowSettingNames.titleSeparator);
-		const titleTemplate = this.configurationService.getValue<string>(WindowSettingNames.title);
 		const focusedView: string = this.viewsService.getFocusedViewName();
+		const variables: Record<string, string> = {};
+		for (const [contextKey, name] of this.variables) {
+			variables[name] = this.contextKeyService.getContextKeyValue(contextKey) ?? '';
+		}
+
+		let titleTemplate = this.configurationService.getValue<string>(WindowSettingNames.title);
+		if (typeof titleTemplate !== 'string') {
+			titleTemplate = defaultWindowTitle;
+		}
+
+		let separator = this.configurationService.getValue<string>(WindowSettingNames.titleSeparator);
+		if (typeof separator !== 'string') {
+			separator = defaultWindowTitleSeparator;
+		}
 
 		return template(titleTemplate, {
+			...variables,
 			activeEditorShort,
 			activeEditorLong,
 			activeEditorMedium,

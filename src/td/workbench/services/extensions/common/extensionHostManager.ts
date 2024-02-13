@@ -55,6 +55,7 @@ import {IListService} from 'td/platform/list/browser/listService';
 import {IQuickInputService} from 'td/platform/quickinput/common/quickInput';
 import {IOutputService} from '../../output/common/output';
 import {IDefaultLogLevelsService} from 'td/workbench/contrib/logs/common/defaultLogLevels';
+import {IWindowsMainService} from 'td/platform/windows/electron-main/windows';
 
 // Enable to see detailed message communication between window and extension host
 const LOG_EXTENSION_HOST_COMMUNICATION = false;
@@ -317,7 +318,7 @@ export class ExtensionHostManager extends Disposable implements IExtensionHostMa
 		// extensionHost.contribution.ts 에서 등록한 
 		this._instantiationService.invokeFunction((accessor: ServicesAccessor) => {
 			// Check that no named customers are missing
-			// accessor.get(IQuickInputService);
+			// accessor.get(IWindowsMainService);
 			// console.log('\x1b[31maccessor.get(DI) done\x1b[0m')
 		})
 		const namedCustomers = ExtHostCustomersRegistry.getNamedCustomers();

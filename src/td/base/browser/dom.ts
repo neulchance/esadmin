@@ -19,7 +19,7 @@ import {URI} from 'td/base/common/uri';
 import {hash} from 'td/base/common/hash';
 import {DevWindow, ensureDevWindow, mainWindow} from 'td/base/browser/window';
 
-export interface IRegisteredDevWindow {
+export interface IRegisteredCodeWindow {
 	readonly window: DevWindow;
 	readonly disposables: DisposableStore;
 }
@@ -39,14 +39,23 @@ export const {
 	onWillUnregisterWindow,
 	onDidUnregisterWindow
 } = (function () {
-	const windows = new Map<number, IRegisteredDevWindow>();
+	const windows = new Map<number, IRegisteredCodeWindow>();
 
 	ensureDevWindow(mainWindow, 1);
-	windows.set(mainWindow.tddevWindowId, {window: mainWindow, disposables: new DisposableStore()});
+	const mainWindowRegistration = {window: mainWindow, disposables: new DisposableStore()};
+	windows.set(mainWindow.tddevWindowId, mainWindowRegistration);
 
-	const onDidRegisterWindow = new event.Emitter<IRegisteredDevWindow>();
+	const onDidRegisterWindow = new event.Emitter<IRegisteredCodeWindow>();
 	const onDidUnregisterWindow = new event.Emitter<DevWindow>();
 	const onWillUnregisterWindow = new event.Emitter<DevWindow>();
+
+	function getWindowById(windowId: number): IRegisteredCodeWindow | undefined;
+	function getWindowById(windowId: number | undefined, fallbackToMain: true): IRegisteredCodeWindow;
+	function getWindowById(windowId: number | undefined, fallbackToMain?: boolean): IRegisteredCodeWindow | undefined {
+		const window = typeof windowId === 'number' ? windows.get(windowId) : undefined;
+
+		return window ?? (fallbackToMain ? mainWindowRegistration : undefined);
+	}
 
 	return {
 		onDidRegisterWindow: onDidRegisterWindow.event,
@@ -78,7 +87,7 @@ export const {
 
 			return disposables;
 		},
-		getWindows(): Iterable<IRegisteredDevWindow> {
+		getWindows(): Iterable<IRegisteredCodeWindow> {
 			return windows.values();
 		},
 		getWindowsCount(): number {
@@ -90,9 +99,7 @@ export const {
 		hasWindow(windowId: number): boolean {
 			return windows.has(windowId);
 		},
-		getWindowById(windowId: number): IRegisteredDevWindow | undefined {
-			return windows.get(windowId);
-		},
+		getWindowById,
 		getWindow(e: Node | UIEvent | undefined | null): DevWindow {
 			const candidateNode = e as Node | undefined | null;
 			if (candidateNode?.ownerDocument?.defaultView) {
@@ -953,7 +960,7 @@ class WrappedStyleElement {
 
 	public dispose(): void {
 		if (this._styleSheet) {
-			clearNode(this._styleSheet);
+			this._styleSheet.remove();
 			this._styleSheet = undefined;
 		}
 	}

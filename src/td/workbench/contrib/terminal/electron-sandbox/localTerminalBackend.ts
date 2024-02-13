@@ -39,6 +39,9 @@ import {StopWatch} from 'td/base/common/stopwatch';
 import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
 
 export class LocalTerminalBackendContribution implements IWorkbenchContribution {
+
+	static readonly ID = 'workbench.contrib.localTerminalBackend';
+
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
 		@ITerminalInstanceService terminalInstanceService: ITerminalInstanceService

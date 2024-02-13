@@ -17,9 +17,7 @@ import {ContextKeyExpr, IContextKey, IContextKeyService, RawContextKey} from 'td
 import {KeybindingWeight} from 'td/platform/keybinding/common/keybindingsRegistry';
 import {EditorContextKeys} from 'td/editor/common/editorContextKeys';
 import {Codicon} from 'td/base/common/codicons';
-import {Registry} from 'td/platform/registry/common/platform';
-import {IWorkbenchContribution, IWorkbenchContributionsRegistry, Extensions} from 'td/workbench/common/contributions';
-import {LifecyclePhase} from 'td/workbench/services/lifecycle/common/lifecycle';
+import {IWorkbenchContribution, WorkbenchPhase, registerWorkbenchContribution2} from 'td/workbench/common/contributions';
 import {IEditorService} from 'td/workbench/services/editor/common/editorService';
 import {Event} from 'td/base/common/event';
 import {addDisposableListener, onDidRegisterWindow} from 'td/base/browser/dom';
@@ -256,6 +254,8 @@ function canToggleWordWrap(codeEditorService: ICodeEditorService, editor: ICodeE
 
 class EditorWordWrapContextKeyTracker extends Disposable implements IWorkbenchContribution {
 
+	static readonly ID = 'workbench.contrib.editorWordWrapContextKeyTracker';
+
 	private readonly _canToggleWordWrap: IContextKey<boolean>;
 	private readonly _editorWordWrap: IContextKey<boolean>;
 	private _activeEditor: ICodeEditor | null;
@@ -314,8 +314,7 @@ class EditorWordWrapContextKeyTracker extends Disposable implements IWorkbenchCo
 	}
 }
 
-const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(Extensions.Workbench);
-workbenchRegistry.registerWorkbenchContribution(EditorWordWrapContextKeyTracker, LifecyclePhase.Ready);
+registerWorkbenchContribution2(EditorWordWrapContextKeyTracker.ID, EditorWordWrapContextKeyTracker, WorkbenchPhase.AfterRestored);
 
 registerEditorContribution(ToggleWordWrapController.ID, ToggleWordWrapController, EditorContributionInstantiation.Eager); // eager because it needs to change the editor word wrap configuration
 registerDiffEditorContribution(DiffToggleWordWrapController.ID, DiffToggleWordWrapController);

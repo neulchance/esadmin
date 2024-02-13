@@ -37,7 +37,6 @@ registerAction2(class extends Action2 {
 		});
 	}
 	run(servicesAccessor: ServicesAccessor): Promise<void> {
-		console.log(`\x1b[31m[TD] SetLogLevelAction.run\x1b[0m]`)
 		return servicesAccessor.get(IInstantiationService).createInstance(SetLogLevelAction, SetLogLevelAction.ID, SetLogLevelAction.TITLE.value).run();
 	}
 });
@@ -70,7 +69,6 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 	) {
 		super();
 		const contextKey = CONTEXT_LOG_LEVEL.bindTo(contextKeyService);
-		// loggerService.getLogLevel()
 		contextKey.set(LogLevelToString(loggerService.getLogLevel()));
 		loggerService.onDidChangeLogLevel(e => {
 			if (isLogLevel(e)) {

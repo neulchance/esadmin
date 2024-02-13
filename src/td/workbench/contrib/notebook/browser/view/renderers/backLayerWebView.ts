@@ -169,7 +169,7 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Themable {
 		@IFileService private readonly fileService: IFileService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
-		@IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
+		// @IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILanguageService private readonly languageService: ILanguageService,
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
@@ -207,11 +207,11 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Themable {
 			};
 		}
 
-		this._register(workspaceTrustManagementService.onDidChangeTrust(e => {
-			const baseUrl = this.asWebviewUri(this.getNotebookBaseUri(), undefined);
-			const htmlContent = this.generateContent(baseUrl.toString());
-			this.webview?.setHtml(htmlContent);
-		}));
+		// this._register(workspaceTrustManagementService.onDidChangeTrust(e => {
+		// 	const baseUrl = this.asWebviewUri(this.getNotebookBaseUri(), undefined);
+		// 	const htmlContent = this.generateContent(baseUrl.toString());
+		// 	this.webview?.setHtml(htmlContent);
+		// }));
 
 		this._register(TokenizationRegistry.onDidChange(() => {
 			this._sendMessageToWebview({
@@ -298,7 +298,7 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Themable {
 			renderOptions,
 			renderersData,
 			preloadsData,
-			this.workspaceTrustManagementService.isWorkspaceTrusted(),
+			true/* this.workspaceTrustManagementService.isWorkspaceTrusted() */,
 			this.nonce);
 
 		const enableCsp = this.configurationService.getValue('notebook.experimental.enableCsp');

@@ -27,7 +27,7 @@ import {mark} from 'td/base/common/performance';
 import {IRemoteAgentService} from 'td/workbench/services/remote/common/remoteAgentService';
 import {IFileService} from 'td/platform/files/common/files';
 import {IWorkbenchEnvironmentService} from 'td/workbench/services/environment/common/environmentService';
-import {IWorkbenchContribution, IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from 'td/workbench/common/contributions';
+import {IWorkbenchContribution, IWorkbenchContributionsRegistry, WorkbenchPhase, Extensions as WorkbenchExtensions, registerWorkbenchContribution2} from 'td/workbench/common/contributions';
 import {ILifecycleService, LifecyclePhase} from 'td/workbench/services/lifecycle/common/lifecycle';
 import {ILogService} from 'td/platform/log/common/log';
 import {toErrorMessage} from 'td/base/common/errorMessage';
@@ -103,7 +103,7 @@ export class WorkspaceService extends Disposable implements IWorkbenchConfigurat
 	private readonly configurationRegistry: IConfigurationRegistry;
 
 	private instantiationService: IInstantiationService | undefined;
-	private configurationEditing: ConfigurationEditing | undefined;
+	private configurationEditing: Promise<ConfigurationEditing> | undefined;
 
 	constructor(
 		{remoteAuthority, configurationCache}: { remoteAuthority?: string; configurationCache: IConfigurationCache },
@@ -1018,7 +1018,7 @@ export class WorkspaceService extends Disposable implements IWorkbenchConfigurat
 		}
 
 		if (overrides?.overrideIdentifiers?.length && overrides.overrideIdentifiers.length > 1) {
-			const configurationModel = this.getConfigurationModel(editableConfigurationTarget, overrides.resource);
+			const configurationModel = this.getConfigurationModelForEditableConfigurationTarget(editableConfigurationTarget, overrides.resource);
 			if (configurationModel) {
 				const overrideIdentifiers = overrides.overrideIdentifiers.sort();
 				const existingOverrides = configurationModel.overrides.find(override => arrayEquals([...override.identifiers].sort(), overrideIdentifiers));
@@ -1029,8 +1029,8 @@ export class WorkspaceService extends Disposable implements IWorkbenchConfigurat
 		}
 
 		// Use same instance of ConfigurationEditing to make sure all writes go through the same queue
-		this.configurationEditing = this.configurationEditing ?? this.instantiationService.createInstance(ConfigurationEditing, (await this.remoteAgentService.getEnvironment())?.settingsPath ?? null);
-		await this.configurationEditing.writeConfiguration(editableConfigurationTarget, {key, value}, {scopes: overrides, ...options});
+		this.configurationEditing = this.configurationEditing ?? this.createConfigurationEditingService(this.instantiationService);
+		await (await this.configurationEditing).writeConfiguration(editableConfigurationTarget, {key, value}, {scopes: overrides, ...options});
 		switch (editableConfigurationTarget) {
 			case EditableConfigurationTarget.USER_LOCAL:
 				if (this.applicationConfiguration && this.isSettingAppliedForAllProfiles(key)) {
@@ -1052,12 +1052,27 @@ export class WorkspaceService extends Disposable implements IWorkbenchConfigurat
 		}
 	}
 
-	private getConfigurationModel(target: EditableConfigurationTarget, resource?: URI | null): ConfigurationModel | undefined {
+	private async createConfigurationEditingService(instantiationService: IInstantiationService): Promise<ConfigurationEditing> {
+		const remoteSettingsResource = (await this.remoteAgentService.getEnvironment())?.settingsPath ?? null;
+		return instantiationService.createInstance(ConfigurationEditing, remoteSettingsResource);
+	}
+
+	private getConfigurationModelForEditableConfigurationTarget(target: EditableConfigurationTarget, resource?: URI | null): ConfigurationModel | undefined {
 		switch (target) {
 			case EditableConfigurationTarget.USER_LOCAL: return this._configuration.localUserConfiguration;
 			case EditableConfigurationTarget.USER_REMOTE: return this._configuration.remoteUserConfiguration;
 			case EditableConfigurationTarget.WORKSPACE: return this._configuration.workspaceConfiguration;
 			case EditableConfigurationTarget.WORKSPACE_FOLDER: return resource ? this._configuration.folderConfigurations.get(resource) : undefined;
+		}
+	}
+
+	getConfigurationModel(target: ConfigurationTarget, resource?: URI | null): ConfigurationModel | undefined {
+		switch (target) {
+			case ConfigurationTarget.USER_LOCAL: return this._configuration.localUserConfiguration;
+			case ConfigurationTarget.USER_REMOTE: return this._configuration.remoteUserConfiguration;
+			case ConfigurationTarget.WORKSPACE: return this._configuration.workspaceConfiguration;
+			case ConfigurationTarget.WORKSPACE_FOLDER: return resource ? this._configuration.folderConfigurations.get(resource) : undefined;
+			default: return undefined;
 		}
 	}
 
@@ -1095,21 +1110,8 @@ export class WorkspaceService extends Disposable implements IWorkbenchConfigurat
 			}
 			const configurationChangeEvent = new ConfigurationChangeEvent(change, previous, this._configuration, this.workspace);
 			configurationChangeEvent.source = target;
-			configurationChangeEvent.sourceConfig = this.getTargetConfiguration(target);
 			this._onDidChangeConfiguration.fire(configurationChangeEvent);
 		}
-	}
-
-	private getTargetConfiguration(target: ConfigurationTarget): any {
-		switch (target) {
-			case ConfigurationTarget.DEFAULT:
-				return this._configuration.defaults.contents;
-			case ConfigurationTarget.USER:
-				return this._configuration.userConfiguration.contents;
-			case ConfigurationTarget.WORKSPACE:
-				return this._configuration.workspaceConfiguration.contents;
-		}
-		return {};
 	}
 
 	private toEditableConfigurationTarget(target: ConfigurationTarget, key: string): EditableConfigurationTarget | null {
@@ -1156,8 +1158,8 @@ class RegisterConfigurationSchemasContribution extends Disposable implements IWo
 
 			const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 			const delayer = this._register(new Delayer<void>(50));
-			this._register(Event.any(configurationRegistry.onDidUpdateConfiguration, configurationRegistry.onDidSchemaChange/* , workspaceTrustManagementService.onDidChangeTrust */)(() =>
-				delayer.trigger(() => this.registerConfigurationSchemas(), lifecycleService.phase === LifecyclePhase.Eventually ? undefined : 2500 /* delay longer in early phases */)));
+			// this._register(Event.any(configurationRegistry.onDidUpdateConfiguration, configurationRegistry.onDidSchemaChange, workspaceTrustManagementService.onDidChangeTrust)(() =>
+			// 	delayer.trigger(() => this.registerConfigurationSchemas(), lifecycleService.phase === LifecyclePhase.Eventually ? undefined : 2500 /* delay longer in early phases */)));
 		});
 	}
 
@@ -1324,6 +1326,8 @@ class ResetConfigurationDefaultsOverridesCache extends Disposable implements IWo
 
 class UpdateExperimentalSettingsDefaults extends Disposable implements IWorkbenchContribution {
 
+	static readonly ID = 'workbench.contrib.updateExperimentalSettingsDefaults';
+
 	private readonly processedExperimentalSettings = new Set<string>();
 	private readonly configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 
@@ -1363,7 +1367,7 @@ class UpdateExperimentalSettingsDefaults extends Disposable implements IWorkbenc
 const workbenchContributionsRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchContributionsRegistry.registerWorkbenchContribution(RegisterConfigurationSchemasContribution, LifecyclePhase.Restored);
 workbenchContributionsRegistry.registerWorkbenchContribution(ResetConfigurationDefaultsOverridesCache, LifecyclePhase.Eventually);
-workbenchContributionsRegistry.registerWorkbenchContribution(UpdateExperimentalSettingsDefaults, LifecyclePhase.Ready);
+registerWorkbenchContribution2(UpdateExperimentalSettingsDefaults.ID, UpdateExperimentalSettingsDefaults, WorkbenchPhase.BlockRestore);
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 configurationRegistry.registerConfiguration({
