@@ -170,5 +170,11 @@ import {MarkerDecorationsService} from 'td/editor/common/services/markerDecorati
 // Snippets
 import 'td/workbench/contrib/snippets/browser/snippets.contribution';
 
+// Welcome
+import 'td/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution';
+import 'td/workbench/contrib/welcomeWalkthrough/browser/walkThrough.contribution';
+import 'td/workbench/contrib/welcomeViews/common/viewsWelcome.contribution';
+import 'td/workbench/contrib/welcomeViews/common/newFile.contribution';
+
 
 //#endregion
