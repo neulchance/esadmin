@@ -3,21 +3,21 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getActiveElement } from 'td/base/browser/dom';
-import { Codicon } from 'td/base/common/codicons';
-import { KeyCode, KeyMod } from 'td/base/common/keyCodes';
-import { ICodeEditor, IDiffEditor } from 'td/editor/browser/editorBrowser';
-import { EditorAction2, ServicesAccessor } from 'td/editor/browser/editorExtensions';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { DiffEditorWidget } from 'td/editor/browser/widget/diffEditor/diffEditorWidget';
-import { EditorContextKeys } from 'td/editor/common/editorContextKeys';
-import { localize, localize2 } from 'td/nls';
-import { ILocalizedString } from 'td/platform/action/common/action';
-import { Action2, MenuId, MenuRegistry, registerAction2 } from 'td/platform/actions/common/actions';
-import { CommandsRegistry } from 'td/platform/commands/common/commands';
-import { IConfigurationService } from 'td/platform/configuration/common/configuration';
-import { ContextKeyEqualsExpr, ContextKeyExpr } from 'td/platform/contextkey/common/contextkey';
-import { KeybindingWeight } from 'td/platform/keybinding/common/keybindingsRegistry';
+import {getActiveElement} from 'td/base/browser/dom';
+import {Codicon} from 'td/base/common/codicons';
+import {KeyCode, KeyMod} from 'td/base/common/keyCodes';
+import {ICodeEditor, IDiffEditor} from 'td/editor/browser/editorBrowser';
+import {EditorAction2, ServicesAccessor} from 'td/editor/browser/editorExtensions';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {DiffEditorWidget} from 'td/editor/browser/widget/diffEditor/diffEditorWidget';
+import {EditorContextKeys} from 'td/editor/common/editorContextKeys';
+import {localize, localize2} from 'td/nls';
+import {ILocalizedString} from 'td/platform/action/common/action';
+import {Action2, MenuId, MenuRegistry, registerAction2} from 'td/platform/actions/common/actions';
+import {CommandsRegistry} from 'td/platform/commands/common/commands';
+import {IConfigurationService} from 'td/platform/configuration/common/configuration';
+import {ContextKeyEqualsExpr, ContextKeyExpr} from 'td/platform/contextkey/common/contextkey';
+import {KeybindingWeight} from 'td/platform/keybinding/common/keybindingsRegistry';
 import './registrations.contribution';
 
 export class ToggleCollapseUnchangedRegions extends Action2 {
@@ -131,7 +131,7 @@ export class SwitchSide extends EditorAction2 {
 		const diffEditor = findFocusedDiffEditor(accessor);
 		if (diffEditor instanceof DiffEditorWidget) {
 			if (arg && arg.dryRun) {
-				return { destinationSelection: diffEditor.mapToOtherSide().destinationSelection };
+				return {destinationSelection: diffEditor.mapToOtherSide().destinationSelection};
 			} else {
 				diffEditor.switchSide();
 			}
