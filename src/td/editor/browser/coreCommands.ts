@@ -4,32 +4,32 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'td/nls';
-import { isFirefox } from 'td/base/browser/browser';
-import { KeyCode, KeyMod } from 'td/base/common/keyCodes';
+import {isFirefox} from 'td/base/browser/browser';
+import {KeyCode, KeyMod} from 'td/base/common/keyCodes';
 import * as types from 'td/base/common/types';
-import { status } from 'td/base/browser/ui/aria/aria';
-import { ICodeEditor } from 'td/editor/browser/editorBrowser';
-import { Command, EditorCommand, ICommandOptions, registerEditorCommand, MultiCommand, UndoCommand, RedoCommand, SelectAllCommand } from 'td/editor/browser/editorExtensions';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { ColumnSelection, IColumnSelectResult } from 'td/editor/common/cursor/cursorColumnSelection';
-import { CursorState, EditOperationType, IColumnSelectData, PartialCursorState } from 'td/editor/common/cursorCommon';
-import { DeleteOperations } from 'td/editor/common/cursor/cursorDeleteOperations';
-import { CursorChangeReason } from 'td/editor/common/cursorEvents';
-import { CursorMove as CursorMove_, CursorMoveCommands } from 'td/editor/common/cursor/cursorMoveCommands';
-import { TypeOperations } from 'td/editor/common/cursor/cursorTypeOperations';
-import { IPosition, Position } from 'td/editor/common/core/position';
-import { Range } from 'td/editor/common/core/range';
-import { Handler, ScrollType } from 'td/editor/common/editorCommon';
-import { EditorContextKeys } from 'td/editor/common/editorContextKeys';
-import { VerticalRevealType } from 'td/editor/common/viewEvents';
-import { ICommandMetadata } from 'td/platform/commands/common/commands';
-import { ContextKeyExpr } from 'td/platform/contextkey/common/contextkey';
-import { ServicesAccessor } from 'td/platform/instantiation/common/instantiation';
-import { KeybindingWeight, KeybindingsRegistry } from 'td/platform/keybinding/common/keybindingsRegistry';
-import { EditorOption } from 'td/editor/common/config/editorOptions';
-import { IViewModel } from 'td/editor/common/viewModel';
-import { ISelection } from 'td/editor/common/core/selection';
-import { getActiveElement } from 'td/base/browser/dom';
+import {status} from 'td/base/browser/ui/aria/aria';
+import {ICodeEditor} from 'td/editor/browser/editorBrowser';
+import {Command, EditorCommand, ICommandOptions, registerEditorCommand, MultiCommand, UndoCommand, RedoCommand, SelectAllCommand} from 'td/editor/browser/editorExtensions';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {ColumnSelection, IColumnSelectResult} from 'td/editor/common/cursor/cursorColumnSelection';
+import {CursorState, EditOperationType, IColumnSelectData, PartialCursorState} from 'td/editor/common/cursorCommon';
+import {DeleteOperations} from 'td/editor/common/cursor/cursorDeleteOperations';
+import {CursorChangeReason} from 'td/editor/common/cursorEvents';
+import {CursorMove as CursorMove_, CursorMoveCommands} from 'td/editor/common/cursor/cursorMoveCommands';
+import {TypeOperations} from 'td/editor/common/cursor/cursorTypeOperations';
+import {IPosition, Position} from 'td/editor/common/core/position';
+import {Range} from 'td/editor/common/core/range';
+import {Handler, ScrollType} from 'td/editor/common/editorCommon';
+import {EditorContextKeys} from 'td/editor/common/editorContextKeys';
+import {VerticalRevealType} from 'td/editor/common/viewEvents';
+import {ICommandMetadata} from 'td/platform/commands/common/commands';
+import {ContextKeyExpr} from 'td/platform/contextkey/common/contextkey';
+import {ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
+import {KeybindingWeight, KeybindingsRegistry} from 'td/platform/keybinding/common/keybindingsRegistry';
+import {EditorOption} from 'td/editor/common/config/editorOptions';
+import {IViewModel} from 'td/editor/common/viewModel';
+import {ISelection} from 'td/editor/common/core/selection';
+import {getActiveElement} from 'td/base/browser/dom';
 
 const CORE_WEIGHT = KeybindingWeight.EditorCore;
 
@@ -479,7 +479,7 @@ export namespace CoreNavigationCommands {
 					weight: CORE_WEIGHT,
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyMod.Alt | KeyCode.LeftArrow,
-					linux: { primary: 0 }
+					linux: {primary: 0}
 				}
 			});
 		}
@@ -498,7 +498,7 @@ export namespace CoreNavigationCommands {
 					weight: CORE_WEIGHT,
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyMod.Alt | KeyCode.RightArrow,
-					linux: { primary: 0 }
+					linux: {primary: 0}
 				}
 			});
 		}
@@ -530,7 +530,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyMod.Alt | KeyCode.UpArrow,
-			linux: { primary: 0 }
+			linux: {primary: 0}
 		}
 	}));
 
@@ -542,7 +542,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyMod.Alt | KeyCode.PageUp,
-			linux: { primary: 0 }
+			linux: {primary: 0}
 		}
 	}));
 
@@ -568,7 +568,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyMod.Alt | KeyCode.DownArrow,
-			linux: { primary: 0 }
+			linux: {primary: 0}
 		}
 	}));
 
@@ -580,7 +580,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyMod.Alt | KeyCode.PageDown,
-			linux: { primary: 0 }
+			linux: {primary: 0}
 		}
 	}));
 
@@ -695,7 +695,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyCode.LeftArrow,
-			mac: { primary: KeyCode.LeftArrow, secondary: [KeyMod.WinCtrl | KeyCode.KeyB] }
+			mac: {primary: KeyCode.LeftArrow, secondary: [KeyMod.WinCtrl | KeyCode.KeyB]}
 		}
 	}));
 
@@ -728,7 +728,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyCode.RightArrow,
-			mac: { primary: KeyCode.RightArrow, secondary: [KeyMod.WinCtrl | KeyCode.KeyF] }
+			mac: {primary: KeyCode.RightArrow, secondary: [KeyMod.WinCtrl | KeyCode.KeyF]}
 		}
 	}));
 
@@ -761,7 +761,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyCode.UpArrow,
-			mac: { primary: KeyCode.UpArrow, secondary: [KeyMod.WinCtrl | KeyCode.KeyP] }
+			mac: {primary: KeyCode.UpArrow, secondary: [KeyMod.WinCtrl | KeyCode.KeyP]}
 		}
 	}));
 
@@ -779,8 +779,8 @@ export namespace CoreNavigationCommands {
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.Shift | KeyCode.UpArrow,
 			secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.UpArrow],
-			mac: { primary: KeyMod.Shift | KeyCode.UpArrow },
-			linux: { primary: KeyMod.Shift | KeyCode.UpArrow }
+			mac: {primary: KeyMod.Shift | KeyCode.UpArrow},
+			linux: {primary: KeyMod.Shift | KeyCode.UpArrow}
 		}
 	}));
 
@@ -829,7 +829,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyCode.DownArrow,
-			mac: { primary: KeyCode.DownArrow, secondary: [KeyMod.WinCtrl | KeyCode.KeyN] }
+			mac: {primary: KeyCode.DownArrow, secondary: [KeyMod.WinCtrl | KeyCode.KeyN]}
 		}
 	}));
 
@@ -847,8 +847,8 @@ export namespace CoreNavigationCommands {
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.Shift | KeyCode.DownArrow,
 			secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.DownArrow],
-			mac: { primary: KeyMod.Shift | KeyCode.DownArrow },
-			linux: { primary: KeyMod.Shift | KeyCode.DownArrow }
+			mac: {primary: KeyMod.Shift | KeyCode.DownArrow},
+			linux: {primary: KeyMod.Shift | KeyCode.DownArrow}
 		}
 	}));
 
@@ -1005,7 +1005,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyCode.Home,
-			mac: { primary: KeyCode.Home, secondary: [KeyMod.CtrlCmd | KeyCode.LeftArrow] }
+			mac: {primary: KeyCode.Home, secondary: [KeyMod.CtrlCmd | KeyCode.LeftArrow]}
 		}
 	}));
 
@@ -1017,7 +1017,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.Shift | KeyCode.Home,
-			mac: { primary: KeyMod.Shift | KeyCode.Home, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.LeftArrow] }
+			mac: {primary: KeyMod.Shift | KeyCode.Home, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.LeftArrow]}
 		}
 	}));
 
@@ -1059,7 +1059,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: 0,
-			mac: { primary: KeyMod.WinCtrl | KeyCode.KeyA }
+			mac: {primary: KeyMod.WinCtrl | KeyCode.KeyA}
 		}
 	}));
 
@@ -1071,7 +1071,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: 0,
-			mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyA }
+			mac: {primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyA}
 		}
 	}));
 
@@ -1104,11 +1104,11 @@ export namespace CoreNavigationCommands {
 		id: 'cursorEnd',
 		precondition: undefined,
 		kbOpts: {
-			args: { sticky: false },
+			args: {sticky: false},
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyCode.End,
-			mac: { primary: KeyCode.End, secondary: [KeyMod.CtrlCmd | KeyCode.RightArrow] }
+			mac: {primary: KeyCode.End, secondary: [KeyMod.CtrlCmd | KeyCode.RightArrow]}
 		},
 		metadata: {
 			description: `Go to End`,
@@ -1133,11 +1133,11 @@ export namespace CoreNavigationCommands {
 		id: 'cursorEndSelect',
 		precondition: undefined,
 		kbOpts: {
-			args: { sticky: false },
+			args: {sticky: false},
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.Shift | KeyCode.End,
-			mac: { primary: KeyMod.Shift | KeyCode.End, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.RightArrow] }
+			mac: {primary: KeyMod.Shift | KeyCode.End, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.RightArrow]}
 		},
 		metadata: {
 			description: `Select to End`,
@@ -1196,7 +1196,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: 0,
-			mac: { primary: KeyMod.WinCtrl | KeyCode.KeyE }
+			mac: {primary: KeyMod.WinCtrl | KeyCode.KeyE}
 		}
 	}));
 
@@ -1208,7 +1208,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: 0,
-			mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyE }
+			mac: {primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyE}
 		}
 	}));
 
@@ -1240,7 +1240,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyCode.Home,
-			mac: { primary: KeyMod.CtrlCmd | KeyCode.UpArrow }
+			mac: {primary: KeyMod.CtrlCmd | KeyCode.UpArrow}
 		}
 	}));
 
@@ -1252,7 +1252,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.Home,
-			mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.UpArrow }
+			mac: {primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.UpArrow}
 		}
 	}));
 
@@ -1284,7 +1284,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyCode.End,
-			mac: { primary: KeyMod.CtrlCmd | KeyCode.DownArrow }
+			mac: {primary: KeyMod.CtrlCmd | KeyCode.DownArrow}
 		}
 	}));
 
@@ -1296,7 +1296,7 @@ export namespace CoreNavigationCommands {
 			weight: CORE_WEIGHT,
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.End,
-			mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.DownArrow }
+			mac: {primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.DownArrow}
 		}
 	}));
 
@@ -1363,7 +1363,7 @@ export namespace CoreNavigationCommands {
 				);
 			}
 
-			viewModel.viewLayout.setScrollPosition({ scrollTop: desiredScrollTop }, ScrollType.Smooth);
+			viewModel.viewLayout.setScrollPosition({scrollTop: desiredScrollTop}, ScrollType.Smooth);
 		}
 
 		private _computeDesiredScrollTop(viewModel: IViewModel, args: EditorScroll_.ParsedArguments): number {
@@ -1409,7 +1409,7 @@ export namespace CoreNavigationCommands {
 
 		_runHorizontalEditorScroll(viewModel: IViewModel, source: string | null | undefined, args: EditorScroll_.ParsedArguments): void {
 			const desiredScrollLeft = this._computeDesiredScrollLeft(viewModel, args);
-			viewModel.viewLayout.setScrollPosition({ scrollLeft: desiredScrollLeft }, ScrollType.Smooth);
+			viewModel.viewLayout.setScrollPosition({scrollLeft: desiredScrollLeft}, ScrollType.Smooth);
 		}
 
 		_computeDesiredScrollLeft(viewModel: IViewModel, args: EditorScroll_.ParsedArguments) {
@@ -1429,7 +1429,7 @@ export namespace CoreNavigationCommands {
 					weight: CORE_WEIGHT,
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: KeyMod.CtrlCmd | KeyCode.UpArrow,
-					mac: { primary: KeyMod.WinCtrl | KeyCode.PageUp }
+					mac: {primary: KeyMod.WinCtrl | KeyCode.PageUp}
 				}
 			});
 		}
@@ -1455,8 +1455,8 @@ export namespace CoreNavigationCommands {
 					weight: CORE_WEIGHT,
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: KeyMod.CtrlCmd | KeyCode.PageUp,
-					win: { primary: KeyMod.Alt | KeyCode.PageUp },
-					linux: { primary: KeyMod.Alt | KeyCode.PageUp }
+					win: {primary: KeyMod.Alt | KeyCode.PageUp},
+					linux: {primary: KeyMod.Alt | KeyCode.PageUp}
 				}
 			});
 		}
@@ -1506,7 +1506,7 @@ export namespace CoreNavigationCommands {
 					weight: CORE_WEIGHT,
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: KeyMod.CtrlCmd | KeyCode.DownArrow,
-					mac: { primary: KeyMod.WinCtrl | KeyCode.PageDown }
+					mac: {primary: KeyMod.WinCtrl | KeyCode.PageDown}
 				}
 			});
 		}
@@ -1532,8 +1532,8 @@ export namespace CoreNavigationCommands {
 					weight: CORE_WEIGHT,
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: KeyMod.CtrlCmd | KeyCode.PageDown,
-					win: { primary: KeyMod.Alt | KeyCode.PageDown },
-					linux: { primary: KeyMod.Alt | KeyCode.PageDown }
+					win: {primary: KeyMod.Alt | KeyCode.PageDown},
+					linux: {primary: KeyMod.Alt | KeyCode.PageDown}
 				}
 			});
 		}
@@ -1981,7 +1981,7 @@ export namespace CoreEditingCommands {
 					weight: CORE_WEIGHT,
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: 0,
-					mac: { primary: KeyMod.WinCtrl | KeyCode.KeyO }
+					mac: {primary: KeyMod.WinCtrl | KeyCode.KeyO}
 				}
 			});
 		}
@@ -2048,7 +2048,7 @@ export namespace CoreEditingCommands {
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: KeyCode.Backspace,
 					secondary: [KeyMod.Shift | KeyCode.Backspace],
-					mac: { primary: KeyCode.Backspace, secondary: [KeyMod.Shift | KeyCode.Backspace, KeyMod.WinCtrl | KeyCode.KeyH, KeyMod.WinCtrl | KeyCode.Backspace] }
+					mac: {primary: KeyCode.Backspace, secondary: [KeyMod.Shift | KeyCode.Backspace, KeyMod.WinCtrl | KeyCode.KeyH, KeyMod.WinCtrl | KeyCode.Backspace]}
 				}
 			});
 		}
@@ -2072,7 +2072,7 @@ export namespace CoreEditingCommands {
 					weight: CORE_WEIGHT,
 					kbExpr: EditorContextKeys.textInputFocus,
 					primary: KeyCode.Delete,
-					mac: { primary: KeyCode.Delete, secondary: [KeyMod.WinCtrl | KeyCode.KeyD, KeyMod.WinCtrl | KeyCode.Delete] }
+					mac: {primary: KeyCode.Delete, secondary: [KeyMod.WinCtrl | KeyCode.KeyD, KeyMod.WinCtrl | KeyCode.Delete]}
 				}
 			});
 		}

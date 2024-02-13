@@ -5,7 +5,7 @@
 
 //#region --- editor/workbench core
 
-// import 'td/editor/editor.all';
+import 'td/editor/editor.all';
 
 import 'td/workbench/api/browser/extensionHost.contribution';
 import 'td/workbench/browser/workbench.contribution';
@@ -69,6 +69,7 @@ import 'td/workbench/services/views/browser/viewDescriptorService';
 import 'td/workbench/services/views/browser/viewsService';
 import 'td/editor/browser/services/hoverService';
 import 'td/editor/common/services/languageFeaturesService';
+import 'td/editor/common/services/semanticTokensStylingService';
 import 'td/workbench/services/keybinding/browser/keybindingService';
 import 'td/workbench/services/editor/browser/editorService';
 import 'td/workbench/services/editor/browser/editorResolverService';
@@ -116,7 +117,7 @@ registerSingleton(IExtensionGalleryService, ExtensionGalleryService, Instantiati
 registerSingleton(IContextViewService, ContextViewService, InstantiationType.Delayed);
 registerSingleton(IListService, ListService, InstantiationType.Delayed);
 registerSingleton(IEditorWorkerService, EditorWorkerService, InstantiationType.Eager /* registers link detection and word based suggestions for any document */);
-// registerSingleton(IMarkerDecorationsService, MarkerDecorationsService, InstantiationType.Delayed);
+registerSingleton(IMarkerDecorationsService, MarkerDecorationsService, InstantiationType.Delayed);
 registerSingleton(IMarkerService, MarkerService, InstantiationType.Delayed);
 registerSingleton(IContextKeyService, ContextKeyService, InstantiationType.Delayed);
 registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService, InstantiationType.Delayed);
@@ -133,6 +134,10 @@ import 'td/workbench/contrib/files/browser/explorerViewlet';
 import 'td/workbench/contrib/files/browser/fileActions.contribution';
 import 'td/workbench/contrib/files/browser/files.contribution';/* this help to working the EditorFactoryRegistry.getFileEditorFactory */
 
+// Bulk Edit
+import 'td/workbench/contrib/bulkEdit/browser/bulkEditService';
+import 'td/workbench/contrib/bulkEdit/browser/preview/bulkEdit.contribution';
+
 // Extensions Management
 import 'td/workbench/contrib/extensions/browser/extensions.contribution';
 import 'td/workbench/contrib/extensions/browser/extensionsViewlet';
@@ -148,9 +153,6 @@ import 'td/workbench/contrib/output/common/outputChannelModelService';
 import 'td/workbench/contrib/output/browser/output.contribution';
 import 'td/workbench/contrib/output/browser/outputView';
 
-// Bulk Edit
-// import 'td/workbench/contrib/bulkEdit/browser/bulkEditService';
-
 // Terminal
 import 'td/workbench/contrib/terminal/terminal.all';
 
@@ -162,6 +164,11 @@ import 'td/workbench/contrib/audioCues/browser/audioCues.contribution';
 
 // Logs
 import 'td/workbench/contrib/logs/common/logs.contribution';
+import {IMarkerDecorationsService} from 'td/editor/common/services/markerDecorations';
+import {MarkerDecorationsService} from 'td/editor/common/services/markerDecorationsService';
+
+// Snippets
+import 'td/workbench/contrib/snippets/browser/snippets.contribution';
 
 
 //#endregion

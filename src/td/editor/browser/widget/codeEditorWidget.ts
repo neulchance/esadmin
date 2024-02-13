@@ -3,63 +3,63 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'td/editor/browser/services/markerDecorations';
+// import 'td/editor/browser/services/markerDecorations';
 
 import 'td/css!./media/editor';
 import * as nls from 'td/nls';
 import * as dom from 'td/base/browser/dom';
-import { IKeyboardEvent } from 'td/base/browser/keyboardEvent';
-import { IMouseWheelEvent } from 'td/base/browser/mouseEvent';
-import { Color } from 'td/base/common/color';
-import { onUnexpectedError } from 'td/base/common/errors';
-import { Emitter, EmitterOptions, Event, EventDeliveryQueue, createEventDeliveryQueue } from 'td/base/common/event';
-import { hash } from 'td/base/common/hash';
-import { Disposable, IDisposable, dispose, DisposableStore } from 'td/base/common/lifecycle';
-import { Schemas } from 'td/base/common/network';
-import { EditorConfiguration, IEditorConstructionOptions } from 'td/editor/browser/config/editorConfiguration';
+import {IKeyboardEvent} from 'td/base/browser/keyboardEvent';
+import {IMouseWheelEvent} from 'td/base/browser/mouseEvent';
+import {Color} from 'td/base/common/color';
+import {onUnexpectedError} from 'td/base/common/errors';
+import {Emitter, EmitterOptions, Event, EventDeliveryQueue, createEventDeliveryQueue} from 'td/base/common/event';
+import {hash} from 'td/base/common/hash';
+import {Disposable, IDisposable, dispose, DisposableStore} from 'td/base/common/lifecycle';
+import {Schemas} from 'td/base/common/network';
+import {EditorConfiguration, IEditorConstructionOptions} from 'td/editor/browser/config/editorConfiguration';
 import * as editorBrowser from 'td/editor/browser/editorBrowser';
-import { EditorExtensionsRegistry, IEditorContributionDescription } from 'td/editor/browser/editorExtensions';
-import { ICodeEditorService } from 'td/editor/browser/services/codeEditorService';
-import { ICommandDelegate } from 'td/editor/browser/view/viewController';
-import { IContentWidgetData, IGlyphMarginWidgetData, IOverlayWidgetData, View } from 'td/editor/browser/view';
-import { ViewUserInputEvents } from 'td/editor/browser/view/viewUserInputEvents';
-import { ConfigurationChangedEvent, EditorLayoutInfo, IEditorOptions, EditorOption, IComputedEditorOptions, FindComputedEditorOptionValueById, filterValidationDecorations } from 'td/editor/common/config/editorOptions';
-import { CursorColumns } from 'td/editor/common/core/cursorColumns';
-import { CursorChangeReason, ICursorPositionChangedEvent, ICursorSelectionChangedEvent } from 'td/editor/common/cursorEvents';
-import { IPosition, Position } from 'td/editor/common/core/position';
-import { IRange, Range } from 'td/editor/common/core/range';
-import { ISelection, Selection } from 'td/editor/common/core/selection';
-import { InternalEditorAction } from 'td/editor/common/editorAction';
+import {EditorExtensionsRegistry, IEditorContributionDescription} from 'td/editor/browser/editorExtensions';
+import {ICodeEditorService} from 'td/editor/browser/services/codeEditorService';
+import {ICommandDelegate} from 'td/editor/browser/view/viewController';
+import {IContentWidgetData, IGlyphMarginWidgetData, IOverlayWidgetData, View} from 'td/editor/browser/view';
+import {ViewUserInputEvents} from 'td/editor/browser/view/viewUserInputEvents';
+import {ConfigurationChangedEvent, EditorLayoutInfo, IEditorOptions, EditorOption, IComputedEditorOptions, FindComputedEditorOptionValueById, filterValidationDecorations} from 'td/editor/common/config/editorOptions';
+import {CursorColumns} from 'td/editor/common/core/cursorColumns';
+import {CursorChangeReason, ICursorPositionChangedEvent, ICursorSelectionChangedEvent} from 'td/editor/common/cursorEvents';
+import {IPosition, Position} from 'td/editor/common/core/position';
+import {IRange, Range} from 'td/editor/common/core/range';
+import {ISelection, Selection} from 'td/editor/common/core/selection';
+import {InternalEditorAction} from 'td/editor/common/editorAction';
 import * as editorCommon from 'td/editor/common/editorCommon';
-import { EditorContextKeys } from 'td/editor/common/editorContextKeys';
-import { EndOfLinePreference, IIdentifiedSingleEditOperation, IModelDecoration, IModelDecorationOptions, IModelDecorationsChangeAccessor, IModelDeltaDecoration, ITextModel, ICursorStateComputer, IAttachedView } from 'td/editor/common/model';
-import { IWordAtPosition } from 'td/editor/common/core/wordHelper';
-import { ClassName } from 'td/editor/common/model/intervalTree';
-import { ModelDecorationOptions } from 'td/editor/common/model/textModel';
-import { IModelContentChangedEvent, IModelDecorationsChangedEvent, IModelLanguageChangedEvent, IModelLanguageConfigurationChangedEvent, IModelOptionsChangedEvent, IModelTokensChangedEvent } from 'td/editor/common/textModelEvents';
-import { editorUnnecessaryCodeOpacity } from 'td/editor/common/core/editorColorRegistry';
-import { editorErrorForeground, editorHintForeground, editorInfoForeground, editorWarningForeground } from 'td/platform/theme/common/colorRegistry';
-import { VerticalRevealType } from 'td/editor/common/viewEvents';
-import { ViewModel } from 'td/editor/common/viewModel/viewModelImpl';
-import { ICommandService } from 'td/platform/commands/common/commands';
-import { ContextKeyValue, IContextKey, IContextKeyService } from 'td/platform/contextkey/common/contextkey';
-import { IInstantiationService, ServicesAccessor } from 'td/platform/instantiation/common/instantiation';
-import { ServiceCollection } from 'td/platform/instantiation/common/serviceCollection';
-import { INotificationService, Severity } from 'td/platform/notification/common/notification';
-import { IThemeService, registerThemingParticipant } from 'td/platform/theme/common/themeService';
-import { IAccessibilityService } from 'td/platform/accessibility/common/accessibility';
-import { MonospaceLineBreaksComputerFactory } from 'td/editor/common/viewModel/monospaceLineBreaksComputer';
-import { DOMLineBreaksComputerFactory } from 'td/editor/browser/view/domLineBreaksComputer';
-import { WordOperations } from 'td/editor/common/cursor/cursorWordOperations';
-import { IEditorWhitespace, IViewModel } from 'td/editor/common/viewModel';
-import { OutgoingViewModelEventKind } from 'td/editor/common/viewModelEventDispatcher';
-import { ILanguageConfigurationService } from 'td/editor/common/languages/languageConfigurationRegistry';
-import { applyFontInfo } from 'td/editor/browser/config/domFontInfo';
-import { IEditorConfiguration } from 'td/editor/common/config/editorConfiguration';
-import { IDimension } from 'td/editor/common/core/dimension';
-import { ILanguageFeaturesService } from 'td/editor/common/services/languageFeatures';
-import { CodeEditorContributions } from 'td/editor/browser/widget/codeEditorContributions';
-import { TabFocus } from 'td/editor/browser/config/tabFocus';
+import {EditorContextKeys} from 'td/editor/common/editorContextKeys';
+import {EndOfLinePreference, IIdentifiedSingleEditOperation, IModelDecoration, IModelDecorationOptions, IModelDecorationsChangeAccessor, IModelDeltaDecoration, ITextModel, ICursorStateComputer, IAttachedView} from 'td/editor/common/model';
+import {IWordAtPosition} from 'td/editor/common/core/wordHelper';
+import {ClassName} from 'td/editor/common/model/intervalTree';
+import {ModelDecorationOptions} from 'td/editor/common/model/textModel';
+import {IModelContentChangedEvent, IModelDecorationsChangedEvent, IModelLanguageChangedEvent, IModelLanguageConfigurationChangedEvent, IModelOptionsChangedEvent, IModelTokensChangedEvent} from 'td/editor/common/textModelEvents';
+import {editorUnnecessaryCodeOpacity} from 'td/editor/common/core/editorColorRegistry';
+import {editorErrorForeground, editorHintForeground, editorInfoForeground, editorWarningForeground} from 'td/platform/theme/common/colorRegistry';
+import {VerticalRevealType} from 'td/editor/common/viewEvents';
+import {ViewModel} from 'td/editor/common/viewModel/viewModelImpl';
+import {ICommandService} from 'td/platform/commands/common/commands';
+import {ContextKeyValue, IContextKey, IContextKeyService} from 'td/platform/contextkey/common/contextkey';
+import {IInstantiationService, ServicesAccessor} from 'td/platform/instantiation/common/instantiation';
+import {ServiceCollection} from 'td/platform/instantiation/common/serviceCollection';
+import {INotificationService, Severity} from 'td/platform/notification/common/notification';
+import {IThemeService, registerThemingParticipant} from 'td/platform/theme/common/themeService';
+import {IAccessibilityService} from 'td/platform/accessibility/common/accessibility';
+import {MonospaceLineBreaksComputerFactory} from 'td/editor/common/viewModel/monospaceLineBreaksComputer';
+import {DOMLineBreaksComputerFactory} from 'td/editor/browser/view/domLineBreaksComputer';
+import {WordOperations} from 'td/editor/common/cursor/cursorWordOperations';
+import {IEditorWhitespace, IViewModel} from 'td/editor/common/viewModel';
+import {OutgoingViewModelEventKind} from 'td/editor/common/viewModelEventDispatcher';
+import {ILanguageConfigurationService} from 'td/editor/common/languages/languageConfigurationRegistry';
+import {applyFontInfo} from 'td/editor/browser/config/domFontInfo';
+import {IEditorConfiguration} from 'td/editor/common/config/editorConfiguration';
+import {IDimension} from 'td/editor/common/core/dimension';
+import {ILanguageFeaturesService} from 'td/editor/common/services/languageFeatures';
+import {CodeEditorContributions} from 'td/editor/browser/widget/codeEditorContributions';
+import {TabFocus} from 'td/editor/browser/config/tabFocus';
 
 let EDITOR_ID = 0;
 
@@ -121,50 +121,50 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 	private readonly _onDidDispose: Emitter<void> = this._register(new Emitter<void>());
 	public readonly onDidDispose: Event<void> = this._onDidDispose.event;
 
-	private readonly _onDidChangeModelContent: Emitter<IModelContentChangedEvent> = this._register(new Emitter<IModelContentChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeModelContent: Emitter<IModelContentChangedEvent> = this._register(new Emitter<IModelContentChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeModelContent: Event<IModelContentChangedEvent> = this._onDidChangeModelContent.event;
 
-	private readonly _onDidChangeModelLanguage: Emitter<IModelLanguageChangedEvent> = this._register(new Emitter<IModelLanguageChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeModelLanguage: Emitter<IModelLanguageChangedEvent> = this._register(new Emitter<IModelLanguageChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeModelLanguage: Event<IModelLanguageChangedEvent> = this._onDidChangeModelLanguage.event;
 
-	private readonly _onDidChangeModelLanguageConfiguration: Emitter<IModelLanguageConfigurationChangedEvent> = this._register(new Emitter<IModelLanguageConfigurationChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeModelLanguageConfiguration: Emitter<IModelLanguageConfigurationChangedEvent> = this._register(new Emitter<IModelLanguageConfigurationChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeModelLanguageConfiguration: Event<IModelLanguageConfigurationChangedEvent> = this._onDidChangeModelLanguageConfiguration.event;
 
-	private readonly _onDidChangeModelOptions: Emitter<IModelOptionsChangedEvent> = this._register(new Emitter<IModelOptionsChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeModelOptions: Emitter<IModelOptionsChangedEvent> = this._register(new Emitter<IModelOptionsChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeModelOptions: Event<IModelOptionsChangedEvent> = this._onDidChangeModelOptions.event;
 
-	private readonly _onDidChangeModelDecorations: Emitter<IModelDecorationsChangedEvent> = this._register(new Emitter<IModelDecorationsChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeModelDecorations: Emitter<IModelDecorationsChangedEvent> = this._register(new Emitter<IModelDecorationsChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeModelDecorations: Event<IModelDecorationsChangedEvent> = this._onDidChangeModelDecorations.event;
 
-	private readonly _onDidChangeModelTokens: Emitter<IModelTokensChangedEvent> = this._register(new Emitter<IModelTokensChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeModelTokens: Emitter<IModelTokensChangedEvent> = this._register(new Emitter<IModelTokensChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeModelTokens: Event<IModelTokensChangedEvent> = this._onDidChangeModelTokens.event;
 
-	private readonly _onDidChangeConfiguration: Emitter<ConfigurationChangedEvent> = this._register(new Emitter<ConfigurationChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeConfiguration: Emitter<ConfigurationChangedEvent> = this._register(new Emitter<ConfigurationChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeConfiguration: Event<ConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
 
-	protected readonly _onWillChangeModel: Emitter<editorCommon.IModelChangedEvent> = this._register(new Emitter<editorCommon.IModelChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	protected readonly _onWillChangeModel: Emitter<editorCommon.IModelChangedEvent> = this._register(new Emitter<editorCommon.IModelChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onWillChangeModel: Event<editorCommon.IModelChangedEvent> = this._onWillChangeModel.event;
 
-	protected readonly _onDidChangeModel: Emitter<editorCommon.IModelChangedEvent> = this._register(new Emitter<editorCommon.IModelChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	protected readonly _onDidChangeModel: Emitter<editorCommon.IModelChangedEvent> = this._register(new Emitter<editorCommon.IModelChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeModel: Event<editorCommon.IModelChangedEvent> = this._onDidChangeModel.event;
 
-	private readonly _onDidChangeCursorPosition: Emitter<ICursorPositionChangedEvent> = this._register(new Emitter<ICursorPositionChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeCursorPosition: Emitter<ICursorPositionChangedEvent> = this._register(new Emitter<ICursorPositionChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeCursorPosition: Event<ICursorPositionChangedEvent> = this._onDidChangeCursorPosition.event;
 
-	private readonly _onDidChangeCursorSelection: Emitter<ICursorSelectionChangedEvent> = this._register(new Emitter<ICursorSelectionChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeCursorSelection: Emitter<ICursorSelectionChangedEvent> = this._register(new Emitter<ICursorSelectionChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeCursorSelection: Event<ICursorSelectionChangedEvent> = this._onDidChangeCursorSelection.event;
 
 	private readonly _onDidAttemptReadOnlyEdit: Emitter<void> = this._register(new InteractionEmitter<void>(this._contributions, this._deliveryQueue));
 	public readonly onDidAttemptReadOnlyEdit: Event<void> = this._onDidAttemptReadOnlyEdit.event;
 
-	private readonly _onDidLayoutChange: Emitter<EditorLayoutInfo> = this._register(new Emitter<EditorLayoutInfo>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidLayoutChange: Emitter<EditorLayoutInfo> = this._register(new Emitter<EditorLayoutInfo>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidLayoutChange: Event<EditorLayoutInfo> = this._onDidLayoutChange.event;
 
-	private readonly _editorTextFocus: BooleanEventEmitter = this._register(new BooleanEventEmitter({ deliveryQueue: this._deliveryQueue }));
+	private readonly _editorTextFocus: BooleanEventEmitter = this._register(new BooleanEventEmitter({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidFocusEditorText: Event<void> = this._editorTextFocus.onDidChangeToTrue;
 	public readonly onDidBlurEditorText: Event<void> = this._editorTextFocus.onDidChangeToFalse;
 
-	private readonly _editorWidgetFocus: BooleanEventEmitter = this._register(new BooleanEventEmitter({ deliveryQueue: this._deliveryQueue }));
+	private readonly _editorWidgetFocus: BooleanEventEmitter = this._register(new BooleanEventEmitter({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidFocusEditorWidget: Event<void> = this._editorWidgetFocus.onDidChangeToTrue;
 	public readonly onDidBlurEditorWidget: Event<void> = this._editorWidgetFocus.onDidChangeToFalse;
 
@@ -219,16 +219,16 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 	private readonly _onKeyDown: Emitter<IKeyboardEvent> = this._register(new InteractionEmitter<IKeyboardEvent>(this._contributions, this._deliveryQueue));
 	public readonly onKeyDown: Event<IKeyboardEvent> = this._onKeyDown.event;
 
-	private readonly _onDidContentSizeChange: Emitter<editorCommon.IContentSizeChangedEvent> = this._register(new Emitter<editorCommon.IContentSizeChangedEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidContentSizeChange: Emitter<editorCommon.IContentSizeChangedEvent> = this._register(new Emitter<editorCommon.IContentSizeChangedEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidContentSizeChange: Event<editorCommon.IContentSizeChangedEvent> = this._onDidContentSizeChange.event;
 
-	private readonly _onDidScrollChange: Emitter<editorCommon.IScrollEvent> = this._register(new Emitter<editorCommon.IScrollEvent>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidScrollChange: Emitter<editorCommon.IScrollEvent> = this._register(new Emitter<editorCommon.IScrollEvent>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidScrollChange: Event<editorCommon.IScrollEvent> = this._onDidScrollChange.event;
 
-	private readonly _onDidChangeViewZones: Emitter<void> = this._register(new Emitter<void>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeViewZones: Emitter<void> = this._register(new Emitter<void>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeViewZones: Event<void> = this._onDidChangeViewZones.event;
 
-	private readonly _onDidChangeHiddenAreas: Emitter<void> = this._register(new Emitter<void>({ deliveryQueue: this._deliveryQueue }));
+	private readonly _onDidChangeHiddenAreas: Emitter<void> = this._register(new Emitter<void>({deliveryQueue: this._deliveryQueue}));
 	public readonly onDidChangeHiddenAreas: Event<void> = this._onDidChangeHiddenAreas.event;
 	//#endregion
 
@@ -289,7 +289,7 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		super();
 		codeEditorService.willCreateCodeEditor();
 
-		const options = { ..._options };
+		const options = {..._options};
 
 		this._domElement = domElement;
 		this._overflowWidgetsDomNode = options.overflowWidgetsDomNode;
@@ -389,7 +389,7 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 
 				const target = this.getTargetAtClientPoint(e.clientX, e.clientY);
 				if (target?.position) {
-					this._onDropIntoEditor.fire({ position: target.position, event: e });
+					this._onDropIntoEditor.fire({position: target.position, event: e});
 				}
 			},
 			onDragLeave: () => {
@@ -1335,7 +1335,7 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 			if (decorationOption.hoverMessage) {
 				opts.hoverMessage = decorationOption.hoverMessage;
 			}
-			newModelDecorations.push({ range: decorationOption.range, options: opts });
+			newModelDecorations.push({range: decorationOption.range, options: opts});
 		}
 
 		// remove decoration sub types that are no longer used, deregister decoration type if necessary
@@ -1362,7 +1362,7 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		const opts = ModelDecorationOptions.createDynamic(this._resolveDecorationOptions(decorationTypeKey, false));
 		const newModelDecorations: IModelDeltaDecoration[] = new Array<IModelDeltaDecoration>(ranges.length);
 		for (let i = 0, len = ranges.length; i < len; i++) {
-			newModelDecorations[i] = { range: ranges[i], options: opts };
+			newModelDecorations[i] = {range: ranges[i], options: opts};
 		}
 
 		// update all decorations
@@ -1810,21 +1810,21 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		} else {
 			commandDelegate = {
 				paste: (text: string, pasteOnNewLine: boolean, multicursorText: string[] | null, mode: string | null) => {
-					const payload: editorCommon.PastePayload = { text, pasteOnNewLine, multicursorText, mode };
+					const payload: editorCommon.PastePayload = {text, pasteOnNewLine, multicursorText, mode};
 					this._commandService.executeCommand(editorCommon.Handler.Paste, payload);
 				},
 				type: (text: string) => {
-					const payload: editorCommon.TypePayload = { text };
+					const payload: editorCommon.TypePayload = {text};
 					this._commandService.executeCommand(editorCommon.Handler.Type, payload);
 				},
 				compositionType: (text: string, replacePrevCharCnt: number, replaceNextCharCnt: number, positionDelta: number) => {
 					// Try if possible to go through the existing `replacePreviousChar` command
 					if (replaceNextCharCnt || positionDelta) {
 						// must be handled through the new command
-						const payload: editorCommon.CompositionTypePayload = { text, replacePrevCharCnt, replaceNextCharCnt, positionDelta };
+						const payload: editorCommon.CompositionTypePayload = {text, replacePrevCharCnt, replaceNextCharCnt, positionDelta};
 						this._commandService.executeCommand(editorCommon.Handler.CompositionType, payload);
 					} else {
-						const payload: editorCommon.ReplacePreviousCharPayload = { text, replaceCharCnt: replacePrevCharCnt };
+						const payload: editorCommon.ReplacePreviousCharPayload = {text, replaceCharCnt: replacePrevCharCnt};
 						this._commandService.executeCommand(editorCommon.Handler.ReplacePreviousChar, payload);
 					}
 				},
@@ -1975,7 +1975,7 @@ class InteractionEmitter<T> extends Emitter<T> {
 		private readonly _contributions: CodeEditorContributions,
 		deliveryQueue: EventDeliveryQueue
 	) {
-		super({ deliveryQueue });
+		super({deliveryQueue});
 	}
 
 	override fire(event: T): void {

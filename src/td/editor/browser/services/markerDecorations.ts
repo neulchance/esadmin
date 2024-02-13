@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IMarkerDecorationsService } from 'td/editor/common/services/markerDecorations';
-import { EditorContributionInstantiation, registerEditorContribution } from 'td/editor/browser/editorExtensions';
-import { ICodeEditor } from 'td/editor/browser/editorBrowser';
-import { IEditorContribution } from 'td/editor/common/editorCommon';
+import {IMarkerDecorationsService} from 'td/editor/common/services/markerDecorations';
+import {EditorContributionInstantiation, registerEditorContribution} from 'td/editor/browser/editorExtensions';
+import {ICodeEditor} from 'td/editor/browser/editorBrowser';
+import {IEditorContribution} from 'td/editor/common/editorCommon';
 
 export class MarkerDecorationsContribution implements IEditorContribution {
 

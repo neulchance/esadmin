@@ -4,58 +4,58 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'td/base/browser/dom';
-import { FastDomNode, createFastDomNode } from 'td/base/browser/fastDomNode';
-import { IMouseWheelEvent } from 'td/base/browser/mouseEvent';
-import { inputLatency } from 'td/base/browser/performance';
-import { CodeWindow } from 'td/base/browser/window';
-import { BugIndicatingError, onUnexpectedError } from 'td/base/common/errors';
-import { IDisposable } from 'td/base/common/lifecycle';
-import { IPointerHandlerHelper } from 'td/editor/browser/controller/mouseHandler';
-import { PointerHandlerLastRenderData } from 'td/editor/browser/controller/mouseTarget';
-import { PointerHandler } from 'td/editor/browser/controller/pointerHandler';
-import { IVisibleRangeProvider, TextAreaHandler } from 'td/editor/browser/controller/textAreaHandler';
-import { IContentWidget, IContentWidgetPosition, IEditorAriaOptions, IGlyphMarginWidget, IGlyphMarginWidgetPosition, IMouseTarget, IOverlayWidget, IOverlayWidgetPosition, IViewZoneChangeAccessor } from 'td/editor/browser/editorBrowser';
-import { RenderingContext, RestrictedRenderingContext } from 'td/editor/browser/view/renderingContext';
-import { ICommandDelegate, ViewController } from 'td/editor/browser/view/viewController';
-import { ContentViewOverlays, MarginViewOverlays } from 'td/editor/browser/view/viewOverlays';
-import { PartFingerprint, PartFingerprints, ViewPart } from 'td/editor/browser/view/viewPart';
-import { ViewUserInputEvents } from 'td/editor/browser/view/viewUserInputEvents';
-import { BlockDecorations } from 'td/editor/browser/viewParts/blockDecorations/blockDecorations';
-import { ViewContentWidgets } from 'td/editor/browser/viewParts/contentWidgets/contentWidgets';
-import { CurrentLineHighlightOverlay, CurrentLineMarginHighlightOverlay } from 'td/editor/browser/viewParts/currentLineHighlight/currentLineHighlight';
-import { DecorationsOverlay } from 'td/editor/browser/viewParts/decorations/decorations';
-import { EditorScrollbar } from 'td/editor/browser/viewParts/editorScrollbar/editorScrollbar';
-import { GlyphMarginWidgets } from 'td/editor/browser/viewParts/glyphMargin/glyphMargin';
-import { IndentGuidesOverlay } from 'td/editor/browser/viewParts/indentGuides/indentGuides';
-import { LineNumbersOverlay } from 'td/editor/browser/viewParts/lineNumbers/lineNumbers';
-import { ViewLines } from 'td/editor/browser/viewParts/lines/viewLines';
-import { LinesDecorationsOverlay } from 'td/editor/browser/viewParts/linesDecorations/linesDecorations';
-import { Margin } from 'td/editor/browser/viewParts/margin/margin';
-import { MarginViewLineDecorationsOverlay } from 'td/editor/browser/viewParts/marginDecorations/marginDecorations';
-import { Minimap } from 'td/editor/browser/viewParts/minimap/minimap';
-import { ViewOverlayWidgets } from 'td/editor/browser/viewParts/overlayWidgets/overlayWidgets';
-import { DecorationsOverviewRuler } from 'td/editor/browser/viewParts/overviewRuler/decorationsOverviewRuler';
-import { OverviewRuler } from 'td/editor/browser/viewParts/overviewRuler/overviewRuler';
-import { Rulers } from 'td/editor/browser/viewParts/rulers/rulers';
-import { ScrollDecorationViewPart } from 'td/editor/browser/viewParts/scrollDecoration/scrollDecoration';
-import { SelectionsOverlay } from 'td/editor/browser/viewParts/selections/selections';
-import { ViewCursors } from 'td/editor/browser/viewParts/viewCursors/viewCursors';
-import { ViewZones } from 'td/editor/browser/viewParts/viewZones/viewZones';
-import { WhitespaceOverlay } from 'td/editor/browser/viewParts/whitespace/whitespace';
-import { IEditorConfiguration } from 'td/editor/common/config/editorConfiguration';
-import { EditorOption } from 'td/editor/common/config/editorOptions';
-import { Position } from 'td/editor/common/core/position';
-import { Range } from 'td/editor/common/core/range';
-import { Selection } from 'td/editor/common/core/selection';
-import { ScrollType } from 'td/editor/common/editorCommon';
-import { GlyphMarginLane, IGlyphMarginLanesModel } from 'td/editor/common/model';
-import { ViewEventHandler } from 'td/editor/common/viewEventHandler';
+import {FastDomNode, createFastDomNode} from 'td/base/browser/fastDomNode';
+import {IMouseWheelEvent} from 'td/base/browser/mouseEvent';
+import {inputLatency} from 'td/base/browser/performance';
+import {DevWindow} from 'td/base/browser/window';
+import {BugIndicatingError, onUnexpectedError} from 'td/base/common/errors';
+import {IDisposable} from 'td/base/common/lifecycle';
+import {IPointerHandlerHelper} from 'td/editor/browser/controller/mouseHandler';
+import {PointerHandlerLastRenderData} from 'td/editor/browser/controller/mouseTarget';
+import {PointerHandler} from 'td/editor/browser/controller/pointerHandler';
+import {IVisibleRangeProvider, TextAreaHandler} from 'td/editor/browser/controller/textAreaHandler';
+import {IContentWidget, IContentWidgetPosition, IEditorAriaOptions, IGlyphMarginWidget, IGlyphMarginWidgetPosition, IMouseTarget, IOverlayWidget, IOverlayWidgetPosition, IViewZoneChangeAccessor} from 'td/editor/browser/editorBrowser';
+import {RenderingContext, RestrictedRenderingContext} from 'td/editor/browser/view/renderingContext';
+import {ICommandDelegate, ViewController} from 'td/editor/browser/view/viewController';
+import {ContentViewOverlays, MarginViewOverlays} from 'td/editor/browser/view/viewOverlays';
+import {PartFingerprint, PartFingerprints, ViewPart} from 'td/editor/browser/view/viewPart';
+import {ViewUserInputEvents} from 'td/editor/browser/view/viewUserInputEvents';
+import {BlockDecorations} from 'td/editor/browser/viewParts/blockDecorations/blockDecorations';
+import {ViewContentWidgets} from 'td/editor/browser/viewParts/contentWidgets/contentWidgets';
+import {CurrentLineHighlightOverlay, CurrentLineMarginHighlightOverlay} from 'td/editor/browser/viewParts/currentLineHighlight/currentLineHighlight';
+import {DecorationsOverlay} from 'td/editor/browser/viewParts/decorations/decorations';
+import {EditorScrollbar} from 'td/editor/browser/viewParts/editorScrollbar/editorScrollbar';
+import {GlyphMarginWidgets} from 'td/editor/browser/viewParts/glyphMargin/glyphMargin';
+import {IndentGuidesOverlay} from 'td/editor/browser/viewParts/indentGuides/indentGuides';
+import {LineNumbersOverlay} from 'td/editor/browser/viewParts/lineNumbers/lineNumbers';
+import {ViewLines} from 'td/editor/browser/viewParts/lines/viewLines';
+import {LinesDecorationsOverlay} from 'td/editor/browser/viewParts/linesDecorations/linesDecorations';
+import {Margin} from 'td/editor/browser/viewParts/margin/margin';
+import {MarginViewLineDecorationsOverlay} from 'td/editor/browser/viewParts/marginDecorations/marginDecorations';
+// import {Minimap} from 'td/editor/browser/viewParts/minimap/minimap';
+import {ViewOverlayWidgets} from 'td/editor/browser/viewParts/overlayWidgets/overlayWidgets';
+import {DecorationsOverviewRuler} from 'td/editor/browser/viewParts/overviewRuler/decorationsOverviewRuler';
+import {OverviewRuler} from 'td/editor/browser/viewParts/overviewRuler/overviewRuler';
+import {Rulers} from 'td/editor/browser/viewParts/rulers/rulers';
+import {ScrollDecorationViewPart} from 'td/editor/browser/viewParts/scrollDecoration/scrollDecoration';
+import {SelectionsOverlay} from 'td/editor/browser/viewParts/selections/selections';
+import {ViewCursors} from 'td/editor/browser/viewParts/viewCursors/viewCursors';
+import {ViewZones} from 'td/editor/browser/viewParts/viewZones/viewZones';
+import {WhitespaceOverlay} from 'td/editor/browser/viewParts/whitespace/whitespace';
+import {IEditorConfiguration} from 'td/editor/common/config/editorConfiguration';
+import {EditorOption} from 'td/editor/common/config/editorOptions';
+import {Position} from 'td/editor/common/core/position';
+import {Range} from 'td/editor/common/core/range';
+import {Selection} from 'td/editor/common/core/selection';
+import {ScrollType} from 'td/editor/common/editorCommon';
+import {GlyphMarginLane, IGlyphMarginLanesModel} from 'td/editor/common/model';
+import {ViewEventHandler} from 'td/editor/common/viewEventHandler';
 import * as viewEvents from 'td/editor/common/viewEvents';
-import { ViewportData } from 'td/editor/common/viewLayout/viewLinesViewportData';
-import { IViewModel } from 'td/editor/common/viewModel';
-import { ViewContext } from 'td/editor/common/viewModel/viewContext';
-import { IInstantiationService } from 'td/platform/instantiation/common/instantiation';
-import { IColorTheme, getThemeTypeSelector } from 'td/platform/theme/common/themeService';
+import {ViewportData} from 'td/editor/common/viewLayout/viewLinesViewportData';
+import {IViewModel} from 'td/editor/common/viewModel';
+import {ViewContext} from 'td/editor/common/viewModel/viewContext';
+import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
+import {IColorTheme, getThemeTypeSelector} from 'td/platform/theme/common/themeService';
 
 
 export interface IContentWidgetData {
@@ -203,8 +203,8 @@ export class View extends ViewEventHandler {
 		const blockOutline = new BlockDecorations(this._context);
 		this._viewParts.push(blockOutline);
 
-		const minimap = new Minimap(this._context);
-		this._viewParts.push(minimap);
+		// const minimap = new Minimap(this._context);
+		// this._viewParts.push(minimap);
 
 		// -------------- Wire dom nodes up
 
@@ -225,7 +225,7 @@ export class View extends ViewEventHandler {
 		this._overflowGuardContainer.appendChild(this._textAreaHandler.textArea);
 		this._overflowGuardContainer.appendChild(this._textAreaHandler.textAreaCover);
 		this._overflowGuardContainer.appendChild(this._overlayWidgets.getDomNode());
-		this._overflowGuardContainer.appendChild(minimap.getDomNode());
+		// this._overflowGuardContainer.appendChild(minimap.getDomNode());
 		this._overflowGuardContainer.appendChild(blockOutline.domNode);
 		this.domNode.appendChild(this._overflowGuardContainer);
 
@@ -254,14 +254,14 @@ export class View extends ViewEventHandler {
 		glyphs = glyphs.concat(model.getAllMarginDecorations().map((decoration) => {
 			const lane = decoration.options.glyphMargin?.position ?? GlyphMarginLane.Center;
 			maxLineNumber = Math.max(maxLineNumber, decoration.range.endLineNumber);
-			return { range: decoration.range, lane, persist: decoration.options.glyphMargin?.persistLane };
+			return {range: decoration.range, lane, persist: decoration.options.glyphMargin?.persistLane};
 		}));
 
 		// Add all glyph margin widgets
 		glyphs = glyphs.concat(this._glyphMarginWidgets.getWidgets().map((widget) => {
 			const range = model.validateRange(widget.preference.range);
 			maxLineNumber = Math.max(maxLineNumber, range.endLineNumber);
-			return { range, lane: widget.preference.lane };
+			return {range, lane: widget.preference.lane};
 		}));
 
 		// Sorted by their start position
@@ -680,7 +680,7 @@ function safeInvokeNoArg<T>(func: () => T): T | null {
 }
 
 interface ICoordinatedRendering {
-	readonly window: CodeWindow;
+	readonly window: DevWindow;
 	prepareRenderText(): void;
 	renderText(): [ViewPart[], RenderingContext] | null;
 	prepareRender(viewParts: ViewPart[], ctx: RenderingContext): void;
@@ -692,7 +692,7 @@ class EditorRenderingCoordinator {
 	public static INSTANCE = new EditorRenderingCoordinator();
 
 	private _coordinatedRenderings: ICoordinatedRendering[] = [];
-	private _animationFrameRunners = new Map<CodeWindow, IDisposable>();
+	private _animationFrameRunners = new Map<DevWindow, IDisposable>();
 
 	private constructor() { }
 
@@ -718,7 +718,7 @@ class EditorRenderingCoordinator {
 		};
 	}
 
-	private _scheduleRender(window: CodeWindow): void {
+	private _scheduleRender(window: DevWindow): void {
 		if (!this._animationFrameRunners.has(window)) {
 			const runner = () => {
 				this._animationFrameRunners.delete(window);
