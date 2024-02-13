@@ -1,46 +1,49 @@
-/*----------------------------------------------------------------------------------------------------
- *  Copyright (c) TinyDeskDev. All rights reserved.
- *  Licensed under the UNLICENSED License. See License.txt in the project root for license information.
- *---------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import {app, BrowserWindow, Display, nativeImage, NativeImage, Rectangle, screen, SegmentedControlSegment, systemPreferences, TouchBar, TouchBarSegmentedControl} from 'electron';
-import {Emitter, Event} from 'td/base/common/event';
-import {release} from 'os';
-import {IWindowState, IDevWindow, ILoadEvent, WindowMode, WindowError, LoadReason, defaultWindowState, IBaseWindow} from 'td/platform/window/electron-main/window';
-import * as path from 'path'
-import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol';
-import {Disposable} from 'td/base/common/lifecycle';
-import {getTitleBarStyle, INativeWindowConfiguration, IWindowSettings, MenuBarVisibility, useNativeFullScreen, useWindowControlsOverlay} from 'td/platform/window/common/window';
-import {isBigSurOrNewer, isMacintosh, isWindows} from 'td/base/common/platform';
-import {IConfigurationService} from 'td/platform/configuration/common/configuration';
-import {IStateService} from 'td/platform/state/node/state';
-import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
-import {DeferredPromise, timeout} from 'td/base/common/async';
-import {FileAccess, Schemas} from 'td/base/common/network';
-import {NativeParsedArgs} from 'td/platform/environment/common/argv';
-import {getMarks, mark} from 'td/base/common/performance';
-import {ILogService} from 'td/platform/log/common/log';
-import {CancellationToken} from 'vscode';
+import {DeferredPromise, RunOnceScheduler, timeout} from 'td/base/common/async';
+import {CancellationToken} from 'td/base/common/cancellation';
 import {toErrorMessage} from 'td/base/common/errorMessage';
-import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
-import {ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier, toWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
-import {IUserDataProfile} from 'td/platform/userDataProfile/common/userDataProfile';
-import {IPolicyService} from 'td/platform/policy/common/policy';
-import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
-import {IApplicationStorageMainService, IStorageMainService} from 'td/platform/storage/electron-main/storageMainService';
-import {IThemeMainService} from 'td/platform/theme/electron-main/themeMainService';
-import {IWorkspacesManagementMainService} from 'td/platform/workspaces/electron-main/workspacesManagementMainService';
-import {IBackupMainService} from 'td/platform/backup/electron-main/backup';
-import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
-import {IDialogMainService} from 'td/platform/dialogs/electron-main/dialogMainService';
-import {ILifecycleMainService} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
-import {IProductService} from 'td/platform/product/common/productService';
-import {IWindowsMainService} from './windows';
-import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
-import {IFileService} from 'td/platform/files/common/files';
-import {ISerializableCommandAction} from 'td/platform/action/common/action';
-import {ThemeIcon} from 'td/base/common/themables';
+import {Emitter, Event} from 'td/base/common/event';
+import {Disposable} from 'td/base/common/lifecycle';
+import {FileAccess, Schemas} from 'td/base/common/network';
+import {getMarks, mark} from 'td/base/common/performance';
+import {isBigSurOrNewer, isMacintosh, isWindows} from 'td/base/common/platform';
 import {URI} from 'td/base/common/uri';
+import {localize} from 'td/nls';
+import {release} from 'os';
+import {ISerializableCommandAction} from 'td/platform/action/common/action';
+import {IBackupMainService} from 'td/platform/backup/electron-main/backup';
+import {IConfigurationChangeEvent, IConfigurationService} from 'td/platform/configuration/common/configuration';
+import {IDialogMainService} from 'td/platform/dialogs/electron-main/dialogMainService';
+import {NativeParsedArgs} from 'td/platform/environment/common/argv';
+import {IEnvironmentMainService} from 'td/platform/environment/electron-main/environmentMainService';
+import {isLaunchedFromCli} from 'td/platform/environment/node/argvHelper';
+import {IFileService} from 'td/platform/files/common/files';
+import {ILifecycleMainService} from 'td/platform/lifecycle/electron-main/lifecycleMainService';
+import {ILogService} from 'td/platform/log/common/log';
+import {IProductService} from 'td/platform/product/common/productService';
+import {IProtocolMainService} from 'td/platform/protocol/electron-main/protocol';
+import {resolveMarketplaceHeaders} from 'td/platform/externalServices/common/marketplace';
+import {IApplicationStorageMainService, IStorageMainService} from 'td/platform/storage/electron-main/storageMainService';
+import {ITelemetryService} from 'td/platform/telemetry/common/telemetry';
+import {ThemeIcon} from 'td/base/common/themables';
+import {IThemeMainService} from 'td/platform/theme/electron-main/themeMainService';
+import {getMenuBarVisibility, IFolderToOpen, INativeWindowConfiguration, IWindowSettings, IWorkspaceToOpen, MenuBarVisibility, hasNativeTitlebar, useNativeFullScreen, useWindowControlsOverlay} from 'td/platform/window/common/window';
+import {defaultBrowserWindowOptions, IWindowsMainService, OpenContext, WindowStateValidator} from 'td/platform/windows/electron-main/windows';
+import {ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier, isSingleFolderWorkspaceIdentifier, isWorkspaceIdentifier, toWorkspaceIdentifier} from 'td/platform/workspace/common/workspace';
+import {IWorkspacesManagementMainService} from 'td/platform/workspaces/electron-main/workspacesManagementMainService';
+import {IWindowState, IDevWindow, ILoadEvent, WindowMode, WindowError, LoadReason, defaultWindowState, IBaseWindow} from 'td/platform/window/electron-main/window';
+import {IPolicyService} from 'td/platform/policy/common/policy';
+import {IUserDataProfile} from 'td/platform/userDataProfile/common/userDataProfile';
+import {IStateService} from 'td/platform/state/node/state';
+import {IUserDataProfilesMainService} from 'td/platform/userDataProfile/electron-main/userDataProfile';
+import {ILoggerMainService} from 'td/platform/log/electron-main/loggerService';
+import {firstOrDefault} from 'td/base/common/arrays';
+import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
 
 export interface IWindowCreationOptions {
 	readonly state: IWindowState;
@@ -128,7 +131,7 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 		this._register(Event.fromNodeEventEmitter(this._win, 'leave-full-screen')(() => this._onDidLeaveFullScreen.fire()));
 
 		// Sheet Offsets
-		const useCustomTitleStyle = getTitleBarStyle(this.configurationService) === 'custom';
+		const useCustomTitleStyle = !hasNativeTitlebar(this.configurationService);
 		if (isMacintosh && useCustomTitleStyle) {
 			win.setSheetOffset(isBigSurOrNewer(release()) ? 28 : 22); // offset dialogs by the height of the custom title bar if we have any
 		}
@@ -191,13 +194,24 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 		if (this.environmentMainService.args['open-devtools'] === true) {
 			win.webContents.openDevTools();
 		}
+
+		// macOS: Window Fullscreen Transitions
+		if (isMacintosh) {
+			this._register(this.onDidEnterFullScreen(() => {
+				this.joinNativeFullScreenTransition?.complete(true);
+			}));
+
+			this._register(this.onDidLeaveFullScreen(() => {
+				this.joinNativeFullScreenTransition?.complete(true);
+			}));
+		}
 	}
 
 	constructor(
 		protected readonly configurationService: IConfigurationService,
 		protected readonly stateService: IStateService,
 		protected readonly environmentMainService: IEnvironmentMainService,
-		// protected readonly logService: ILogService
+		protected readonly logService: ILogService
 	) {
 		super();
 	}
@@ -331,21 +345,18 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 
 	//#region Fullscreen
 
-	// TODO@electron workaround for https://github.com/electron/electron/issues/35360
-	// where on macOS the window will report a wrong state for `isFullScreen()` while
-	// transitioning into and out of native full screen.
-	protected transientIsNativeFullScreen: boolean | undefined = undefined;
-	protected joinNativeFullScreenTransition: DeferredPromise<void> | undefined = undefined;
+	private transientIsNativeFullScreen: boolean | undefined = undefined;
+	private joinNativeFullScreenTransition: DeferredPromise<boolean> | undefined = undefined;
 
 	toggleFullScreen(): void {
-		this.setFullScreen(!this.isFullScreen);
+		this.setFullScreen(!this.isFullScreen, false);
 	}
 
-	protected setFullScreen(fullscreen: boolean): void {
+	protected setFullScreen(fullscreen: boolean, fromRestore: boolean): void {
 
 		// Set fullscreen state
 		if (useNativeFullScreen(this.configurationService)) {
-			this.setNativeFullScreen(fullscreen);
+			this.setNativeFullScreen(fullscreen, fromRestore);
 		} else {
 			this.setSimpleFullScreen(fullscreen);
 		}
@@ -363,31 +374,63 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 		return Boolean(isFullScreen || isSimpleFullScreen);
 	}
 
-	private setNativeFullScreen(fullscreen: boolean): void {
+	private setNativeFullScreen(fullscreen: boolean, fromRestore: boolean): void {
 		const win = this.win;
 		if (win?.isSimpleFullScreen()) {
 			win?.setSimpleFullScreen(false);
 		}
 
-		this.doSetNativeFullScreen(fullscreen);
+		this.doSetNativeFullScreen(fullscreen, fromRestore);
 	}
 
-	private doSetNativeFullScreen(fullscreen: boolean): void {
+	private doSetNativeFullScreen(fullscreen: boolean, fromRestore: boolean): void {
 		if (isMacintosh) {
+
+			// macOS: Electron windows report `false` for `isFullScreen()` for as long
+			// as the fullscreen transition animation takes place. As such, we need to
+			// listen to the transition events and carry around an intermediate state
+			// for knowing if we are in fullscreen or not
+			// Refs: https://github.com/electron/electron/issues/35360
+
 			this.transientIsNativeFullScreen = fullscreen;
-			this.joinNativeFullScreenTransition = new DeferredPromise<void>();
-			Promise.race([
-				this.joinNativeFullScreenTransition.p,
-				// still timeout after some time in case the transition is unusually slow
-				// this can easily happen for an OS update where macOS tries to reopen
-				// previous applications and that can take multiple seconds, probably due
-				// to security checks. its worth noting that if this takes more than
-				// 10 seconds, users would see a window that is not-fullscreen but without
-				// custom titlebar...
-				timeout(10000)
-			]).finally(() => {
+
+			const joinNativeFullScreenTransition = this.joinNativeFullScreenTransition = new DeferredPromise<boolean>();
+			(async () => {
+				const transitioned = await Promise.race([
+					joinNativeFullScreenTransition.p,
+					timeout(10000).then(() => false)
+				]);
+
+				if (this.joinNativeFullScreenTransition !== joinNativeFullScreenTransition) {
+					return; // another transition was requested later
+				}
+
 				this.transientIsNativeFullScreen = undefined;
-			});
+				this.joinNativeFullScreenTransition = undefined;
+
+				// There is one interesting gotcha on macOS: when you are opening a new
+				// window from a fullscreen window, that new window will immediately
+				// open fullscreen and emit the `enter-full-screen` event even before we
+				// reach this method. In that case, we actually will timeout after 10s
+				// for detecting the transition and as such it is important that we only
+				// signal to leave fullscreen if the window reports as not being in fullscreen.
+
+				if (!transitioned && fullscreen && fromRestore && this.win && !this.win.isFullScreen()) {
+
+					// We have seen requests for fullscreen failing eventually after some
+					// time, for example when an OS update was performed and windows restore.
+					// In those cases a user would find a window that is not in fullscreen
+					// but also does not show any custom titlebar (and thus window controls)
+					// because we think the window is in fullscreen.
+					//
+					// As a workaround in that case we emit a warning and leave fullscreen
+					// so that at least the window controls are back.
+
+					this.logService.warn('window: native macOS fullscreen transition did not happen within 10s from restoring');
+
+					this._onDidLeaveFullScreen.fire();
+				}
+			})();
 		}
 
 		const win = this.win;
@@ -397,7 +440,7 @@ export abstract class BaseWindow extends Disposable implements IBaseWindow {
 	private setSimpleFullScreen(fullscreen: boolean): void {
 		const win = this.win;
 		if (win?.isFullScreen()) {
-			this.doSetNativeFullScreen(false);
+			this.doSetNativeFullScreen(false, false);
 		}
 
 		win?.setSimpleFullScreen(fullscreen);
@@ -482,9 +525,9 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 	private pendingLoadConfig: INativeWindowConfiguration | undefined;
 	private wasLoaded = false;
 
-  constructor(
+	constructor(
 		config: IWindowCreationOptions,
-		@ILogService private readonly logService: ILogService,
+		@ILogService logService: ILogService,
 		@ILoggerMainService private readonly loggerMainService: ILoggerMainService,
 		@IEnvironmentMainService environmentMainService: IEnvironmentMainService,
 		@IPolicyService private readonly policyService: IPolicyService,
@@ -504,31 +547,92 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
 		@IStateService stateService: IStateService,
 		@IInstantiationService instantiationService: IInstantiationService
-  ) {
-    super(configurationService, stateService, environmentMainService);
+	) {
+		super(configurationService, stateService, environmentMainService, logService);
 
-    //#region create browser window
-    {
-      this._win = new BrowserWindow({
-        backgroundColor: '#1f1f1f',
-        width: 1000	,
-        height: 800,
-        webPreferences: {
-          preload: FileAccess.asFileUri('td/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
-					/* 
-					Error in Electron Browser
-					VM5:66 Uncaught (in promise) Error: Preload: did not find expected vscode-window-config in renderer process arguments list. */
+		//#region create browser window
+		{
+			// Load window state
+			const [state, hasMultipleDisplays] = this.restoreWindowState(config.state);
+			this.windowState = state;
+			this.logService.trace('window#ctor: using window state', state);
+
+			// In case we are maximized or fullscreen, only show later
+			// after the call to maximize/fullscreen (see below)
+			const isFullscreenOrMaximized = (this.windowState.mode === WindowMode.Maximized || this.windowState.mode === WindowMode.Fullscreen);
+
+			const options = instantiationService.invokeFunction(defaultBrowserWindowOptions, this.windowState, {
+				show: !isFullscreenOrMaximized, // reduce flicker by showing later
+				webPreferences: {
+					preload: FileAccess.asFileUri('td/base/parts/sandbox/electron-sandbox/preload.js').fsPath,
 					additionalArguments: [`--vscode-window-config=${this.configObjectUrl.resource.toString()}`],
-					sandbox: true,
-					spellcheck: false,
-        },
-      })
+					v8CacheOptions: this.environmentMainService.useCodeCache ? 'bypassHeatCheck' : 'none',
+				}
+			});
 
-      this._id = this._win.id;
-    }
-    //#endregion
-    
-  }
+
+			// Create the browser window
+			mark('code/willCreateCodeBrowserWindow');
+			this._win = new BrowserWindow(options);
+			mark('code/didCreateCodeBrowserWindow');
+
+			this._id = this._win.id;
+			this.setWin(this._win);
+
+			// TODO@electron (Electron 4 regression): when running on multiple displays where the target display
+			// to open the window has a larger resolution than the primary display, the window will not size
+			// correctly unless we set the bounds again (https://github.com/microsoft/vscode/issues/74872)
+			//
+			// Extended to cover Windows as well as Mac (https://github.com/microsoft/vscode/issues/146499)
+			//
+			// However, when running with native tabs with multiple windows we cannot use this workaround
+			// because there is a potential that the new window will be added as native tab instead of being
+			// a window on its own. In that case calling setBounds() would cause https://github.com/microsoft/vscode/issues/75830
+			const windowSettings = this.configurationService.getValue<IWindowSettings | undefined>('window');
+			const useNativeTabs = isMacintosh && windowSettings?.nativeTabs === true;
+			if ((isMacintosh || isWindows) && hasMultipleDisplays && (!useNativeTabs || BrowserWindow.getAllWindows().length === 1)) {
+				if ([this.windowState.width, this.windowState.height, this.windowState.x, this.windowState.y].every(value => typeof value === 'number')) {
+					this._win.setBounds({
+						width: this.windowState.width,
+						height: this.windowState.height,
+						x: this.windowState.x,
+						y: this.windowState.y
+					});
+				}
+			}
+
+			if (isFullscreenOrMaximized) {
+				mark('code/willMaximizeDevWindow');
+
+				// this call may or may not show the window, depends
+				// on the platform: currently on Windows and Linux will
+				// show the window as active. To be on the safe side,
+				// we show the window at the end of this block.
+				this._win.maximize();
+
+				if (this.windowState.mode === WindowMode.Fullscreen) {
+					this.setFullScreen(true, true);
+				}
+
+				// to reduce flicker from the default window size
+				// to maximize or fullscreen, we only show after
+				this._win.show();
+				mark('code/didMaximizeDevWindow');
+			}
+
+			this._lastFocusTime = Date.now(); // since we show directly, we need to set the last focus time too
+		}
+		//#endregion
+
+		// respect configured menu bar visibility
+		this.onConfigurationUpdated();
+
+		// macOS: touch bar support
+		this.createTouchBar();
+
+		// Eventing
+		this.registerListeners();
+	}
 
 	private readyState = ReadyState.NONE;
 
@@ -546,34 +650,449 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 		this._onDidSignalReady.fire();
 	}
 
+	ready(): Promise<IDevWindow> {
+		return new Promise<IDevWindow>(resolve => {
+			if (this.isReady) {
+				return resolve(this);
+			}
+
+			// otherwise keep and call later when we are ready
+			this.whenReadyCallbacks.push(resolve);
+		});
+	}
+
+	get isReady(): boolean {
+		return this.readyState === ReadyState.READY;
+	}
+
+	get whenClosedOrLoaded(): Promise<void> {
+		return new Promise<void>(resolve => {
+
+			function handle() {
+				closeListener.dispose();
+				loadListener.dispose();
+
+				resolve();
+			}
+
+			const closeListener = this.onDidClose(() => handle());
+			const loadListener = this.onWillLoad(() => handle());
+		});
+	}
+
+	private registerListeners(): void {
+
+		// Window error conditions to handle
+		this._win.on('unresponsive', () => this.onWindowError(WindowError.UNRESPONSIVE));
+		this._win.webContents.on('render-process-gone', (event, details) => this.onWindowError(WindowError.PROCESS_GONE, {...details}));
+		this._win.webContents.on('did-fail-load', (event, exitCode, reason) => this.onWindowError(WindowError.LOAD, {reason, exitCode}));
+
+		// Prevent windows/iframes from blocking the unload
+		// through DOM events. We have our own logic for
+		// unloading a window that should not be confused
+		// with the DOM way.
+		// (https://github.com/microsoft/vscode/issues/122736)
+		this._win.webContents.on('will-prevent-unload', event => {
+			event.preventDefault();
+		});
+
+		// Remember that we loaded
+		this._win.webContents.on('did-finish-load', () => {
+
+			// Associate properties from the load request if provided
+			if (this.pendingLoadConfig) {
+				this._config = this.pendingLoadConfig;
+
+				this.pendingLoadConfig = undefined;
+			}
+		});
+
+		// Window (Un)Maximize
+		this._register(this.onDidMaximize(() => {
+			if (this._config) {
+				this._config.maximized = true;
+			}
+		}));
+
+		this._register(this.onDidUnmaximize(() => {
+			if (this._config) {
+				this._config.maximized = false;
+			}
+		}));
+
+		// Window Fullscreen
+		this._register(this.onDidEnterFullScreen(() => {
+			this.sendWhenReady('vscode:enterFullScreen', CancellationToken.None);
+		}));
+
+		this._register(this.onDidLeaveFullScreen(() => {
+			this.sendWhenReady('vscode:leaveFullScreen', CancellationToken.None);
+		}));
+
+		// Handle configuration changes
+		this._register(this.configurationService.onDidChangeConfiguration(e => this.onConfigurationUpdated(e)));
+
+		// Handle Workspace events
+		this._register(this.workspacesManagementMainService.onDidDeleteUntitledWorkspace(e => this.onDidDeleteUntitledWorkspace(e)));
+
+		// Inject headers when requests are incoming
+		const urls = ['https://marketplace.visualstudio.com/*', 'https://*.vsassets.io/*'];
+		this._win.webContents.session.webRequest.onBeforeSendHeaders({urls}, async (details, cb) => {
+			const headers = await this.getMarketplaceHeaders();
+
+			cb({cancel: false, requestHeaders: Object.assign(details.requestHeaders, headers)});
+		});
+	}
+
+	private marketplaceHeadersPromise: Promise<object> | undefined;
+	private getMarketplaceHeaders(): Promise<object> {
+		if (!this.marketplaceHeadersPromise) {
+			this.marketplaceHeadersPromise = resolveMarketplaceHeaders(
+				this.productService.version,
+				this.productService,
+				this.environmentMainService,
+				this.configurationService,
+				this.fileService,
+				this.applicationStorageMainService,
+				this.telemetryService);
+		}
+
+		return this.marketplaceHeadersPromise;
+	}
+
+	private async onWindowError(error: WindowError.UNRESPONSIVE): Promise<void>;
+	private async onWindowError(error: WindowError.PROCESS_GONE, details: { reason: string; exitCode: number }): Promise<void>;
+	private async onWindowError(error: WindowError.LOAD, details: { reason: string; exitCode: number }): Promise<void>;
+	private async onWindowError(type: WindowError, details?: { reason?: string; exitCode?: number }): Promise<void> {
+
+		switch (type) {
+			case WindowError.PROCESS_GONE:
+				this.logService.error(`DevWindow: renderer process gone (reason: ${details?.reason || '<unknown>'}, code: ${details?.exitCode || '<unknown>'})`);
+				break;
+			case WindowError.UNRESPONSIVE:
+				this.logService.error('DevWindow: detected unresponsive');
+				break;
+			case WindowError.LOAD:
+				this.logService.error(`DevWindow: failed to load (reason: ${details?.reason || '<unknown>'}, code: ${details?.exitCode || '<unknown>'})`);
+				break;
+		}
+
+		// Telemetry
+		type WindowErrorClassification = {
+			type: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'The type of window error to understand the nature of the error better.' };
+			reason: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The reason of the window error to understand the nature of the error better.' };
+			code: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'The exit code of the window process to understand the nature of the error better' };
+			owner: 'bpasero';
+			comment: 'Provides insight into reasons the vscode window had an error.';
+		};
+		type WindowErrorEvent = {
+			type: WindowError;
+			reason: string | undefined;
+			code: number | undefined;
+		};
+		this.telemetryService.publicLog2<WindowErrorEvent, WindowErrorClassification>('windowerror', {
+			type,
+			reason: details?.reason,
+			code: details?.exitCode
+		});
+
+		// Inform User if non-recoverable
+		switch (type) {
+			case WindowError.UNRESPONSIVE:
+			case WindowError.PROCESS_GONE:
+
+				// If we run extension tests from CLI, we want to signal
+				// back this state to the test runner by exiting with a
+				// non-zero exit code.
+				if (this.isExtensionDevelopmentTestFromCli) {
+					this.lifecycleMainService.kill(1);
+					return;
+				}
+
+				// If we run smoke tests, want to proceed with an orderly
+				// shutdown as much as possible by destroying the window
+				// and then calling the normal `quit` routine.
+				if (this.environmentMainService.args['enable-smoke-test-driver']) {
+					await this.destroyWindow(false, false);
+					this.lifecycleMainService.quit(); // still allow for an orderly shutdown
+					return;
+				}
+
+				// Unresponsive
+				if (type === WindowError.UNRESPONSIVE) {
+					if (this.isExtensionDevelopmentHost || this.isExtensionTestHost || (this._win && this._win.webContents && this._win.webContents.isDevToolsOpened())) {
+						// TODO@electron Workaround for https://github.com/microsoft/vscode/issues/56994
+						// In certain cases the window can report unresponsiveness because a breakpoint was hit
+						// and the process is stopped executing. The most typical cases are:
+						// - devtools are opened and debugging happens
+						// - window is an extensions development host that is being debugged
+						// - window is an extension test development host that is being debugged
+						return;
+					}
+
+					// Show Dialog
+					const {response, checkboxChecked} = await this.dialogMainService.showMessageBox({
+						type: 'warning',
+						buttons: [
+							localize({key: 'reopen', comment: ['&& denotes a mnemonic']}, "&&Reopen"),
+							localize({key: 'close', comment: ['&& denotes a mnemonic']}, "&&Close"),
+							localize({key: 'wait', comment: ['&& denotes a mnemonic']}, "&&Keep Waiting")
+						],
+						message: localize('appStalled', "The window is not responding"),
+						detail: localize('appStalledDetail', "You can reopen or close the window or keep waiting."),
+						checkboxLabel: this._config?.workspace ? localize('doNotRestoreEditors', "Don't restore editors") : undefined
+					}, this._win);
+
+					// Handle choice
+					if (response !== 2 /* keep waiting */) {
+						const reopen = response === 0;
+						await this.destroyWindow(reopen, checkboxChecked);
+					}
+				}
+
+				// Process gone
+				else if (type === WindowError.PROCESS_GONE) {
+					let message: string;
+					if (!details) {
+						message = localize('appGone', "The window terminated unexpectedly");
+					} else {
+						message = localize('appGoneDetails', "The window terminated unexpectedly (reason: '{0}', code: '{1}')", details.reason, details.exitCode ?? '<unknown>');
+					}
+
+					// Show Dialog
+					const {response, checkboxChecked} = await this.dialogMainService.showMessageBox({
+						type: 'warning',
+						buttons: [
+							this._config?.workspace ? localize({key: 'reopen', comment: ['&& denotes a mnemonic']}, "&&Reopen") : localize({key: 'newWindow', comment: ['&& denotes a mnemonic']}, "&&New Window"),
+							localize({key: 'close', comment: ['&& denotes a mnemonic']}, "&&Close")
+						],
+						message,
+						detail: this._config?.workspace ?
+							localize('appGoneDetailWorkspace', "We are sorry for the inconvenience. You can reopen the window to continue where you left off.") :
+							localize('appGoneDetailEmptyWindow', "We are sorry for the inconvenience. You can open a new empty window to start again."),
+						checkboxLabel: this._config?.workspace ? localize('doNotRestoreEditors', "Don't restore editors") : undefined
+					}, this._win);
+
+					// Handle choice
+					const reopen = response === 0;
+					await this.destroyWindow(reopen, checkboxChecked);
+				}
+				break;
+		}
+	}
+
+	private async destroyWindow(reopen: boolean, skipRestoreEditors: boolean): Promise<void> {
+		const workspace = this._config?.workspace;
+
+		// check to discard editor state first
+		if (skipRestoreEditors && workspace) {
+			try {
+				const workspaceStorage = this.storageMainService.workspaceStorage(workspace);
+				await workspaceStorage.init();
+				workspaceStorage.delete('memento/workbench.parts.editor');
+				await workspaceStorage.close();
+			} catch (error) {
+				this.logService.error(error);
+			}
+		}
+
+		// 'close' event will not be fired on destroy(), so signal crash via explicit event
+		this._onDidDestroy.fire();
+
+		try {
+			// ask the windows service to open a new fresh window if specified
+			if (reopen && this._config) {
+
+				// We have to reconstruct a openable from the current workspace
+				let uriToOpen: IWorkspaceToOpen | IFolderToOpen | undefined = undefined;
+				let forceEmpty = undefined;
+				if (isSingleFolderWorkspaceIdentifier(workspace)) {
+					uriToOpen = {folderUri: workspace.uri};
+				} else if (isWorkspaceIdentifier(workspace)) {
+					uriToOpen = {workspaceUri: workspace.configPath};
+				} else {
+					forceEmpty = true;
+				}
+
+				// Delegate to windows service
+				const window = firstOrDefault(await this.windowsMainService.open({
+					context: OpenContext.API,
+					userEnv: this._config.userEnv,
+					cli: {
+						...this.environmentMainService.args,
+						_: [] // we pass in the workspace to open explicitly via `urisToOpen`
+					},
+					urisToOpen: uriToOpen ? [uriToOpen] : undefined,
+					forceEmpty,
+					forceNewWindow: true,
+					remoteAuthority: this.remoteAuthority
+				}));
+				window?.focus();
+			}
+		} finally {
+			// make sure to destroy the window as its renderer process is gone. do this
+			// after the code for reopening the window, to prevent the entire application
+			// from quitting when the last window closes as a result.
+			this._win?.destroy();
+		}
+	}
+
+	private onDidDeleteUntitledWorkspace(workspace: IWorkspaceIdentifier): void {
+
+		// Make sure to update our workspace config if we detect that it
+		// was deleted
+		if (this._config?.workspace?.id === workspace.id) {
+			this._config.workspace = undefined;
+		}
+	}
+
+	private onConfigurationUpdated(e?: IConfigurationChangeEvent): void {
+
+		// Menubar
+		if (!e || e.affectsConfiguration('window.menuBarVisibility')) {
+			const newMenuBarVisibility = this.getMenuBarVisibility();
+			if (newMenuBarVisibility !== this.currentMenuBarVisibility) {
+				this.currentMenuBarVisibility = newMenuBarVisibility;
+				this.setMenuBarVisibility(newMenuBarVisibility);
+			}
+		}
+
+		// Proxy
+		if (!e || e.affectsConfiguration('http.proxy')) {
+			let newHttpProxy = (this.configurationService.getValue<string>('http.proxy') || '').trim()
+				|| (process.env['https_proxy'] || process.env['HTTPS_PROXY'] || process.env['http_proxy'] || process.env['HTTP_PROXY'] || '').trim() // Not standardized.
+				|| undefined;
+
+			if (newHttpProxy?.endsWith('/')) {
+				newHttpProxy = newHttpProxy.substr(0, newHttpProxy.length - 1);
+			}
+
+			const newNoProxy = (process.env['no_proxy'] || process.env['NO_PROXY'] || '').trim() || undefined; // Not standardized.
+			if ((newHttpProxy || '').indexOf('@') === -1 && (newHttpProxy !== this.currentHttpProxy || newNoProxy !== this.currentNoProxy)) {
+				this.currentHttpProxy = newHttpProxy;
+				this.currentNoProxy = newNoProxy;
+
+				const proxyRules = newHttpProxy || '';
+				const proxyBypassRules = newNoProxy ? `${newNoProxy},<local>` : '<local>';
+				this.logService.trace(`Setting proxy to '${proxyRules}', bypassing '${proxyBypassRules}'`);
+				this._win.webContents.session.setProxy({proxyRules, proxyBypassRules, pacScript: ''});
+			}
+		}
+	}
+
 	addTabbedWindow(window: IDevWindow): void {
 		if (isMacintosh && window.win) {
 			this._win.addTabbedWindow(window.win);
 		}
 	}
 
-	/* Invoked in windowsMainService.ts #doOpenInBrowserWindow */
 	load(configuration: INativeWindowConfiguration, options: ILoadOptions = Object.create(null)): void {
 		this.logService.trace(`window#load: attempt to load window (id: ${this._id})`);
-		// this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench${this.environmentMainService.isBuilt ? '' : '-dev'}.html`).toString(true));
+
+		// Clear Document Edited if needed
+		if (this.isDocumentEdited()) {
+			if (!options.isReload || !this.backupMainService.isHotExitEnabled()) {
+				this.setDocumentEdited(false);
+			}
+		}
+
+		// Clear Title and Filename if needed
+		if (!options.isReload) {
+			if (this.getRepresentedFilename()) {
+				this.setRepresentedFilename('');
+			}
+
+			this._win.setTitle(this.productService.nameLong);
+		}
 
 		// Update configuration values based on our window context
-		// and set it into the config object URL for usage
-		this.updateConfiguration(configuration)
+		// and set it into the config object URL for usage.
+		this.updateConfiguration(configuration, options);
+
+		// If this is the first time the window is loaded, we associate the paths
+		// directly with the window because we assume the loading will just work
+		if (this.readyState === ReadyState.NONE) {
+			this._config = configuration;
+		}
+
+		// Otherwise, the window is currently showing a folder and if there is an
+		// unload handler preventing the load, we cannot just associate the paths
+		// because the loading might be vetoed. Instead we associate it later when
+		// the window load event has fired.
+		else {
+			this.pendingLoadConfig = configuration;
+		}
+
+		// Indicate we are navigting now
+		this.readyState = ReadyState.NAVIGATING;
 
 		// Load URL
+		// this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench${this.environmentMainService.isBuilt ? '' : '-dev'}.html`).toString(true));
 		this._win.loadURL(FileAccess.asBrowserUri(`td/dev/electron-sandbox/workbench/workbench.html`).toString(true));
-		this._win.webContents.openDevTools()
-		
+
 		// Remember that we did load
 		const wasLoaded = this.wasLoaded;
 		this.wasLoaded = true;
+
+		// Make window visible if it did not open in N seconds because this indicates an error
+		// Only do this when running out of sources and not when running tests
+		if (!this.environmentMainService.isBuilt && !this.environmentMainService.extensionTestsLocationURI) {
+			this._register(new RunOnceScheduler(() => {
+				if (this._win && !this._win.isVisible() && !this._win.isMinimized()) {
+					this._win.show();
+					this.focus({force: true});
+					this._win.webContents.openDevTools();
+				}
+			}, 10000)).schedule();
+		}
 
 		// Event
 		this._onWillLoad.fire({workspace: configuration.workspace, reason: options.isReload ? LoadReason.RELOAD : wasLoaded ? LoadReason.LOAD : LoadReason.INITIAL});
 	}
 
-	private updateConfiguration(configuration: INativeWindowConfiguration, options?: ILoadOptions): void {
+	private updateConfiguration(configuration: INativeWindowConfiguration, options: ILoadOptions): void {
+
+		// If this window was loaded before from the command line
+		// (as indicated by VSCODE_CLI environment), make sure to
+		// preserve that user environment in subsequent loads,
+		// unless the new configuration context was also a CLI
+		// (for https://github.com/microsoft/vscode/issues/108571)
+		// Also, preserve the environment if we're loading from an
+		// extension development host that had its environment set
+		// (for https://github.com/microsoft/vscode/issues/123508)
+		const currentUserEnv = (this._config ?? this.pendingLoadConfig)?.userEnv;
+		if (currentUserEnv) {
+			const shouldPreserveLaunchCliEnvironment = isLaunchedFromCli(currentUserEnv) && !isLaunchedFromCli(configuration.userEnv);
+			const shouldPreserveDebugEnvironmnet = this.isExtensionDevelopmentHost;
+			if (shouldPreserveLaunchCliEnvironment || shouldPreserveDebugEnvironmnet) {
+				configuration.userEnv = {...currentUserEnv, ...configuration.userEnv}; // still allow to override certain environment as passed in
+			}
+		}
+
+		// If named pipe was instantiated for the crashpad_handler process, reuse the same
+		// pipe for new app instances connecting to the original app instance.
+		// Ref: https://github.com/microsoft/vscode/issues/115874
+		if (process.env['CHROME_CRASHPAD_PIPE_NAME']) {
+			Object.assign(configuration.userEnv, {
+				CHROME_CRASHPAD_PIPE_NAME: process.env['CHROME_CRASHPAD_PIPE_NAME']
+			});
+		}
+
+		// Add disable-extensions to the config, but do not preserve it on currentConfig or
+		// pendingLoadConfig so that it is applied only on this load
+		if (options.disableExtensions !== undefined) {
+			configuration['disable-extensions'] = options.disableExtensions;
+		}
+
+		// Update window related properties
+		configuration.fullscreen = this.isFullScreen;
+		configuration.maximized = this._win.isMaximized();
+		configuration.partsSplash = this.themeMainService.getWindowSplash();
+		configuration.zoomLevel = this.getZoomLevel();
+		configuration.isCustomZoomLevel = typeof this.customZoomLevel === 'number';
+		if (configuration.isCustomZoomLevel && configuration.partsSplash) {
+			configuration.partsSplash.zoomLevel = configuration.zoomLevel;
+		}
 
 		// Update with latest perf marks
 		mark('code/willOpenNewWindow');
@@ -589,7 +1108,7 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 		const configuration = Object.assign({}, this._config);
 
 		// Validate workspace
-		// configuration.workspace = await this.validateWorkspaceBeforeReload(configuration);
+		configuration.workspace = await this.validateWorkspaceBeforeReload(configuration);
 
 		// Delete some properties we do not want during reload
 		delete configuration.filesToOpenOrCreate;
@@ -599,47 +1118,60 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 
 		// Some configuration things get inherited if the window is being reloaded and we are
 		// in extension development mode. These options are all development related.
-		// if (this.isExtensionDevelopmentHost && cli) {
-		// 	configuration.verbose = cli.verbose;
-		// 	configuration.debugId = cli.debugId;
-		// 	configuration.extensionEnvironment = cli.extensionEnvironment;
-		// 	configuration['inspect-extensions'] = cli['inspect-extensions'];
-		// 	configuration['inspect-brk-extensions'] = cli['inspect-brk-extensions'];
-		// 	configuration['extensions-dir'] = cli['extensions-dir'];
-		// }
+		if (this.isExtensionDevelopmentHost && cli) {
+			configuration.verbose = cli.verbose;
+			configuration.debugId = cli.debugId;
+			configuration.extensionEnvironment = cli.extensionEnvironment;
+			configuration['inspect-extensions'] = cli['inspect-extensions'];
+			configuration['inspect-brk-extensions'] = cli['inspect-brk-extensions'];
+			configuration['extensions-dir'] = cli['extensions-dir'];
+		}
 
 		configuration.accessibilitySupport = app.isAccessibilitySupportEnabled();
 		configuration.isInitialStartup = false; // since this is a reload
-		// configuration.policiesData = this.policyService.serialize(); // set policies data again
+		configuration.policiesData = this.policyService.serialize(); // set policies data again
 		configuration.continueOn = this.environmentMainService.continueOn;
-		// configuration.profiles = {
-		// 	all: this.userDataProfilesService.profiles,
-		// 	profile: this.profile || this.userDataProfilesService.defaultProfile,
-		// 	home: this.userDataProfilesService.profilesHome
-		// };
+		configuration.profiles = {
+			all: this.userDataProfilesService.profiles,
+			profile: this.profile || this.userDataProfilesService.defaultProfile,
+			home: this.userDataProfilesService.profilesHome
+		};
 		configuration.logLevel = this.loggerMainService.getLogLevel();
-		// configuration.loggers = {
-		// 	window: this.loggerMainService.getRegisteredLoggers(this.id),
-		// 	global: this.loggerMainService.getRegisteredLoggers()
-		// };
+		configuration.loggers = {
+			window: this.loggerMainService.getRegisteredLoggers(this.id),
+			global: this.loggerMainService.getRegisteredLoggers()
+		};
 
 		// Load config
 		this.load(configuration, {isReload: true, disableExtensions: cli?.['disable-extensions']});
 	}
 
-	get isReady(): boolean {
-		return this.readyState === ReadyState.READY;
-	}
+	private async validateWorkspaceBeforeReload(configuration: INativeWindowConfiguration): Promise<IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier | undefined> {
 
-	ready(): Promise<IDevWindow> {
-		return new Promise<IDevWindow>(resolve => {
-			if (this.isReady) {
-				return resolve(this);
+		// Multi folder
+		if (isWorkspaceIdentifier(configuration.workspace)) {
+			const configPath = configuration.workspace.configPath;
+			if (configPath.scheme === Schemas.file) {
+				const workspaceExists = await this.fileService.exists(configPath);
+				if (!workspaceExists) {
+					return undefined;
+				}
 			}
+		}
 
-			// otherwise keep and call later when we are ready
-			this.whenReadyCallbacks.push(resolve);
-		});
+		// Single folder
+		else if (isSingleFolderWorkspaceIdentifier(configuration.workspace)) {
+			const uri = configuration.workspace.uri;
+			if (uri.scheme === Schemas.file) {
+				const folderExists = await this.fileService.exists(uri);
+				if (!folderExists) {
+					return undefined;
+				}
+			}
+		}
+
+		// Workspace is valid
+		return configuration.workspace;
 	}
 
 	serializeWindowState(): IWindowState {
@@ -714,19 +1246,125 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 		return state;
 	}
 
-	get whenClosedOrLoaded(): Promise<void> {
-		return new Promise<void>(resolve => {
+	private restoreWindowState(state?: IWindowState): [IWindowState, boolean? /* has multiple displays */] {
+		mark('code/willRestoreDevWindowState');
 
-			function handle() {
-				closeListener.dispose();
-				loadListener.dispose();
+		let hasMultipleDisplays = false;
+		if (state) {
 
-				resolve();
+			// Window zoom
+			this.customZoomLevel = state.zoomLevel;
+
+			// Window dimensions
+			try {
+				const displays = screen.getAllDisplays();
+				hasMultipleDisplays = displays.length > 1;
+
+				state = WindowStateValidator.validateWindowState(this.logService, state, displays);
+			} catch (err) {
+				this.logService.warn(`Unexpected error validating window state: ${err}\n${err.stack}`); // somehow display API can be picky about the state to validate
 			}
+		}
 
-			const closeListener = this.onDidClose(() => handle());
-			const loadListener = this.onWillLoad(() => handle());
-		});
+		mark('code/didRestoreDevWindowState');
+
+		return [state || defaultWindowState(), hasMultipleDisplays];
+	}
+
+	getBounds(): Rectangle {
+		const [x, y] = this._win.getPosition();
+		const [width, height] = this._win.getSize();
+
+		return {x, y, width, height};
+	}
+
+	protected override setFullScreen(fullscreen: boolean, fromRestore: boolean): void {
+		super.setFullScreen(fullscreen, fromRestore);
+
+		// Events
+		this.sendWhenReady(fullscreen ? 'vscode:enterFullScreen' : 'vscode:leaveFullScreen', CancellationToken.None);
+
+		// Respect configured menu bar visibility or default to toggle if not set
+		if (this.currentMenuBarVisibility) {
+			this.setMenuBarVisibility(this.currentMenuBarVisibility, false);
+		}
+	}
+
+	private getMenuBarVisibility(): MenuBarVisibility {
+		let menuBarVisibility = getMenuBarVisibility(this.configurationService);
+		if (['visible', 'toggle', 'hidden'].indexOf(menuBarVisibility) < 0) {
+			menuBarVisibility = 'classic';
+		}
+
+		return menuBarVisibility;
+	}
+
+	private setMenuBarVisibility(visibility: MenuBarVisibility, notify: boolean = true): void {
+		if (isMacintosh) {
+			return; // ignore for macOS platform
+		}
+
+		if (visibility === 'toggle') {
+			if (notify) {
+				this.send('vscode:showInfoMessage', localize('hiddenMenuBar', "You can still access the menu bar by pressing the Alt-key."));
+			}
+		}
+
+		if (visibility === 'hidden') {
+			// for some weird reason that I have no explanation for, the menu bar is not hiding when calling
+			// this without timeout (see https://github.com/microsoft/vscode/issues/19777). there seems to be
+			// a timing issue with us opening the first window and the menu bar getting created. somehow the
+			// fact that we want to hide the menu without being able to bring it back via Alt key makes Electron
+			// still show the menu. Unable to reproduce from a simple Hello World application though...
+			setTimeout(() => {
+				this.doSetMenuBarVisibility(visibility);
+			});
+		} else {
+			this.doSetMenuBarVisibility(visibility);
+		}
+	}
+
+	private doSetMenuBarVisibility(visibility: MenuBarVisibility): void {
+		const isFullscreen = this.isFullScreen;
+
+		switch (visibility) {
+			case ('classic'):
+				this._win.setMenuBarVisibility(!isFullscreen);
+				this._win.autoHideMenuBar = isFullscreen;
+				break;
+
+			case ('visible'):
+				this._win.setMenuBarVisibility(true);
+				this._win.autoHideMenuBar = false;
+				break;
+
+			case ('toggle'):
+				this._win.setMenuBarVisibility(false);
+				this._win.autoHideMenuBar = true;
+				break;
+
+			case ('hidden'):
+				this._win.setMenuBarVisibility(false);
+				this._win.autoHideMenuBar = false;
+				break;
+		}
+	}
+
+	notifyZoomLevel(zoomLevel: number | undefined): void {
+		this.customZoomLevel = zoomLevel;
+	}
+
+	private getZoomLevel(): number | undefined {
+		if (typeof this.customZoomLevel === 'number') {
+			return this.customZoomLevel;
+		}
+
+		const windowSettings = this.configurationService.getValue<IWindowSettings | undefined>('window');
+		return windowSettings?.zoomLevel;
+	}
+
+	close(): void {
+		this._win?.close();
 	}
 
 	sendWhenReady(channel: string, token: CancellationToken, ...args: any[]): void {
@@ -769,6 +1407,40 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 		});
 	}
 
+	private createTouchBar(): void {
+		if (!isMacintosh) {
+			return; // only supported on macOS
+		}
+
+		// To avoid flickering, we try to reuse the touch bar group
+		// as much as possible by creating a large number of groups
+		// for reusing later.
+		for (let i = 0; i < 10; i++) {
+			const groupTouchBar = this.createTouchBarGroup();
+			this.touchBarGroups.push(groupTouchBar);
+		}
+
+		this._win.setTouchBar(new TouchBar({items: this.touchBarGroups}));
+	}
+
+	private createTouchBarGroup(items: ISerializableCommandAction[] = []): TouchBarSegmentedControl {
+
+		// Group Segments
+		const segments = this.createTouchBarGroupSegments(items);
+
+		// Group Control
+		const control = new TouchBar.TouchBarSegmentedControl({
+			segments,
+			mode: 'buttons',
+			segmentStyle: 'automatic',
+			change: (selectedIndex) => {
+				this.sendWhenReady('vscode:runAction', CancellationToken.None, {id: (control.segments[selectedIndex] as ITouchBarSegment).id, from: 'touchbar'});
+			}
+		});
+
+		return control;
+	}
+
 	private createTouchBarGroupSegments(items: ISerializableCommandAction[] = []): ITouchBarSegment[] {
 		const segments: ITouchBarSegment[] = items.map(item => {
 			let icon: NativeImage | undefined;
@@ -796,27 +1468,10 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 		return segments;
 	}
 
-	notifyZoomLevel(zoomLevel: number | undefined): void {
-		this.customZoomLevel = zoomLevel;
-	}
+	override dispose(): void {
+		super.dispose();
 
-	private getZoomLevel(): number | undefined {
-		if (typeof this.customZoomLevel === 'number') {
-			return this.customZoomLevel;
-		}
-
-		const windowSettings = this.configurationService.getValue<IWindowSettings | undefined>('window');
-		return windowSettings?.zoomLevel;
-	}
-
-	close(): void {
-		this._win?.close();
-	}
-
-	getBounds(): Rectangle {
-		const [x, y] = this._win.getPosition();
-		const [width, height] = this._win.getSize();
-
-		return {x, y, width, height};
+		// Deregister the loggers for this window
+		this.loggerMainService.deregisterLoggers(this.id);
 	}
 }
