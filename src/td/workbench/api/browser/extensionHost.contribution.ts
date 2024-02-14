@@ -12,7 +12,7 @@ import {JSONValidationExtensionPoint} from 'td/workbench/api/common/jsonValidati
 // import {IconExtensionPoint} from 'td/workbench/services/themes/common/iconExtensionPoint';
 // import {TokenClassificationExtensionPoints} from 'td/workbench/services/themes/common/tokenClassificationExtensionPoint';
 // import {LanguageConfigurationFileHandler} from 'td/workbench/contrib/codeEditor/browser/languageConfigurationExtensionPoint';
-// import {StatusBarItemsExtensionPoint} from 'td/workbench/api/browser/statusBarExtensionPoint';
+import {StatusBarItemsExtensionPoint} from 'td/workbench/api/browser/statusBarExtensionPoint';
 
 // --- mainThread participants
 import './mainThreadLocalization';
@@ -59,7 +59,7 @@ export class ExtensionPoints implements IWorkbenchContribution {
 		// this.instantiationService.createInstance(IconExtensionPoint);
 		// this.instantiationService.createInstance(TokenClassificationExtensionPoints);
 		// this.instantiationService.createInstance(LanguageConfigurationFileHandler);
-		// this.instantiationService.createInstance(StatusBarItemsExtensionPoint);
+		this.instantiationService.createInstance(StatusBarItemsExtensionPoint);
 	}
 }
 

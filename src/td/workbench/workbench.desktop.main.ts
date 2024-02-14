@@ -54,6 +54,7 @@ import 'td/workbench/services/history/browser/historyService';
 import 'td/workbench/services/userDataSync/electron-sandbox/userDataSyncService';
 import 'td/workbench/services/userDataSync/electron-sandbox/userDataAutoSyncService';
 import 'td/workbench/services/extensionManagement/electron-sandbox/extensionManagementService';
+import 'td/workbench/services/extensionManagement/electron-sandbox/extensionTipsService';
 import 'td/workbench/services/path/electron-sandbox/pathService';
 import 'td/platform/remote/electron-sandbox/sharedProcessTunnelService';
 import 'td/workbench/services/tunnel/electron-sandbox/tunnelService';

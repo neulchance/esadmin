@@ -52,11 +52,11 @@ export async function loadLocalResource(
 	logService: ILogService,
 	token: CancellationToken,
 ): Promise<WebviewResourceResponse.StreamResponse> {
-	logService.debug(`loadLocalResource - begin. requestUri=${requestUri}`);
+	// logService.debug(`loadLocalResource - begin. requestUri=${requestUri}`);
 
 	const resourceToLoad = getResourceToLoad(requestUri, options.roots);
 
-	logService.debug(`loadLocalResource - found resource to load. requestUri=${requestUri}, resourceToLoad=${resourceToLoad}`);
+	// logService.debug(`loadLocalResource - found resource to load. requestUri=${requestUri}, resourceToLoad=${resourceToLoad}`);
 
 	if (!resourceToLoad) {
 		return WebviewResourceResponse.AccessDenied;
