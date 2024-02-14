@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import {BrowserWindowConstructorOptions, WebContents} from 'electron';
+import {BrowserWindowConstructorOptions, HandlerDetails, WebContents} from 'electron';
 import {Event} from 'td/base/common/event';
 import {Schemas, VSCODE_AUTHORITY} from 'td/base/common/network';
 import {IAuxiliaryWindow} from 'td/platform/auxiliaryWindow/electron-main/auxiliaryWindow';
@@ -17,9 +17,10 @@ export interface IAuxiliaryWindowsMainService {
 
 	readonly onDidMaximizeWindow: Event<IAuxiliaryWindow>;
 	readonly onDidUnmaximizeWindow: Event<IAuxiliaryWindow>;
+	readonly onDidChangeFullScreen: Event<{ window: IAuxiliaryWindow; fullscreen: boolean }>;
 	readonly onDidTriggerSystemContextMenu: Event<{ readonly window: IAuxiliaryWindow; readonly x: number; readonly y: number }>;
 
-	createWindow(): BrowserWindowConstructorOptions;
+	createWindow(details: HandlerDetails): BrowserWindowConstructorOptions;
 	registerWindow(webContents: WebContents): void;
 
 	getWindowById(windowId: number): IAuxiliaryWindow | undefined;

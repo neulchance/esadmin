@@ -48,6 +48,7 @@ import 'td/platform/undoRedo/common/undoRedoService';
 import 'td/workbench/services/dialogs/common/dialogService';
 import 'td/workbench/services/progress/browser/progressService';
 import 'td/workbench/services/decorations/browser/decorationsService';
+import 'td/workbench/services/extensions/browser/extensionUrlHandler';
 import 'td/workbench/services/themes/browser/workbenchThemeService';
 import 'td/workbench/services/notification/common/notificationService';
 import 'td/workbench/services/remote/common/remoteExtensionsScanner';
