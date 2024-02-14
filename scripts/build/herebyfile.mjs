@@ -1,5 +1,5 @@
-import { task } from 'hereby'
-import { rimraf, copyfile } from './utils.mjs'
+import {task} from 'hereby'
+import {rimraf} from './utils.mjs'
 
 export const local = task({
   name: "local",
@@ -15,20 +15,20 @@ export const delOut = task({
   run: async () => await rimraf('out')
 })
 
-export const taskWatchClient = task({
-  name: "watch-client",
-  description: "Builds the full compiler and services",
-  // run: async () => (await import('./task-watch-client.mjs')).watch()
-  run: async () => console.log('watch-client')
+export const copyFiles = task({
+  name: "copyfiles",
+  description: "Copy non-code files to out directory",
+  dependencies: [delOut],
+  run: async () => {
+    (await import('./tasks/facade.mjs')).copyFiles(['css', 'html', 'svg', 'png', 'ttf', 'json'])
+  }
 })
 
 export const transpileSrc = task({
   name: "transpile-src",
   description: "Transpiles the src project (all code)",
-  dependencies: [delOut],
+  dependencies: [delOut, copyFiles],
   run: async () => {
-    await copyfile('src/td/dev/electron-sandbox/workbench/workbench.html', 'out/td/dev/electron-sandbox/workbench/workbench.html'),
-    await copyfile('src/td/base/browser/ui/codicons/codicon/codicon.ttf', 'out/td/base/browser/ui/codicons/codicon/codicon.ttf'),
     (await import('./tasks/facade.mjs')).transpile()
   }
 })

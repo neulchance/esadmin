@@ -790,11 +790,11 @@ export class DevWindow extends BaseWindow implements IDevWindow {
 			reason: string | undefined;
 			code: number | undefined;
 		};
-		this.telemetryService.publicLog2<WindowErrorEvent, WindowErrorClassification>('windowerror', {
-			type,
-			reason: details?.reason,
-			code: details?.exitCode
-		});
+		// this.telemetryService.publicLog2<WindowErrorEvent, WindowErrorClassification>('windowerror', {
+		// 	type,
+		// 	reason: details?.reason,
+		// 	code: details?.exitCode
+		// });
 
 		// Inform User if non-recoverable
 		switch (type) {

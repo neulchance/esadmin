@@ -57,9 +57,19 @@ protocol.registerSchemesAsPrivileged([
 registerListeners();
 
 app.once('ready', function () {
-  ipcMain.handle('ping', () => 'pong')
+	if (args['trace']) {
+		const contentTracing = require('electron').contentTracing;
 
-  onReady();
+		const traceOptions = {
+			categoryFilter: args['trace-category-filter'] || '*',
+			traceOptions: args['trace-options'] || 'record-until-full,enable-sampling'
+		};
+
+		contentTracing.startRecording(traceOptions).finally(() => onReady());
+	} else {
+		ipcMain.handle('ping', () => 'pong');
+		onReady();
+	}
 })
 
 /**

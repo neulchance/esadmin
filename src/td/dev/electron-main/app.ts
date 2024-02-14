@@ -407,27 +407,27 @@ export class DevApplication extends Disposable {
 
 			// All Windows: only allow about:blank auxiliary windows to open
 			// For all other URLs, delegate to the OS.
-			// contents.setWindowOpenHandler(details => {
+			contents.setWindowOpenHandler(details => {
 
-			// 	// about:blank windows can open as window witho our default options
-			// 	if (details.url === 'about:blank') {
-			// 		this.logService.trace('[aux window] webContents#setWindowOpenHandler: Allowing auxiliary window to open on about:blank');
+				// about:blank windows can open as window witho our default options
+				if (details.url === 'about:blank') {
+					this.logService.trace('[aux window] webContents#setWindowOpenHandler: Allowing auxiliary window to open on about:blank');
 
-			// 		return {
-			// 			action: 'allow',
-			// 			overrideBrowserWindowOptions: this.auxiliaryWindowsMainService?.createWindow(details)
-			// 		};
-			// 	}
+					return {
+						action: 'allow',
+						overrideBrowserWindowOptions: this.auxiliaryWindowsMainService?.createWindow(details)
+					};
+				}
 
-			// 	// Any other URL: delegate to OS
-			// 	else {
-			// 		this.logService.trace(`webContents#setWindowOpenHandler: Prevented opening window with URL ${details.url}}`);
+				// Any other URL: delegate to OS
+				else {
+					this.logService.trace(`webContents#setWindowOpenHandler: Prevented opening window with URL ${details.url}}`);
 
-			// 		this.nativeHostMainService?.openExternal(undefined, details.url);
+					this.nativeHostMainService?.openExternal(undefined, details.url);
 
-			// 		return {action: 'deny'};
-			// 	}
-			// });
+					return {action: 'deny'};
+				}
+			});
 		});
 
 		//#endregion

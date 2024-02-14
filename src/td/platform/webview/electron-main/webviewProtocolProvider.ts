@@ -31,7 +31,6 @@ export class WebviewProtocolProvider extends Disposable {
 	) {
 		try {
 			const uri = URI.parse(request.url);
-			console.log('who?', uri)
 			const entry = WebviewProtocolProvider.validWebviewFilePaths.get(uri.path);
 			if (typeof entry === 'string') {
 				const relativeResourcePath: AppResourcePath = `td/workbench/contrib/webview/browser/pre/${entry}`;

@@ -19,6 +19,7 @@ import './mainThreadLocalization';
 import './mainThreadConsole';
 import './mainThreadExtensionService';
 import './mainThreadWindow';
+import './mainThreadCodeInsets';
 import './mainThreadWebviewManager';
 import './mainThreadCommands';
 import './mainThreadClipboard';

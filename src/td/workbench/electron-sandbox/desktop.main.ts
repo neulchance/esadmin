@@ -114,6 +114,12 @@ export class DesktopMain extends Disposable {
 		// Log
 		const logService = this._register(new NativeLogService(loggerService, environmentService));
 		serviceCollection.set(ILogService, logService);
+		// if (isCI) {
+		// 	logService.info('workbench#open()'); // marking workbench open helps to diagnose flaky integration/smoke tests
+		// }
+		// if (logService.getLevel() === LogLevel.Trace) {
+		// 	logService.trace('workbench#open(): with configuration', safeStringify(this.configuration));
+		// }
 
 		// Shared Process
 		const sharedProcessService = new SharedProcessService(this.configuration.windowId, logService);
