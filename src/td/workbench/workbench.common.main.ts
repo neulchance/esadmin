@@ -170,6 +170,12 @@ import {MarkerDecorationsService} from 'td/editor/common/services/markerDecorati
 // Snippets
 import 'td/workbench/contrib/snippets/browser/snippets.contribution';
 
+// Webview
+import 'td/workbench/contrib/webview/browser/webview.contribution';
+import 'td/workbench/contrib/webviewPanel/browser/webviewPanel.contribution';
+import 'td/workbench/contrib/webviewView/browser/webviewView.contribution';
+import 'td/workbench/contrib/customEditor/browser/customEditor.contribution';
+
 // Welcome
 import 'td/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution';
 import 'td/workbench/contrib/welcomeWalkthrough/browser/walkThrough.contribution';

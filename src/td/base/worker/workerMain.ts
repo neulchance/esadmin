@@ -70,13 +70,13 @@
 				return resolve();
 			}
 			const loaderSrc: string | TrustedScriptURL = monacoBaseUrl + 'td/loader.js';
+			console.log(`\x1b[31mloaderSrc\x1b[0m`)
+        console.log(loaderSrc)
 
 			const isCrossOrigin = (/^((http:)|(https:)|(file:))/.test(loaderSrc) && loaderSrc.substring(0, globalThis.origin.length) !== globalThis.origin);
 			if (!isCrossOrigin && canUseEval()) {
 				// use `fetch` if possible because `importScripts`
 				// is synchronous and can lead to deadlocks on Safari
-        console.log(`\x1b[31mloaderSrc\x1b[0m`)
-        console.log(loaderSrc)
 				fetch(loaderSrc).then((response) => {
 					if (response.status !== 200) {
 						throw new Error(response.statusText);

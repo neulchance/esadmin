@@ -82,8 +82,8 @@ import {IOpenURLOptions, IURLService} from 'td/platform/url/common/url';
 import {URLHandlerChannelClient, URLHandlerRouter} from 'td/platform/url/common/urlIpc';
 import {NativeURLService} from 'td/platform/url/common/urlService';
 import {ElectronURLListener} from 'td/platform/url/electron-main/electronUrlListener';
-// import {IWebviewManagerService} from 'td/platform/webview/common/webviewManagerService';
-// import {WebviewMainService} from 'td/platform/webview/electron-main/webviewMainService';
+import {IWebviewManagerService} from 'td/platform/webview/common/webviewManagerService';
+import {WebviewMainService} from 'td/platform/webview/electron-main/webviewMainService';
 import {isFolderToOpen, isWorkspaceToOpen, IWindowOpenable} from 'td/platform/window/common/window';
 import {IWindowsMainService, OpenContext} from 'td/platform/windows/electron-main/windows';
 import {IDevWindow} from 'td/platform/window/electron-main/window';
@@ -1037,7 +1037,7 @@ export class DevApplication extends Disposable {
 		services.set(INativeHostMainService, new SyncDescriptor(NativeHostMainService, undefined, false /* proxied to other processes */));
 
 		// Webview Manager
-		// services.set(IWebviewManagerService, new SyncDescriptor(WebviewMainService));
+		services.set(IWebviewManagerService, new SyncDescriptor(WebviewMainService));
 
 		// Menubar
 		services.set(IMenubarMainService, new SyncDescriptor(MenubarMainService));
@@ -1190,8 +1190,8 @@ export class DevApplication extends Disposable {
 		mainProcessElectronServer.registerChannel('url', urlChannel);
 
 		// Webview Manager
-		// const webviewChannel = ProxyChannel.fromService(accessor.get(IWebviewManagerService), disposables);
-		// mainProcessElectronServer.registerChannel('webview', webviewChannel);
+		const webviewChannel = ProxyChannel.fromService(accessor.get(IWebviewManagerService), disposables);
+		mainProcessElectronServer.registerChannel('webview', webviewChannel);
 
 		// Storage (main & shared process)
 		const storageChannel = this._register(new StorageDatabaseChannel(this.logService, accessor.get(IStorageMainService)));

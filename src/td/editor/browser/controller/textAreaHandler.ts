@@ -6,37 +6,37 @@
 import 'td/css!./textAreaHandler';
 import * as nls from 'td/nls';
 import * as browser from 'td/base/browser/browser';
-import { FastDomNode, createFastDomNode } from 'td/base/browser/fastDomNode';
-import { IKeyboardEvent } from 'td/base/browser/keyboardEvent';
+import {FastDomNode, createFastDomNode} from 'td/base/browser/fastDomNode';
+import {IKeyboardEvent} from 'td/base/browser/keyboardEvent';
 import * as platform from 'td/base/common/platform';
 import * as strings from 'td/base/common/strings';
-import { applyFontInfo } from 'td/editor/browser/config/domFontInfo';
-import { CopyOptions, ICompositionData, IPasteData, ITextAreaInputHost, TextAreaInput, ClipboardDataToCopy, TextAreaWrapper } from 'td/editor/browser/controller/textAreaInput';
-import { ISimpleModel, ITypeData, PagedScreenReaderStrategy, TextAreaState, _debugComposition } from 'td/editor/browser/controller/textAreaState';
-import { ViewController } from 'td/editor/browser/view/viewController';
-import { PartFingerprint, PartFingerprints, ViewPart } from 'td/editor/browser/view/viewPart';
-import { LineNumbersOverlay } from 'td/editor/browser/viewParts/lineNumbers/lineNumbers';
-import { Margin } from 'td/editor/browser/viewParts/margin/margin';
-import { RenderLineNumbersType, EditorOption, IComputedEditorOptions, EditorOptions } from 'td/editor/common/config/editorOptions';
-import { FontInfo } from 'td/editor/common/config/fontInfo';
-import { WordCharacterClass, getMapForWordSeparators } from 'td/editor/common/core/wordCharacterClassifier';
-import { Position } from 'td/editor/common/core/position';
-import { Range } from 'td/editor/common/core/range';
-import { Selection } from 'td/editor/common/core/selection';
-import { ScrollType } from 'td/editor/common/editorCommon';
-import { EndOfLinePreference } from 'td/editor/common/model';
-import { RenderingContext, RestrictedRenderingContext, HorizontalPosition } from 'td/editor/browser/view/renderingContext';
-import { ViewContext } from 'td/editor/common/viewModel/viewContext';
+import {applyFontInfo} from 'td/editor/browser/config/domFontInfo';
+import {CopyOptions, ICompositionData, IPasteData, ITextAreaInputHost, TextAreaInput, ClipboardDataToCopy, TextAreaWrapper} from 'td/editor/browser/controller/textAreaInput';
+import {ISimpleModel, ITypeData, PagedScreenReaderStrategy, TextAreaState, _debugComposition} from 'td/editor/browser/controller/textAreaState';
+import {ViewController} from 'td/editor/browser/view/viewController';
+import {PartFingerprint, PartFingerprints, ViewPart} from 'td/editor/browser/view/viewPart';
+import {LineNumbersOverlay} from 'td/editor/browser/viewParts/lineNumbers/lineNumbers';
+import {Margin} from 'td/editor/browser/viewParts/margin/margin';
+import {RenderLineNumbersType, EditorOption, IComputedEditorOptions, EditorOptions} from 'td/editor/common/config/editorOptions';
+import {FontInfo} from 'td/editor/common/config/fontInfo';
+import {WordCharacterClass, getMapForWordSeparators} from 'td/editor/common/core/wordCharacterClassifier';
+import {Position} from 'td/editor/common/core/position';
+import {Range} from 'td/editor/common/core/range';
+import {Selection} from 'td/editor/common/core/selection';
+import {ScrollType} from 'td/editor/common/editorCommon';
+import {EndOfLinePreference} from 'td/editor/common/model';
+import {RenderingContext, RestrictedRenderingContext, HorizontalPosition} from 'td/editor/browser/view/renderingContext';
+import {ViewContext} from 'td/editor/common/viewModel/viewContext';
 import * as viewEvents from 'td/editor/common/viewEvents';
-import { AccessibilitySupport } from 'td/platform/accessibility/common/accessibility';
-import { IEditorAriaOptions } from 'td/editor/browser/editorBrowser';
-import { MOUSE_CURSOR_TEXT_CSS_CLASS_NAME } from 'td/base/browser/ui/mouseCursor/mouseCursor';
-import { TokenizationRegistry } from 'td/editor/common/languages';
-import { ColorId, ITokenPresentation } from 'td/editor/common/encodedTokenAttributes';
-import { Color } from 'td/base/common/color';
-import { IME } from 'td/base/common/ime';
-import { IKeybindingService } from 'td/platform/keybinding/common/keybinding';
-import { IInstantiationService } from 'td/platform/instantiation/common/instantiation';
+import {AccessibilitySupport} from 'td/platform/accessibility/common/accessibility';
+import {IEditorAriaOptions} from 'td/editor/browser/editorBrowser';
+import {MOUSE_CURSOR_TEXT_CSS_CLASS_NAME} from 'td/base/browser/ui/mouseCursor/mouseCursor';
+import {TokenizationRegistry} from 'td/editor/common/languages';
+import {ColorId, ITokenPresentation} from 'td/editor/common/encodedTokenAttributes';
+import {Color} from 'td/base/common/color';
+import {IME} from 'td/base/common/ime';
+import {IKeybindingService} from 'td/platform/keybinding/common/keybinding';
+import {IInstantiationService} from 'td/platform/instantiation/common/instantiation';
 
 export interface IVisibleRangeProvider {
 	visibleRangeForPosition(position: Position): HorizontalPosition | null;
@@ -178,7 +178,7 @@ export class TextAreaHandler extends ViewPart {
 		PartFingerprints.write(this.textArea, PartFingerprint.TextArea);
 		this.textArea.setClassName(`inputarea ${MOUSE_CURSOR_TEXT_CSS_CLASS_NAME}`);
 		this.textArea.setAttribute('wrap', this._textAreaWrapping && !this._visibleTextArea ? 'on' : 'off');
-		const { tabSize } = this._context.viewModel.model.getOptions();
+		const {tabSize} = this._context.viewModel.model.getOptions();
 		this.textArea.domNode.style.tabSize = `${tabSize * this._fontInfo.spaceWidth}px`;
 		this.textArea.setAttribute('autocorrect', 'off');
 		this.textArea.setAttribute('autocapitalize', 'off');
@@ -379,7 +379,7 @@ export class TextAreaHandler extends ViewPart {
 			const ta = this.textArea.domNode;
 			const modelSelection = this._modelSelections[0];
 
-			const { distanceToModelLineStart, widthOfHiddenTextBefore } = (() => {
+			const {distanceToModelLineStart, widthOfHiddenTextBefore} = (() => {
 				// Find the text that is on the current line before the selection
 				const textBeforeSelection = ta.value.substring(0, Math.min(ta.selectionStart, ta.selectionEnd));
 				const lineFeedOffset1 = textBeforeSelection.lastIndexOf('\n');
@@ -392,13 +392,13 @@ export class TextAreaHandler extends ViewPart {
 				const visibleBeforeCharCount = Math.min(startModelPosition.column - 1, desiredVisibleBeforeCharCount);
 				const distanceToModelLineStart = startModelPosition.column - 1 - visibleBeforeCharCount;
 				const hiddenLineTextBefore = lineTextBeforeSelection.substring(0, lineTextBeforeSelection.length - visibleBeforeCharCount);
-				const { tabSize } = this._context.viewModel.model.getOptions();
+				const {tabSize} = this._context.viewModel.model.getOptions();
 				const widthOfHiddenTextBefore = measureText(this.textArea.domNode.ownerDocument, hiddenLineTextBefore, this._fontInfo, tabSize);
 
-				return { distanceToModelLineStart, widthOfHiddenTextBefore };
+				return {distanceToModelLineStart, widthOfHiddenTextBefore};
 			})();
 
-			const { distanceToModelLineEnd } = (() => {
+			const {distanceToModelLineEnd} = (() => {
 				// Find the text that is on the current line after the selection
 				const textAfterSelection = ta.value.substring(Math.max(ta.selectionStart, ta.selectionEnd));
 				const lineFeedOffset2 = textAfterSelection.indexOf('\n');
@@ -410,7 +410,7 @@ export class TextAreaHandler extends ViewPart {
 				const visibleAfterCharCount = Math.min(this._context.viewModel.model.getLineMaxColumn(endModelPosition.lineNumber) - endModelPosition.column, desiredVisibleAfterCharCount);
 				const distanceToModelLineEnd = this._context.viewModel.model.getLineMaxColumn(endModelPosition.lineNumber) - endModelPosition.column - visibleAfterCharCount;
 
-				return { distanceToModelLineEnd };
+				return {distanceToModelLineEnd};
 			})();
 
 			// Scroll to reveal the location in the editor where composition occurs
@@ -620,7 +620,7 @@ export class TextAreaHandler extends ViewPart {
 		this._emptySelectionClipboard = options.get(EditorOption.emptySelectionClipboard);
 		this._copyWithSyntaxHighlighting = options.get(EditorOption.copyWithSyntaxHighlighting);
 		this.textArea.setAttribute('wrap', this._textAreaWrapping && !this._visibleTextArea ? 'on' : 'off');
-		const { tabSize } = this._context.viewModel.model.getOptions();
+		const {tabSize} = this._context.viewModel.model.getOptions();
 		this.textArea.domNode.style.tabSize = `${tabSize * this._fontInfo.spaceWidth}px`;
 		this.textArea.setAttribute('aria-label', this._getAriaLabel(options));
 		this.textArea.setAttribute('aria-required', options.get(EditorOption.ariaRequired) ? 'true' : 'false');

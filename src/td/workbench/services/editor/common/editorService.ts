@@ -5,7 +5,7 @@
 
 import {createDecorator} from 'td/platform/instantiation/common/instantiation';
 import {IResourceEditorInput, IEditorOptions, IResourceEditorInputIdentifier, ITextResourceEditorInput} from 'td/platform/editor/common/editor';
-import {IEditorPane, GroupIdentifier, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, ITextDiffEditorPane, IEditorIdentifier, ISaveOptions, IRevertOptions, EditorsOrder, IVisibleEditorPane, IEditorCloseEvent, IUntypedEditorInput, IFindEditorOptions} from 'td/workbench/common/editor';
+import {IEditorPane, GroupIdentifier, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, ITextDiffEditorPane, IEditorIdentifier, ISaveOptions, IRevertOptions, EditorsOrder, IVisibleEditorPane, IEditorCloseEvent, IUntypedEditorInput, IFindEditorOptions, IEditorWillOpenEvent} from 'td/workbench/common/editor';
 import {EditorInput} from 'td/workbench/common/editor/editorInput';
 import {Event} from 'td/base/common/event';
 import {IEditor, IDiffEditor} from 'td/editor/common/editorCommon';
@@ -150,6 +150,11 @@ export interface IEditorService {
 	 * all groups.
 	 */
 	readonly onDidEditorsChange: Event<IEditorsChangeEvent>;
+
+	/**
+	 * Emitted when an editor is about to open.
+	 */
+	readonly onWillOpenEditor: Event<IEditorWillOpenEvent>;
 
 	/**
 	 * Emitted when an editor is closed.

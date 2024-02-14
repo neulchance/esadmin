@@ -90,6 +90,9 @@ import 'td/workbench/contrib/debug/electron-sandbox/extensionHostDebugService';
 // Terminal
 import 'td/workbench/contrib/terminal/electron-sandbox/terminal.contribution';
 
+// Webview
+import 'td/workbench/contrib/webview/electron-sandbox/webview.contribution';
+
 //#endregion
 
 export {main} from 'td/workbench/electron-sandbox/desktop.main';
