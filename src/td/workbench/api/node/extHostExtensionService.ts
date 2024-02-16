@@ -61,16 +61,16 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 	readonly extensionRuntime = ExtensionRuntime.Node;
 
 	protected async _beforeAlmostReadyToRunExtensions(): Promise<void> {
-		// console.log(`\x1b[32m createInstance ExtHostConsoleForwarder start \x1b[0m`)
+		if (false/* Coloring Flow Check */) console.log(`\x1b[32m createInstance ExtHostConsoleForwarder start \x1b[0m`)
 		// make sure console.log calls make it to the render
 		this._instaService.createInstance(ExtHostConsoleForwarder);
-		// console.log(`\x1b[32m createInstance ExtHostConsoleForwarder done \x1b[0m`)
+		if (false/* Coloring Flow Check */) console.log(`\x1b[32m createInstance ExtHostConsoleForwarder done \x1b[0m`)
 
 		// initialize API and register actors
 		// explain@neulchance
-		// console.log(`\x1b[32m Above line of invokeFunction(createApiFactoryAndRegisterActors) :: This Message When invoked.\x1b[0m`)
+		if (false/* Coloring Flow Check */) console.log(`\x1b[32m Above line of invokeFunction(createApiFactoryAndRegisterActors) :: This Message When invoked.\x1b[0m`)
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
-		// console.log(`\x1b[32m Below line of invokeFunction(createApiFactoryAndRegisterActors) :: This Message When invoked.\x1b[0m`)
+		if (false/* Coloring Flow Check */) console.log(`\x1b[32m Below line of invokeFunction(createApiFactoryAndRegisterActors) :: This Message When invoked.\x1b[0m`)
 
 		// Register Download command
 		this._instaService.createInstance(ExtHostDownloadService);

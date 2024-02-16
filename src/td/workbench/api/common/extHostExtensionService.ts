@@ -213,6 +213,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 	}
 
 	public async initialize(): Promise<void> {
+		if (false/* Coloring Flow Check */) console.log(`\x1b[32mextHostExtensionService initialize()\x1b[0m`)
 		try {
 			await this._beforeAlmostReadyToRunExtensions();
 			if (false/* Coloring Flow Check */) console.log(`\x1b[32m_beforeAlmostReadyToRunExtensions done\x1b[0m`)

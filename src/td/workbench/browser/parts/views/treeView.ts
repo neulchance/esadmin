@@ -93,7 +93,7 @@ export class TreeViewPane extends ViewPane {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@INotificationService notificationService: INotificationService
 	) {
-		super({...(options as IViewPaneOptions), titleMenuId: MenuId.ViewTitle, donotForwardArgs: false}, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
+		super({...(options as IViewPaneOptions), titleMenuId: MenuId.ViewTitle, donotForwardArgs: false}, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService/* , telemetryService */);
 		const {treeView} = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
 		this.treeView = treeView;
 		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));

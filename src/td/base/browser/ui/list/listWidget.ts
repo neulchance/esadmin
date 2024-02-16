@@ -946,7 +946,7 @@ export class DefaultStyleController implements IStyleController {
 		if (styles.listFocusOutline) { // default: set
 			content.push(`
 				.monaco-drag-image,
-				.monaco-list${suffix}:focus .monaco-list-row.focused { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; }
+				.monaco-list${suffix}:focus .monaco-list-row.focused { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; border-radius: 4px; }
 				.monaco-workbench.context-menu-visible .monaco-list${suffix}.last-focused .monaco-list-row.focused { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; }
 			`);
 		}
