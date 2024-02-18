@@ -47,12 +47,12 @@ import {MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL} from 'td/platform/window/electron-sandbo
 		// but can run without a document opened and allow to close
 		// the window when the last document is closed
 		// (https://github.com/microsoft/vscode/issues/126042)
-		KeybindingsRegistry.registerKeybindingRule({
+		/* KeybindingsRegistry.registerKeybindingRule({
 			id: CloseWindowAction.ID,
 			weight: KeybindingWeight.WorkbenchContrib,
 			when: ContextKeyExpr.and(EditorsVisibleContext.toNegated(), SingleEditorGroupsContext),
 			primary: KeyMod.CtrlCmd | KeyCode.KeyW
-		});
+		}); */
 	}
 
 	// Actions: Install Shell Script (macOS only)
