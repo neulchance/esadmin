@@ -1,3 +1,7 @@
+```ts
+KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyP
+```
+
 how to added the '.quick-input-widget’?
 
 QuickInputController
@@ -33,8 +37,8 @@ registerAction2(ShowAllCommandsAction);
         ┌ run() ──────────────────────────────────┴────────────────────────────────────────┐
         │                                                                          '>'─┐   │
         │     get(IQuickInputService).quickAccess.show(CommandsQuickAccessProvider.PREFIX) │
-        │                             ───┬────────────                                     │
-        │     QuickAccessController ─────┘                                                 │
+        │       QuickAccessController ───┘        ─┬──                                     │
+        │             ┌────────────────────────────┘                                       │
         └─────────────┼────────────────────────────────────────────────────────────────────┘             
                  doShowOrPick('>') td/platform/quickinput/browser/quickAccess.ts:45
                ────────┬─────────
@@ -42,29 +46,13 @@ registerAction2(ShowAllCommandsAction);
                        │    ────────┴────────
      this.quickInputService.createQuickPick() td/platform/quickinput/browser/quickAccess.ts:98
         this.controller.createQuickPick(); td/platform/quickinput/browser/quickInputService.ts:167
-             ──┬──────
+             ──┬───────
                └ QuickInputController
-                 this.getUI(true) td/platform/quickinput/browser/quickInputController.ts:519
-
-
-this.updateLayout()
-td/platform/quickinput/browser/quickInputController.ts:570
-
-show: controller => this.show(controller)
-td/platform/quickinput/browser/quickInputController.ts:317
-
-
-
-
-
-┌─────
-│readonly onShow = this.onShowEmitter.event;
-│td/platform/quickinput/browser/quickInputController.ts:50
-│
-│this._register(this.onShow(() => this.inQuickInputContext.set(true)));
-│td/workbench/services/quickinput/browser/quickInputService.ts:38
-│
-│.onDidChangeContext(
-│
-└─────
+                 this.getUI(true) td/platform/quickinput/browser/quickInputController.ts:519:22
+                 ──┬───────
+┌──────────────────┴──────
+│                 <div class="monaco-workbench"> toptest element
+│                             ──────┴────────
+│const container = dom.append(this._container, $('.quick-input-widget.show-file-icons')); td/platform/quickinput/browser/quickInputController.ts:103:39 
+└────────────────
 ```
