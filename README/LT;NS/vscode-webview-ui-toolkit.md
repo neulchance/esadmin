@@ -1,0 +1,12 @@
+┌stackoverflow
+│https://stackoverflow.com/questions/69763723/how-can-i-convert-my-normal-angular-project-into-a-vs-code-extension
+└───── 
+┌Links
+│https://github.com/microsoft/vscode-webview-ui-toolkit
+│https://github.com/microsoft/vscode-webview-ui-toolkit-samples
+│https://code.visualstudio.com/blogs/2021/10/11/webview-ui-toolkit
+│https://code.visualstudio.com/api/extension-guides/webview
+└─────
+┌notepad
+│https://github.com/microsoft/vscode-webview-ui-toolkit-samples/tree/main/default/notepad
+└─────
