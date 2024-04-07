@@ -66,6 +66,7 @@ export interface IInstantiationService {
 }
 
 /**
+ * https://www.typescriptlang.org/docs/handbook/2/functions.html#call-signatures
  * Identifies a service of type `T`.
  */
 export interface ServiceIdentifier<T> {
@@ -93,10 +94,12 @@ function storeServiceDependency(id: Function, target: Function, index: number): 
 export function createDecorator<T>(serviceId: string): ServiceIdentifier<T> {
 
 	if (_util.serviceIds.has(serviceId)) {
+		/* 이 블럭은 createDecorator() 함수를 호출 할 때, 'serviceId'에 대한 중복 호출시 동일 값 반환을 위해 존재 */
 		return _util.serviceIds.get(serviceId)!;
 	}
 
 	const id = <any>function (target: Function, key: string, index: number): any {
+		/* 이 변수에 할당된 함수는 @@IServiceName-decorator 형식으로 선언된후 'eval'될 때, 해당 'target'에  */
 		if (arguments.length !== 3) {
 			throw new Error('@IServiceName-decorator can only be used to decorate a parameter');
 		}
